@@ -10,10 +10,16 @@
 //!       the language.
 #![deny(warnings)]
 
-use std::{error, fmt};
+use std::fmt;
 use std::io::{self, Read, Write};
 use std::path::Path;
 use std::fs::File;
+
+/// Brainfuck errors are the best kind of errors.
+mod error;
+
+// Re-exports.
+pub use error::Error;
 
 /// An executable instruction in the language.
 ///
@@ -174,7 +180,7 @@ impl Interpreter {
     /// ```
     /// use brainfuck::Interpreter;
     ///
-    /// Interpreter::load("foo.bf");
+    /// Interpreter::load("fixtures/hello.b");
     /// ```
     pub fn load<P: AsRef<Path>>(path: P) -> Result<Interpreter, Error> {
         let mut file = try!(File::open(path));
@@ -195,7 +201,7 @@ impl Interpreter {
     /// ```
     /// use brainfuck::Interpreter;
     ///
-    /// Interpreter::load("fixtures/hello.bf").unwrap().run();
+    /// Interpreter::load("fixtures/hello.b").unwrap().run();
     /// ```
     pub fn run(&mut self) {
         while self.step().is_some() {}
@@ -208,7 +214,7 @@ impl Interpreter {
     /// ```
     /// use brainfuck::Interpreter;
     ///
-    /// let mut interp = Interpreter::load("fixtures/hello.bf").unwrap();
+    /// let mut interp = Interpreter::load("fixtures/hello.b").unwrap();
     /// interp.run_with_callback(|i| {
     ///     println!("Stepped: {}", i);
     /// });
@@ -233,7 +239,7 @@ impl Interpreter {
     /// ```
     /// use brainfuck::{Interpreter, Instruction};
     ///
-    /// let mut interp = Interpreter::load("fixtures/hello.bf").unwrap();
+    /// let mut interp = Interpreter::load("fixtures/hello.b").unwrap();
     /// assert!(interp.step().unwrap() == Instruction::SkipForward);
     /// ```
     pub fn step(&mut self) -> Option<Instruction> {
@@ -263,66 +269,5 @@ impl Interpreter {
         };
         self.pc = self.pc + 1;
         Instruction::new(byte).or_else(|| self.get_next_instruction())
-    }
-}
-
-/// A general error type for problems inside of the interpreter.
-#[derive(Debug)]
-pub enum Error {
-    /// Errors with reading or writing to IO.
-    Io(io::Error),
-}
-
-impl error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::Io(_) => "Io Error",
-        }
-    }
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Error::Io(ref e) => e.fmt(f),
-        }
-    }
-}
-
-impl From<io::Error> for Error {
-    fn from(e: io::Error) -> Error {
-        Error::Io(e)
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn load() {
-        let interp = Interpreter::load("fixtures/hello.bf");
-        assert!(interp.is_ok());
-    }
-
-    #[test]
-    fn step() {
-        let mut interp = Interpreter::load("fixtures/hello.bf").unwrap();
-        assert!(interp.step().unwrap() == Instruction::SkipForward);
-    }
-
-    #[test]
-    fn run() {
-        let mut interp = Interpreter::load("fixtures/hello.bf").unwrap();
-        interp.run();
-        // TODO: Test something.
-    }
-
-    #[test]
-    fn run_with_callback() {
-        let mut interp = Interpreter::load("fixtures/hello.bf").unwrap();
-        let mut count = 0;
-        interp.run_with_callback(|_| count = count + 1);
-        assert_eq!(count, 907);
     }
 }
