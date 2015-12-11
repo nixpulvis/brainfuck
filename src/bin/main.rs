@@ -1,8 +1,8 @@
 extern crate brainfuck;
 
-use brainfuck::interpreter::Interpreter;
+use brainfuck::Interpreter;
 
 fn main() {
-    let mut interp = Interpreter::new("fixtures/hello.bf").unwrap();
+    let mut interp = Interpreter::load("fixtures/hello.bf").unwrap();
     interp.run();
 }
