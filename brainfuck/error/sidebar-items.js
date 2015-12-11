@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Error","A general error type for problems inside of the interpreter."]]});
