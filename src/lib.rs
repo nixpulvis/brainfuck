@@ -10,7 +10,7 @@
 //!       the language.
 
 use std::{error, fmt};
-use std::io::{self, Read};
+use std::io::{self, Read, Write};
 use std::path::Path;
 use std::fs::File;
 use std::char;
@@ -82,10 +82,15 @@ impl Instruction {
                 interp.tape[interp.ptr] = interp.tape[interp.ptr] - 1;
             },
             Instruction::Output => {
-                print!("{}", interp.tape[interp.ptr] as char);
+                // TODO: Optimize.
+                let stdout = io::stdout();
+                stdout.lock().write(&interp.tape[interp.ptr..interp.ptr + 1]);
             },
             Instruction::Input => {
-                println!("unimplemented");
+                // TODO: Optimize, and handle EOF.
+                let stdin = io::stdin();
+                let input = stdin.lock().bytes().next().unwrap().unwrap();
+                interp.tape[interp.ptr] = input;
             },
             Instruction::SkipForward => {
                 if interp.tape[interp.ptr] == 0 {
