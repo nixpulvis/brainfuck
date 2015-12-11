@@ -334,6 +334,36 @@
 <span id="291">291</span>
 <span id="292">292</span>
 <span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Simple brainfuck interpreter in Rust.</span>
 <span class='doccomment'>//!</span>
@@ -533,6 +563,28 @@
         <span class='kw'>while</span> <span class='self'>self</span>.<span class='ident'>step</span>().<span class='ident'>is_some</span>() {}
     }
 
+    <span class='doccomment'>/// Run the interpreter with a callback hook.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// # Examples</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// ```</span>
+    <span class='doccomment'>/// use brainfuck::Interpreter;</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// let mut interp = Interpreter::load(&quot;fixtures/hello.bf&quot;).unwrap();</span>
+    <span class='doccomment'>/// interp.run_with_callback(|i| {</span>
+    <span class='doccomment'>///     println!(&quot;Stepped: {}&quot;, i);</span>
+    <span class='doccomment'>/// });</span>
+    <span class='doccomment'>/// ```</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>run_with_callback</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='kw-2'>mut</span> <span class='ident'>hook</span>: <span class='ident'>F</span>)
+    <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='ident'>Instruction</span>) {
+        <span class='kw'>loop</span> {
+            <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>step</span>() {
+                <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>i</span>) <span class='op'>=&gt;</span> <span class='ident'>hook</span>(<span class='ident'>i</span>),
+                <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>break</span>,
+            }
+        }
+    }
+
     <span class='doccomment'>/// Step the interpreter one instruction.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// This function returns `None` when there are no more steps to</span>
@@ -626,6 +678,14 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>load</span>(<span class='string'>&quot;fixtures/hello.bf&quot;</span>).<span class='ident'>unwrap</span>();
         <span class='ident'>interp</span>.<span class='ident'>run</span>();
         <span class='comment'>// TODO: Test something.</span>
+    }
+
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>run_with_callback</span>() {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>load</span>(<span class='string'>&quot;fixtures/hello.bf&quot;</span>).<span class='ident'>unwrap</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>count</span> <span class='op'>=</span> <span class='number'>0</span>;
+        <span class='ident'>interp</span>.<span class='ident'>run_with_callback</span>(<span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>count</span> <span class='op'>=</span> <span class='ident'>count</span> <span class='op'>+</span> <span class='number'>1</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>count</span>, <span class='number'>907</span>);
     }
 }
 </pre>
