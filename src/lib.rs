@@ -8,12 +8,12 @@
 //!
 //! TODO: Explain the choices made which are not spelled out for
 //!       the language.
+#![deny(warnings)]
 
 use std::{error, fmt};
 use std::io::{self, Read, Write};
 use std::path::Path;
 use std::fs::File;
-use std::char;
 
 /// An executable instruction in the language.
 ///
@@ -82,12 +82,12 @@ impl Instruction {
                 interp.tape[interp.ptr] = interp.tape[interp.ptr] - 1;
             },
             Instruction::Output => {
-                // TODO: Optimize.
+                // TODO: Optimize, and handle errors.
                 let stdout = io::stdout();
-                stdout.lock().write(&interp.tape[interp.ptr..interp.ptr + 1]);
+                stdout.lock().write(&interp.tape[interp.ptr..interp.ptr + 1]).unwrap();
             },
             Instruction::Input => {
-                // TODO: Optimize, and handle EOF.
+                // TODO: Optimize, and handle errors.
                 let stdin = io::stdin();
                 let input = stdin.lock().bytes().next().unwrap().unwrap();
                 interp.tape[interp.ptr] = input;
@@ -179,7 +179,7 @@ impl Interpreter {
     pub fn load<P: AsRef<Path>>(path: P) -> Result<Interpreter, Error> {
         let mut file = try!(File::open(path));
         let mut buf = String::new();
-        file.read_to_string(&mut buf);
+        try!(file.read_to_string(&mut buf));
         Ok(Interpreter {
             code: buf,
             tape: [0; 30000],
