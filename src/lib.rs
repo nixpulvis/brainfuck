@@ -196,6 +196,28 @@ impl Interpreter {
         while self.step().is_some() {}
     }
 
+    /// Run the interpreter with a callback hook.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use brainfuck::Interpreter;
+    ///
+    /// let mut interp = Interpreter::load("fixtures/hello.bf").unwrap();
+    /// interp.run_with_callback(|i| {
+    ///     println!("Stepped: {}", i);
+    /// });
+    /// ```
+    pub fn run_with_callback<F>(&mut self, mut hook: F)
+    where F: FnMut(&Instruction) {
+        loop {
+            match self.step() {
+                Some(ref i) => hook(i),
+                None => break,
+            }
+        }
+    }
+
     /// Step the interpreter one instruction.
     ///
     /// This function returns `None` when there are no more steps to
@@ -289,5 +311,13 @@ mod test {
         let mut interp = Interpreter::load("fixtures/hello.bf").unwrap();
         interp.run();
         // TODO: Test something.
+    }
+
+    #[test]
+    fn run_with_callback() {
+        let mut interp = Interpreter::load("fixtures/hello.bf").unwrap();
+        let mut count = 0;
+        interp.run_with_callback(|_| count = count + 1);
+        assert_eq!(count, 907);
     }
 }
