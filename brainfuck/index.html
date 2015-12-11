@@ -9,6 +9,7 @@
 
     <title>brainfuck - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
 
     
@@ -45,15 +46,43 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/brainfuck/lib.rs.html#1-3' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/brainfuck/lib.rs.html#1-293' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Simple brainfuck interpreter in Rust.</p>
-</div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+
+<p>The brainfuck language was created with the purpose of being a
+very minimal language which is very easy to write an interpreter
+for. This is one such interpreters.</p>
+
+<h1 id='undefined-behavior' class='section-header'><a href='#undefined-behavior'>Undefined Behavior</a></h1>
+<p>TODO: Explain the choices made which are not spelled out for
+      the language.</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                     <tr class=' module-item'>
-                        <td><a class='mod' href='interpreter/index.html'
-                               title='brainfuck::interpreter'>interpreter</a></td>
+                        <td><a class='struct' href='struct.Interpreter.html'
+                               title='brainfuck::Interpreter'>Interpreter</a></td>
                         <td class='docblock short'>
-                             
+                             <p>A brainfuck interpreter, with the needed state for execution.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.Error.html'
+                               title='brainfuck::Error'>Error</a></td>
+                        <td class='docblock short'>
+                             <p>A general error type for problems inside of the interpreter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.Instruction.html'
+                               title='brainfuck::Instruction'>Instruction</a></td>
+                        <td class='docblock short'>
+                             <p>An executable instruction in the language.</p>
+
                         </td>
                     </tr>
                 </table></section>
