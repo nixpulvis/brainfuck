@@ -71,6 +71,10 @@
 <span id="28">28</span>
 <span id="29">29</span>
 <span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::{<span class='ident'>error</span>, <span class='ident'>fmt</span>, <span class='ident'>io</span>};
 
@@ -79,12 +83,15 @@
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Error</span> {
     <span class='doccomment'>/// Errors with reading or writing to IO.</span>
     <span class='ident'>Io</span>(<span class='ident'>io</span>::<span class='ident'>Error</span>),
+    <span class='doccomment'>/// TODO: Is this the right name for this error.</span>
+    <span class='ident'>InputEmpty</span>,
 }
 
 <span class='kw'>impl</span> <span class='ident'>error</span>::<span class='ident'>Error</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
     <span class='kw'>fn</span> <span class='ident'>description</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>str</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>Error</span>::<span class='ident'>Io</span>(_) <span class='op'>=&gt;</span> <span class='string'>&quot;Io Error&quot;</span>,
+            <span class='ident'>Error</span>::<span class='ident'>InputEmpty</span> <span class='op'>=&gt;</span> <span class='string'>&quot;Input Empty Error&quot;</span>,
         }
     }
 }
@@ -93,6 +100,7 @@
     <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>Error</span>::<span class='ident'>Io</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='ident'>e</span>.<span class='ident'>fmt</span>(<span class='ident'>f</span>),
+            <span class='ident'>Error</span>::<span class='ident'>InputEmpty</span> <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>error</span>::<span class='ident'>Error</span>::<span class='ident'>description</span>(<span class='self'>self</span>)),
         }
     }
 }
