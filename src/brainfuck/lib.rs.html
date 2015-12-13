@@ -338,6 +338,26 @@
 <span id="295">295</span>
 <span id="296">296</span>
 <span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Simple brainfuck interpreter in Rust.</span>
 <span class='doccomment'>//!</span>
@@ -495,9 +515,29 @@
 <span class='doccomment'>/// A brainfuck interpreter, with the needed state for execution.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// For more information about the brainfuck language in general see the</span>
-<span class='doccomment'>/// top level documentation for this crate. The program code is stored as</span>
-<span class='doccomment'>/// a string, and can be any size. The tape is an array of 30,000 unsigned</span>
-<span class='doccomment'>/// bytes. This is derived from the original description of the language.</span>
+<span class='doccomment'>/// [top level documentation][top-doc] for this crate. The program code</span>
+<span class='doccomment'>/// is stored as a string, and can be any size. The tape is an array of</span>
+<span class='doccomment'>/// 30,000 unsigned bytes. This is derived from the original description</span>
+<span class='doccomment'>/// of the language.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// Brainfuck programs traditionally read from `STDIN` and `STDOUT`, but to</span>
+<span class='doccomment'>/// make things a bit more general we allow reading and writing to arbitrary</span>
+<span class='doccomment'>/// readers and writers.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// # Examples</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// Print 1 to `STDOUT`.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// ```</span>
+<span class='doccomment'>/// use std::io;</span>
+<span class='doccomment'>/// use brainfuck::Interpreter;</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// let mut reader = io::stdin();</span>
+<span class='doccomment'>/// let mut writer = io::stdout();</span>
+<span class='doccomment'>/// Interpreter::new(&quot;+.&quot;, &amp;mut reader, &amp;mut writer).unwrap().run();</span>
+<span class='doccomment'>/// ```</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// [top-doc]: index.html</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Interpreter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
     <span class='ident'>code</span>: <span class='ident'>String</span>,
     <span class='ident'>reader</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Read</span>,
