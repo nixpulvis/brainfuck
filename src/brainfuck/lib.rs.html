@@ -325,6 +325,19 @@
 <span id="282">282</span>
 <span id="283">283</span>
 <span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Simple brainfuck interpreter in Rust.</span>
 <span class='doccomment'>//!</span>
@@ -495,15 +508,32 @@
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Interpreter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>new</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>Read</span>, <span class='ident'>W</span>: <span class='ident'>Write</span><span class='op'>&gt;</span>(<span class='ident'>code</span>: <span class='ident'>String</span>, <span class='ident'>input</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>R</span>, <span class='ident'>output</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>W</span>) <span class='op'>-&gt;</span> <span class='ident'>Interpreter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-        <span class='ident'>Interpreter</span> {
-            <span class='ident'>code</span>: <span class='ident'>code</span>,
+    <span class='doccomment'>/// Return a new interpreter with the given code, reader, and writter.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Interpreters are relatively large, so avoid too many calls to this</span>
+    <span class='doccomment'>/// function.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// # Examples</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// ```</span>
+    <span class='doccomment'>/// use brainfuck::Interpreter;</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// let mut reader = &amp;[][..];</span>
+    <span class='doccomment'>/// let mut writer = Vec::&lt;u8&gt;::new();</span>
+    <span class='doccomment'>/// Interpreter::new(&quot;+.&quot;, &amp;mut reader, &amp;mut writer).unwrap().run();</span>
+    <span class='doccomment'>/// ```</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span><span class='op'>&lt;</span><span class='ident'>C</span>: <span class='ident'>Into</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>, <span class='ident'>R</span>: <span class='ident'>Read</span>, <span class='ident'>W</span>: <span class='ident'>Write</span><span class='op'>&gt;</span>(<span class='ident'>code</span>: <span class='ident'>C</span>, <span class='ident'>input</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>R</span>, <span class='ident'>output</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>W</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Interpreter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
+        <span class='comment'>// TODO: Compress and cache the code, removing everything but code.</span>
+        <span class='comment'>//       This will allow running to avoid the overhead of finding</span>
+        <span class='comment'>//       instructions and brace matching.</span>
+        <span class='prelude-val'>Ok</span>(<span class='ident'>Interpreter</span> {
+            <span class='ident'>code</span>: <span class='ident'>code</span>.<span class='ident'>into</span>(),
             <span class='ident'>reader</span>: <span class='ident'>input</span>,
             <span class='ident'>writer</span>: <span class='ident'>output</span>,
             <span class='ident'>tape</span>: [<span class='number'>0</span>; <span class='number'>30000</span>],
             <span class='ident'>ptr</span>: <span class='number'>0</span>,
             <span class='ident'>pc</span>: <span class='number'>0</span>,
-        }
+        })
     }
 
     <span class='doccomment'>/// Create a new interpreter from a file.</span>
@@ -527,7 +557,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>file</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>File</span>::<span class='ident'>open</span>(<span class='ident'>path</span>));
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>code</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>file</span>.<span class='ident'>read_to_string</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>code</span>));
-        <span class='prelude-val'>Ok</span>(<span class='ident'>Interpreter</span>::<span class='ident'>new</span>(<span class='ident'>code</span>, <span class='ident'>input</span>, <span class='ident'>output</span>))
+        <span class='ident'>Interpreter</span>::<span class='ident'>new</span>(<span class='ident'>code</span>, <span class='ident'>input</span>, <span class='ident'>output</span>)
     }
 
     <span class='doccomment'>/// Run the interpreter.</span>
@@ -590,10 +620,6 @@
             <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
         }
     }
-
-    <span class='comment'>// TODO: Compress and cache the code, removing everything but code.</span>
-    <span class='comment'>//       This will allow running to avoid the overhead of finding</span>
-    <span class='comment'>//       instructions and brace matching.</span>
 
     <span class='doccomment'>/// Returns the next instruction at or after the program counter. The</span>
     <span class='doccomment'>/// value of the program counter will be one greater than the returned</span>
