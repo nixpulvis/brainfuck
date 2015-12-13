@@ -11,7 +11,7 @@
 #![deny(warnings)]
 
 use std::fmt;
-use std::io::{self, Read, Write};
+use std::io::{Read, Write};
 use std::path::Path;
 use std::fs::File;
 
@@ -161,15 +161,15 @@ pub struct Interpreter<'a> {
     // TODO: The code should be stored in something like Box<Read> with memory
     //       of the read data as it reads it.
     code: String,
-    reader: Box<Read + 'a>,
-    writer: Box<Write + 'a>,
+    reader: &'a mut Read,
+    writer: &'a mut Write,
     tape: [u8; 30000],
     ptr: usize,
     pc: usize,
 }
 
 impl<'a> Interpreter<'a> {
-    fn new<R: Read + 'a, W: Write + 'a>(code: String, input: Box<R>, output: Box<W>) -> Interpreter<'a> {
+    fn new<R: Read, W: Write>(code: String, input: &'a mut R, output: &'a mut W) -> Interpreter<'a> {
         Interpreter {
             code: code,
             reader: input,
@@ -193,21 +193,15 @@ impl<'a> Interpreter<'a> {
     /// ```
     /// use brainfuck::Interpreter;
     ///
-    /// Interpreter::from_file("fixtures/hello.b");
+    /// let mut reader = &[][..];
+    /// let mut writer = Vec::<u8>::new();
+    /// let interp = Interpreter::from_file("fixtures/hello.b", &mut reader, &mut writer);
     /// ```
-    pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Interpreter<'a>, Error> {
+    pub fn from_file<P: AsRef<Path>, R: Read, W: Write>(path: P, input: &'a mut R, output: &'a mut W) -> Result<Interpreter<'a>, Error> {
         let mut file = try!(File::open(path));
         let mut code = String::new();
         try!(file.read_to_string(&mut code));
-        Ok(Interpreter::from_reader(code))
-    }
-
-    // TODO: Make this take a reader.
-    fn from_reader(code: String) -> Interpreter<'a> {
-        // TODO: Add configuration/arguments for the reader and writer.
-        let stdin = Box::new(io::stdin());
-        let stdout = Box::new(io::stdout());
-        Interpreter::new(code, stdin, stdout)
+        Ok(Interpreter::new(code, input, output))
     }
 
     /// Run the interpreter.
@@ -217,7 +211,9 @@ impl<'a> Interpreter<'a> {
     /// ```
     /// use brainfuck::Interpreter;
     ///
-    /// Interpreter::from_file("fixtures/hello.b").unwrap().run();
+    /// let mut reader = &[][..];
+    /// let mut writer = Vec::<u8>::new();
+    /// Interpreter::from_file("fixtures/hello.b", &mut reader, &mut writer).unwrap().run();
     /// ```
     pub fn run(&mut self) {
         while self.step().is_some() {}
@@ -230,7 +226,9 @@ impl<'a> Interpreter<'a> {
     /// ```
     /// use brainfuck::Interpreter;
     ///
-    /// let mut interp = Interpreter::from_file("fixtures/hello.b").unwrap();
+    /// let mut reader = &[][..];
+    /// let mut writer = Vec::<u8>::new();
+    /// let mut interp = Interpreter::from_file("fixtures/hello.b", &mut reader, &mut writer).unwrap();
     /// interp.run_with_callback(|i| {
     ///     println!("Stepped: {}", i);
     /// });
@@ -255,7 +253,9 @@ impl<'a> Interpreter<'a> {
     /// ```
     /// use brainfuck::{Interpreter, Instruction};
     ///
-    /// let mut interp = Interpreter::from_file("fixtures/hello.b").unwrap();
+    /// let mut reader = &[][..];
+    /// let mut writer = Vec::<u8>::new();
+    /// let mut interp = Interpreter::from_file("fixtures/hello.b", &mut reader, &mut writer).unwrap();
     /// assert!(interp.step().unwrap() == Instruction::SkipForward);
     /// ```
     pub fn step(&mut self) -> Option<Instruction> {
