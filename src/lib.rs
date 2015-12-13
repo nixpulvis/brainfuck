@@ -2,25 +2,31 @@
 //!
 //! The brainfuck language was created with the purpose of being a
 //! very minimal language which is very easy to write an interpreter
-//! for. This is one such interpreters. For more information on the
-//! brainfuck language start [here][brainfuck]. Brainfuck itself is
-//! syntactically challenging for humans, but is really not all that
-//! complicated. `+.` for example increments the value in the first
-//! cell and outputs that value. The real weird instructions are
-//! the control flow contructs `[` and `]`. `+++>,<[>+.<-]` for
-//! example prints the 3 values after the input value.
+//! for. This is one such interpreter. For more information on the
+//! brainfuck language start with the documentation of each
+//! [instruction in the language][instruction], or
+//! [some material online][brainfuck]. Brainfuck itself is syntactically
+//! challenging for humans, but is really not all that complicated. `+.`
+//! for example increments the value in the first cell and outputs that
+//! value. The real weird instructions are the control flow contructs
+//! `[` and `]`. `+++>,<[>+.<-]` for example prints the 3 values after
+//! the input value. For more about control flow in brainfuck read the
+//! section on [control flow][control-flow].
 //!
-//! # Semantics
+//! # Semantics and Portability
 //!
-//! Each instruction is documented in detail [here][instruction-docs].
-//! This includes devivations from the common semantics of the language,
-//! and any extensions. The brainfuck language has a few areas that
-//! are undefined behavior. These undefined behaviors are given explicit
+//! There are a few extensions and devivations from the common semantics
+//! of the language. The brainfuck language has a few areas that are
+//! undefined behavior. These undefined behaviors are given explicit
 //! semantics in this implmentation. Most brainfuck programs should work
-//! as expected in this implmentation.
+//! as expected in this implmentation. For more information on portabiliy
+//! of brainfuck programs read [The Unofficial Constraints on Portable Brainfuck Implementations][portabiliy].
 //!
+//! [instruction]: enum.Instruction.html
 //! [brainfuck]: http://www.muppetlabs.com/~breadbox/bf/
+//! [control-flow]: enum.Instruction.html#control-flow
 //! [instruction-docs]: enum.Instruction.html
+//! [portabiliy]: http://www.muppetlabs.com/%7Ebreadbox/bf/standards.html
 #![deny(warnings)]
 
 use std::fmt;
@@ -45,7 +51,11 @@ pub use error::Error;
 ///
 /// # Control Flow
 ///
-/// TODO: Explain the `[` and `]` instructions.
+/// Control flow in brainfuck is achieved by skipping forward, and
+/// backward. The `[` instruction skips past it's matching `]`
+/// instruction, and the `]` instruction skips back **to** it's
+/// matching `[` instruction. Matching brackets follow the intuitive
+/// notion, for example `[+[+]+]` has to pairs of matching
 ///
 /// # Undefined Behavior
 ///
