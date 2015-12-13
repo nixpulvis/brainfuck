@@ -325,8 +325,6 @@
 <span id="282">282</span>
 <span id="283">283</span>
 <span id="284">284</span>
-<span id="285">285</span>
-<span id="286">286</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Simple brainfuck interpreter in Rust.</span>
 <span class='doccomment'>//!</span>
@@ -488,8 +486,6 @@
 <span class='doccomment'>/// a string, and can be any size. The tape is an array of 30,000 unsigned</span>
 <span class='doccomment'>/// bytes. This is derived from the original description of the language.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Interpreter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='comment'>// TODO: The code should be stored in something like Box&lt;Read&gt; with memory</span>
-    <span class='comment'>//       of the read data as it reads it.</span>
     <span class='ident'>code</span>: <span class='ident'>String</span>,
     <span class='ident'>reader</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Read</span>,
     <span class='ident'>writer</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Write</span>,
