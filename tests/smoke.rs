@@ -5,8 +5,11 @@ macro_rules! load_and_run {
         #[test]
         #[cfg(feature="smoke-test")]
         fn $name() {
+            use std::io;
             use brainfuck::*;
-            Interpreter::load($path).unwrap().run();
+            let mut stdin = io::stdin();
+            let mut stdout = Vec::new();
+            Interpreter::from_file("fixtures/hello.b", &mut stdin, &mut stdout).unwrap().run();
         }
     };
 }

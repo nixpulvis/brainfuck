@@ -233,20 +233,25 @@ impl<'a> Interpreter<'a> {
         };
         match instruction {
             Instruction::IncPtr => {
-                self.ptr = self.ptr + 1;
+                let wrapped = (self.ptr as i16 + 1) % 30000;
+                self.ptr = wrapped as usize;
             },
             Instruction::DecPtr => {
-                self.ptr = self.ptr - 1;
+                let wrapped = (self.ptr as i16 - 1 + 30000) % 30000;
+                self.ptr = wrapped as usize;
             },
             Instruction::IncVal => {
-                self.tape[self.ptr] = self.tape[self.ptr] + 1;
+                let wrapped = self.tape[self.ptr] as i16 + 1;
+                self.tape[self.ptr] = wrapped as u8;
             },
             Instruction::DecVal => {
-                self.tape[self.ptr] = self.tape[self.ptr] - 1;
+                let wrapped = self.tape[self.ptr] as i16 - 1;
+                self.tape[self.ptr] = wrapped as u8;
             },
             Instruction::Output => {
                 // TODO: Handle errors.
-                try!(self.writer.write(&self.tape[self.ptr..self.ptr + 1]));
+                let byte = self.tape[self.ptr];
+                try!(self.writer.write(&[byte]));
             },
             Instruction::Input => {
                 // TODO: Handle errors.
@@ -316,5 +321,78 @@ impl<'a> Interpreter<'a> {
         }
         self.pc = self.pc + 1;
         Ok(Instruction::from_char(byte).or_else(|| self.get_next_instruction().expect("program loaded")))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn single_step() {
+        let mut reader = &[][..];
+        let mut writer = Vec::<u8>::new();
+        let mut interp = Interpreter::new(&mut reader, &mut writer);
+        interp.load(Program::from_source(">"));
+        assert_eq!(interp.step().unwrap().unwrap().unwrap(), Instruction::IncPtr);
+    }
+
+    #[test]
+    fn ub_decrement_pointer_below_min() {
+        // Decrementing the pointer below the start should wrap around to
+        // the end of the tape.
+        let mut reader = &[][..];
+        let mut writer = Vec::<u8>::new();
+        {
+            let mut interp = Interpreter::new(&mut reader, &mut writer);
+            interp.load(Program::from_source("<."));
+            interp.run().unwrap();
+        }
+        assert_eq!(writer, [0]);
+    }
+
+    #[test]
+    fn ub_increment_pointer_above_max() {
+        // Incrementing the pointer above the end should wrap around to
+        // the start of the tape. This test sets the first cell to 1,
+        // and then loops incrementing the pointer and subtracting 1
+        // from each cell until one of the cells is 0 (i.e.) the first
+        // cell. This relys on correctly working value wrapping.
+        let mut reader = &[][..];
+        let mut writer = Vec::<u8>::new();
+        {
+            let mut interp = Interpreter::new(&mut reader, &mut writer);
+            interp.load(Program::from_source("+[>-.]"));
+            interp.run().unwrap();
+        }
+        assert_eq!(writer.len(), 30000);
+    }
+
+    #[test]
+    fn ub_decrement_value_below_min() {
+        // Decrementing a value below it's minimum value should wrap to
+        // it's maximum value.
+        let mut reader = &[][..];
+        let mut writer = Vec::<u8>::new();
+        {
+            let mut interp = Interpreter::new(&mut reader, &mut writer);
+            interp.load(Program::from_source("-."));
+            interp.run().unwrap();
+        }
+        assert_eq!(writer, [255]);
+    }
+
+    #[test]
+    fn ub_increment_value_above_max() {
+        // Incrementing a value above it's maximum value should wrap to
+        // it's minimum value.
+        let mut reader = &[][..];
+        let mut writer = Vec::<u8>::new();
+        {
+            let mut interp = Interpreter::new(&mut reader, &mut writer);
+            interp.load(Program::from_source("+[+]."));
+            interp.run().unwrap();
+        }
+        assert_eq!(writer, [0]);
     }
 }
