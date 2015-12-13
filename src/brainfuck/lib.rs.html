@@ -358,17 +358,48 @@
 <span id="315">315</span>
 <span id="316">316</span>
 <span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Simple brainfuck interpreter in Rust.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! The brainfuck language was created with the purpose of being a</span>
 <span class='doccomment'>//! very minimal language which is very easy to write an interpreter</span>
-<span class='doccomment'>//! for. This is one such interpreters.</span>
+<span class='doccomment'>//! for. This is one such interpreters. For more information on the</span>
+<span class='doccomment'>//! brainfuck language start [here][brainfuck]. Brainfuck itself is</span>
+<span class='doccomment'>//! syntactically challenging for humans, but is really not all that</span>
+<span class='doccomment'>//! complicated. `+.` for example increments the value in the first</span>
+<span class='doccomment'>//! cell and outputs that value. The real weird instructions are</span>
+<span class='doccomment'>//! the control flow contructs `[` and `]`. `+++&gt;,&lt;[&gt;+.&lt;-]` for</span>
+<span class='doccomment'>//! example prints the 3 values after the input value.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! # Undefined Behavior</span>
+<span class='doccomment'>//! # Semantics</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! TODO: Explain the choices made which are not spelled out for</span>
-<span class='doccomment'>//!       the language.</span>
+<span class='doccomment'>//! Each instruction is documented in detail [here][instruction-docs].</span>
+<span class='doccomment'>//! This includes devivations from the common semantics of the language,</span>
+<span class='doccomment'>//! and any extensions. The brainfuck language has a few areas that</span>
+<span class='doccomment'>//! are undefined behavior. These undefined behaviors are given explicit</span>
+<span class='doccomment'>//! semantics in this implmentation. Most brainfuck programs should work</span>
+<span class='doccomment'>//! as expected in this implmentation.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! [brainfuck]: http://www.muppetlabs.com/~breadbox/bf/</span>
+<span class='doccomment'>//! [instruction-docs]: enum.Instruction.html</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>deny</span>(<span class='ident'>warnings</span>)]</span>
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
@@ -394,6 +425,11 @@
 <span class='doccomment'>/// # Control Flow</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// TODO: Explain the `[` and `]` instructions.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// # Undefined Behavior</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// TODO: Explain the choices made which are not spelled out for</span>
+<span class='doccomment'>///       the language.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Instruction</span> {
     <span class='doccomment'>/// Increment the pointer moving it up on the tape.</span>

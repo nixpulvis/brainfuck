@@ -46,16 +46,26 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/brainfuck/lib.rs.html#1-317' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/brainfuck/lib.rs.html#1-335' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Simple brainfuck interpreter in Rust.</p>
 
 <p>The brainfuck language was created with the purpose of being a
 very minimal language which is very easy to write an interpreter
-for. This is one such interpreters.</p>
+for. This is one such interpreters. For more information on the
+brainfuck language start <a href="http://www.muppetlabs.com/%7Ebreadbox/bf/">here</a>. Brainfuck itself is
+syntactically challenging for humans, but is really not all that
+complicated. <code>+.</code> for example increments the value in the first
+cell and outputs that value. The real weird instructions are
+the control flow contructs <code>[</code> and <code>]</code>. <code>+++&gt;,&lt;[&gt;+.&lt;-]</code> for
+example prints the 3 values after the input value.</p>
 
-<h1 id='undefined-behavior' class='section-header'><a href='#undefined-behavior'>Undefined Behavior</a></h1>
-<p>TODO: Explain the choices made which are not spelled out for
-      the language.</p>
+<h1 id='semantics' class='section-header'><a href='#semantics'>Semantics</a></h1>
+<p>Each instruction is documented in detail <a href="enum.Instruction.html">here</a>.
+This includes devivations from the common semantics of the language,
+and any extensions. The brainfuck language has a few areas that
+are undefined behavior. These undefined behaviors are given explicit
+semantics in this implmentation. Most brainfuck programs should work
+as expected in this implmentation.</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                     <tr class=' module-item'>
