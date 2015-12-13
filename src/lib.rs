@@ -98,7 +98,7 @@ pub enum Instruction {
 
 impl Instruction {
     /// Return the instruction corrisponding to the given instruction.
-    pub fn new(character: char) -> Option<Instruction> {
+    pub fn from_char(character: char) -> Option<Instruction> {
         match character {
             '>' => Some(Instruction::IncPtr),
             '<' => Some(Instruction::DecPtr),
@@ -353,6 +353,6 @@ impl<'a> Interpreter<'a> {
             None => return None,
         };
         self.pc = self.pc + 1;
-        Instruction::new(byte).or_else(|| self.get_next_instruction())
+        Instruction::from_char(byte).or_else(|| self.get_next_instruction())
     }
 }
