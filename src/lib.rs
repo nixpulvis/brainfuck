@@ -65,7 +65,7 @@ pub use error::Error;
 /// cell is **not** 0. This allows for a relatively simple syntax for
 /// decrementing iteration. For example `+++[- > operate on cell 2 < ]>.`
 /// is the boilerplate for a loop that operates 3 times.
-#[derive(Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Instruction {
     /// Increment the pointer moving it up on the tape.
     /// TODO: Document wrapping/error behavior.
@@ -111,74 +111,6 @@ impl Instruction {
             _ => None,
         }
     }
-
-    /// Given an interpreter to execute on, perform the action
-    /// corrisponding to this instruction.
-    pub fn execute(&self, interp: &mut Interpreter) -> Result<(), Error> {
-        match *self {
-            Instruction::IncPtr => {
-                interp.ptr = interp.ptr + 1;
-            },
-            Instruction::DecPtr => {
-                interp.ptr = interp.ptr - 1;
-            },
-            Instruction::IncVal => {
-                interp.tape[interp.ptr] = interp.tape[interp.ptr] + 1;
-            },
-            Instruction::DecVal => {
-                interp.tape[interp.ptr] = interp.tape[interp.ptr] - 1;
-            },
-            Instruction::Output => {
-                // TODO: Handle errors.
-                try!(interp.writer.write(&interp.tape[interp.ptr..interp.ptr + 1]));
-            },
-            Instruction::Input => {
-                // TODO: Handle errors.
-                let input = try!(match interp.reader.bytes().next() {
-                    Some(b) => b,
-                    None => return Err(Error::InputEmpty),
-                });
-                interp.tape[interp.ptr] = input;
-            },
-            Instruction::SkipForward => {
-                if interp.tape[interp.ptr] == 0 {
-                    let mut numopen = 1u32;
-                    let mut tmppc = interp.pc + 1;
-
-                    let mut iter = interp.code.chars().skip(tmppc);
-                    while numopen != 0 {
-                        let c = iter.next().unwrap();
-                        if c == '[' {
-                            numopen = numopen + 1;
-                        } else if c == ']' {
-                            numopen = numopen - 1;
-                        }
-                        tmppc = tmppc + 1;
-                    }
-                    interp.pc = tmppc;
-                }
-            },
-            Instruction::SkipBackward => {
-                if interp.tape[interp.ptr] != 0 {
-                    let mut numclosed = 1u32;
-                    let mut tmppc = interp.pc - 1;
-
-                    let mut iter = interp.code.chars().rev().skip(interp.code.len() - tmppc + 1);
-                    while numclosed != 0 {
-                        let c = iter.next().unwrap();
-                        if c == ']' {
-                            numclosed = numclosed + 1;
-                        } else if c == '[' {
-                            numclosed = numclosed - 1;
-                        }
-                        tmppc = tmppc - 1;
-                    }
-                    interp.pc = tmppc;
-                }
-            },
-        };
-        Ok(())
-    }
 }
 
 impl fmt::Display for Instruction {
@@ -196,6 +128,32 @@ impl fmt::Display for Instruction {
     }
 }
 
+// TODO: Compress and cache the code, removing everything but code.
+//       This will allow running to avoid the overhead of finding
+//       instructions and brace matching.
+pub struct Program {
+    source: String,
+}
+
+impl Program {
+    pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Program, Error> {
+        let mut file = try!(File::open(path));
+        let mut source = String::new();
+        try!(file.read_to_string(&mut source));
+        Ok(Program::from_source(source))
+    }
+
+    pub fn from_source<C: Into<String>>(source: C) -> Program {
+        Program {
+            source: source.into(),
+        }
+    }
+
+    // fn compress(&mut self) {}
+    // fn check(&self) {}
+    // fn optimize(&self) {}
+}
+
 /// A brainfuck interpreter, with the needed state for execution.
 ///
 /// For more information about the brainfuck language in general see the
@@ -208,22 +166,9 @@ impl fmt::Display for Instruction {
 /// make things a bit more general we allow reading and writing to arbitrary
 /// readers and writers.
 ///
-/// # Examples
-///
-/// Print 1 to `STDOUT`.
-///
-/// ```
-/// use std::io;
-/// use brainfuck::Interpreter;
-///
-/// let mut reader = io::stdin();
-/// let mut writer = io::stdout();
-/// Interpreter::new("+.", &mut reader, &mut writer).unwrap().run();
-/// ```
-///
 /// [top-doc]: index.html
 pub struct Interpreter<'a> {
-    code: String,
+    program: Option<Program>,
     reader: &'a mut Read,
     writer: &'a mut Write,
     tape: [u8; 30000],
@@ -236,115 +181,119 @@ impl<'a> Interpreter<'a> {
     ///
     /// Interpreters are relatively large, so avoid too many calls to this
     /// function.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use brainfuck::Interpreter;
-    ///
-    /// let mut reader = &[][..];
-    /// let mut writer = Vec::<u8>::new();
-    /// Interpreter::new("+.", &mut reader, &mut writer).unwrap().run();
-    /// ```
-    pub fn new<C: Into<String>, R: Read, W: Write>(code: C, input: &'a mut R, output: &'a mut W) -> Result<Interpreter<'a>, Error> {
-        // TODO: Compress and cache the code, removing everything but code.
-        //       This will allow running to avoid the overhead of finding
-        //       instructions and brace matching.
-        Ok(Interpreter {
-            code: code.into(),
+    pub fn new<R: Read, W: Write>(input: &'a mut R, output: &'a mut W) -> Interpreter<'a> {
+        Interpreter {
+            program: None,
             reader: input,
             writer: output,
             tape: [0; 30000],
             ptr: 0,
             pc: 0,
-        })
+        }
     }
 
-    /// Create a new interpreter from a file.
-    ///
-    /// Loads the given file from the path, and creates a new
-    /// interpreter. The code of the interpreter is the contents
-    /// of the file. Every cell of the tape is initialized to 0.
-    /// Both the pointer and the program counter are set to 0. If
-    /// the file fails to load then this function returns an error.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use brainfuck::Interpreter;
-    ///
-    /// let mut reader = &[][..];
-    /// let mut writer = Vec::<u8>::new();
-    /// let interp = Interpreter::from_file("fixtures/hello.b", &mut reader, &mut writer);
-    /// ```
-    pub fn from_file<P: AsRef<Path>, R: Read, W: Write>(path: P, input: &'a mut R, output: &'a mut W) -> Result<Interpreter<'a>, Error> {
-        let mut file = try!(File::open(path));
-        let mut code = String::new();
-        try!(file.read_to_string(&mut code));
-        Interpreter::new(code, input, output)
+    /// Load a program for the interpreter to run.
+    pub fn load(&mut self, program: Program) -> &mut Self {
+        self.pc = 0;
+        self.program = Some(program);
+        self
     }
 
     /// Run the interpreter.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use brainfuck::Interpreter;
-    ///
-    /// let mut reader = &[][..];
-    /// let mut writer = Vec::<u8>::new();
-    /// Interpreter::from_file("fixtures/hello.b", &mut reader, &mut writer).unwrap().run();
-    /// ```
-    pub fn run(&mut self) {
-        while self.step().is_some() {}
+    pub fn run(&mut self) -> Result<(), Error> {
+        while try!(self.step()).is_some() {}
+        Ok(())
     }
 
     /// Run the interpreter with a callback hook.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use brainfuck::Interpreter;
-    ///
-    /// let mut reader = &[][..];
-    /// let mut writer = Vec::<u8>::new();
-    /// let mut interp = Interpreter::from_file("fixtures/hello.b", &mut reader, &mut writer).unwrap();
-    /// interp.run_with_callback(|interp, inst| {
-    ///     println!("Stepped: {}", inst);
-    /// });
-    /// ```
-    pub fn run_with_callback<F>(&mut self, mut hook: F)
+    pub fn run_with_callback<F>(&mut self, mut hook: F) -> Result<(), Error>
     where F: FnMut(&mut Self, &Instruction) {
-        while let Some(Ok(ref i)) = self.step() {
+        while let Some(Ok(ref i)) = try!(self.step()) {
             hook(self, i);
+        };
+        Ok(())
+    }
+
+    fn step(&mut self) -> Result<Option<Result<Instruction, Error>>, Error> {
+        match try!(self.get_next_instruction()) {
+            Some(i) => {
+                match self.execute(i) {
+                    Ok(_) => Ok(Some(Ok(i))),
+                    Err(e) => Ok(Some(Err(e.into()))),
+                }
+            }
+            None => Ok(None),
         }
     }
 
-    /// Step the interpreter one instruction.
-    ///
-    /// This function returns `None` when there are no more steps to
-    /// make in the code from the current value of the program counter.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use brainfuck::{Interpreter, Instruction};
-    ///
-    /// let mut reader = &[][..];
-    /// let mut writer = Vec::<u8>::new();
-    /// let mut interp = Interpreter::from_file("fixtures/hello.b", &mut reader, &mut writer).unwrap();
-    /// assert!(interp.step().unwrap().unwrap() == Instruction::SkipForward);
-    /// ```
-    pub fn step(&mut self) -> Option<Result<Instruction, Error>> {
-        match self.get_next_instruction() {
-            Some(i) => {
-                match i.execute(self) {
-                    Ok(_) => Some(Ok(i)),
-                    Err(e) => Some(Err(e.into())),
+    fn execute(&mut self, instruction: Instruction) -> Result<(), Error> {
+        let program = match self.program {
+            Some(ref p) => p,
+            None => return Err(Error::NoProgram),
+        };
+        match instruction {
+            Instruction::IncPtr => {
+                self.ptr = self.ptr + 1;
+            },
+            Instruction::DecPtr => {
+                self.ptr = self.ptr - 1;
+            },
+            Instruction::IncVal => {
+                self.tape[self.ptr] = self.tape[self.ptr] + 1;
+            },
+            Instruction::DecVal => {
+                self.tape[self.ptr] = self.tape[self.ptr] - 1;
+            },
+            Instruction::Output => {
+                // TODO: Handle errors.
+                try!(self.writer.write(&self.tape[self.ptr..self.ptr + 1]));
+            },
+            Instruction::Input => {
+                // TODO: Handle errors.
+                let input = try!(match self.reader.bytes().next() {
+                    Some(b) => b,
+                    None => return Err(Error::InputEmpty),
+                });
+                self.tape[self.ptr] = input;
+            },
+            Instruction::SkipForward => {
+                if self.tape[self.ptr] == 0 {
+                    let mut numopen = 1u32;
+                    let mut tmppc = self.pc + 1;
+
+                    let mut iter = program.source.chars().skip(tmppc);
+                    while numopen != 0 {
+                        let c = iter.next().unwrap();
+                        if c == '[' {
+                            numopen = numopen + 1;
+                        } else if c == ']' {
+                            numopen = numopen - 1;
+                        }
+                        tmppc = tmppc + 1;
+                    }
+                    self.pc = tmppc;
                 }
-            }
-            None => None,
-        }
+            },
+            Instruction::SkipBackward => {
+                if self.tape[self.ptr] != 0 {
+                    let mut numclosed = 1u32;
+                    let mut tmppc = self.pc - 1;
+
+                    let mut iter = program.source.chars().rev().skip(program.source.len() - tmppc + 1);
+                    while numclosed != 0 {
+                        let c = iter.next().unwrap();
+                        if c == ']' {
+                            numclosed = numclosed + 1;
+                        } else if c == '[' {
+                            numclosed = numclosed - 1;
+                        }
+                        tmppc = tmppc - 1;
+                    }
+                    self.pc = tmppc;
+                }
+            },
+        };
+        Ok(())
     }
 
     /// Returns the next instruction at or after the program counter. The
@@ -353,12 +302,19 @@ impl<'a> Interpreter<'a> {
     ///
     /// This function returns `None` if there are no more instructions in
     /// the code.
-    fn get_next_instruction(&mut self) -> Option<Instruction> {
-        let byte = match self.code.chars().nth(self.pc) {
-            Some(c) => c,
-            None => return None,
-        };
+    fn get_next_instruction(&mut self) -> Result<Option<Instruction>, Error> {
+        let byte;
+        {
+            let program = match self.program {
+                Some(ref p) => p,
+                None => return Err(Error::NoProgram),
+            };
+            byte = match program.source.chars().nth(self.pc) {
+                Some(c) => c,
+                None => return Ok(None),
+            };
+        }
         self.pc = self.pc + 1;
-        Instruction::from_char(byte).or_else(|| self.get_next_instruction())
+        Ok(Instruction::from_char(byte).or_else(|| self.get_next_instruction().expect("program loaded")))
     }
 }

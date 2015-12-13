@@ -7,6 +7,8 @@ pub enum Error {
     Io(io::Error),
     /// TODO: Is this the right name for this error.
     InputEmpty,
+    /// No program loaded.
+    NoProgram,
 }
 
 impl error::Error for Error {
@@ -14,6 +16,7 @@ impl error::Error for Error {
         match *self {
             Error::Io(_) => "Io Error",
             Error::InputEmpty => "Input Empty Error",
+            Error::NoProgram => "No Program",
         }
     }
 }
@@ -23,6 +26,7 @@ impl fmt::Display for Error {
         match *self {
             Error::Io(ref e) => e.fmt(f),
             Error::InputEmpty => write!(f, "{}", error::Error::description(self)),
+            Error::NoProgram => write!(f, "{}", error::Error::description(self)),
         }
     }
 }
