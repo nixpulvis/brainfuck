@@ -101,7 +101,7 @@ impl Instruction {
 
     /// Given an interpreter to execute on, perform the action
     /// corrisponding to this instruction.
-    pub fn execute(&self, interp: &mut Interpreter) {
+    pub fn execute(&self, interp: &mut Interpreter) -> Result<(), Error> {
         match *self {
             Instruction::IncPtr => {
                 interp.ptr = interp.ptr + 1;
@@ -117,11 +117,14 @@ impl Instruction {
             },
             Instruction::Output => {
                 // TODO: Handle errors.
-                (&mut interp.writer).write(&interp.tape[interp.ptr..interp.ptr + 1]).unwrap();
+                try!(interp.writer.write(&interp.tape[interp.ptr..interp.ptr + 1]));
             },
             Instruction::Input => {
                 // TODO: Handle errors.
-                let input = (&mut interp.reader).bytes().next().unwrap().unwrap();
+                let input = try!(match interp.reader.bytes().next() {
+                    Some(b) => b,
+                    None => return Err(Error::InputEmpty),
+                });
                 interp.tape[interp.ptr] = input;
             },
             Instruction::SkipForward => {
@@ -160,7 +163,8 @@ impl Instruction {
                     interp.pc = tmppc;
                 }
             },
-        }
+        };
+        Ok(())
     }
 }
 
@@ -298,7 +302,7 @@ impl<'a> Interpreter<'a> {
     /// ```
     pub fn run_with_callback<F>(&mut self, mut hook: F)
     where F: FnMut(&mut Self, &Instruction) {
-        while let Some(ref i) = self.step() {
+        while let Some(Ok(ref i)) = self.step() {
             hook(self, i);
         }
     }
@@ -316,13 +320,15 @@ impl<'a> Interpreter<'a> {
     /// let mut reader = &[][..];
     /// let mut writer = Vec::<u8>::new();
     /// let mut interp = Interpreter::from_file("fixtures/hello.b", &mut reader, &mut writer).unwrap();
-    /// assert!(interp.step().unwrap() == Instruction::SkipForward);
+    /// assert!(interp.step().unwrap().unwrap() == Instruction::SkipForward);
     /// ```
-    pub fn step(&mut self) -> Option<Instruction> {
+    pub fn step(&mut self) -> Option<Result<Instruction, Error>> {
         match self.get_next_instruction() {
             Some(i) => {
-                i.execute(self);
-                Some(i)
+                match i.execute(self) {
+                    Ok(_) => Some(Ok(i)),
+                    Err(e) => Some(Err(e.into())),
+                }
             }
             None => None,
         }
