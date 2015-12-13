@@ -34,5 +34,5 @@ fn step() {
     let mut stdin = io::stdin();
     let mut stdout = io::stdout();
     let mut interp = Interpreter::from_file("fixtures/hello.b", &mut stdin, &mut stdout).unwrap();
-    assert!(interp.step().unwrap() == Instruction::SkipForward);
+    assert!(interp.step().unwrap().unwrap() == Instruction::SkipForward);
 }
