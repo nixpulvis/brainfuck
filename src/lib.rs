@@ -65,7 +65,7 @@ pub use error::Error;
 /// cell is **not** 0. This allows for a relatively simple syntax for
 /// decrementing iteration. For example `+++[- > operate on cell 2 < ]>.`
 /// is the boilerplate for a loop that operates 3 times.
-#[derive(Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Instruction {
     /// Increment the pointer moving it up on the tape.
     /// TODO: Document wrapping/error behavior.
@@ -110,74 +110,6 @@ impl Instruction {
             ']' => Some(Instruction::SkipBackward),
             _ => None,
         }
-    }
-
-    /// Given an interpreter to execute on, perform the action
-    /// corrisponding to this instruction.
-    pub fn execute(&self, interp: &mut Interpreter) -> Result<(), Error> {
-        match *self {
-            Instruction::IncPtr => {
-                interp.ptr = interp.ptr + 1;
-            },
-            Instruction::DecPtr => {
-                interp.ptr = interp.ptr - 1;
-            },
-            Instruction::IncVal => {
-                interp.tape[interp.ptr] = interp.tape[interp.ptr] + 1;
-            },
-            Instruction::DecVal => {
-                interp.tape[interp.ptr] = interp.tape[interp.ptr] - 1;
-            },
-            Instruction::Output => {
-                // TODO: Handle errors.
-                try!(interp.writer.write(&interp.tape[interp.ptr..interp.ptr + 1]));
-            },
-            Instruction::Input => {
-                // TODO: Handle errors.
-                let input = try!(match interp.reader.bytes().next() {
-                    Some(b) => b,
-                    None => return Err(Error::InputEmpty),
-                });
-                interp.tape[interp.ptr] = input;
-            },
-            Instruction::SkipForward => {
-                if interp.tape[interp.ptr] == 0 {
-                    let mut numopen = 1u32;
-                    let mut tmppc = interp.pc + 1;
-
-                    let mut iter = interp.program.source.chars().skip(tmppc);
-                    while numopen != 0 {
-                        let c = iter.next().unwrap();
-                        if c == '[' {
-                            numopen = numopen + 1;
-                        } else if c == ']' {
-                            numopen = numopen - 1;
-                        }
-                        tmppc = tmppc + 1;
-                    }
-                    interp.pc = tmppc;
-                }
-            },
-            Instruction::SkipBackward => {
-                if interp.tape[interp.ptr] != 0 {
-                    let mut numclosed = 1u32;
-                    let mut tmppc = interp.pc - 1;
-
-                    let mut iter = interp.program.source.chars().rev().skip(interp.program.source.len() - tmppc + 1);
-                    while numclosed != 0 {
-                        let c = iter.next().unwrap();
-                        if c == ']' {
-                            numclosed = numclosed + 1;
-                        } else if c == '[' {
-                            numclosed = numclosed - 1;
-                        }
-                        tmppc = tmppc - 1;
-                    }
-                    interp.pc = tmppc;
-                }
-            },
-        };
-        Ok(())
     }
 }
 
@@ -236,7 +168,7 @@ impl Program {
 ///
 /// [top-doc]: index.html
 pub struct Interpreter<'a> {
-    program: Program,
+    program: Option<Program>,
     reader: &'a mut Read,
     writer: &'a mut Write,
     tape: [u8; 30000],
@@ -249,9 +181,9 @@ impl<'a> Interpreter<'a> {
     ///
     /// Interpreters are relatively large, so avoid too many calls to this
     /// function.
-    pub fn new<R: Read, W: Write>(program: Program, input: &'a mut R, output: &'a mut W) -> Interpreter<'a> {
+    pub fn new<R: Read, W: Write>(input: &'a mut R, output: &'a mut W) -> Interpreter<'a> {
         Interpreter {
-            program: program,
+            program: None,
             reader: input,
             writer: output,
             tape: [0; 30000],
@@ -260,15 +192,21 @@ impl<'a> Interpreter<'a> {
         }
     }
 
+    pub fn load(&mut self, program: Program) -> &mut Self {
+        self.program = Some(program);
+        self
+    }
+
     /// Run the interpreter.
-    pub fn run(&mut self) {
-        while self.step().is_some() {}
+    pub fn run(&mut self) -> Result<(), Error> {
+        while try!(self.step()).is_some() {}
+        Ok(())
     }
 
     /// Run the interpreter with a callback hook.
     pub fn run_with_callback<F>(&mut self, mut hook: F)
     where F: FnMut(&mut Self, &Instruction) {
-        while let Some(Ok(ref i)) = self.step() {
+        while let Ok(Some(Ok(ref i))) = self.step() {
             hook(self, i);
         }
     }
@@ -277,16 +215,86 @@ impl<'a> Interpreter<'a> {
     ///
     /// This function returns `None` when there are no more steps to
     /// make in the code from the current value of the program counter.
-    pub fn step(&mut self) -> Option<Result<Instruction, Error>> {
-        match self.get_next_instruction() {
+    pub fn step(&mut self) -> Result<Option<Result<Instruction, Error>>, Error> {
+        match try!(self.get_next_instruction()) {
             Some(i) => {
-                match i.execute(self) {
-                    Ok(_) => Some(Ok(i)),
-                    Err(e) => Some(Err(e.into())),
+                match self.execute(i) {
+                    Ok(_) => Ok(Some(Ok(i))),
+                    Err(e) => Ok(Some(Err(e.into()))),
                 }
             }
-            None => None,
+            None => Ok(None),
         }
+    }
+
+    pub fn execute(&mut self, instruction: Instruction) -> Result<(), Error> {
+        let program = match self.program {
+            Some(ref p) => p,
+            None => return Err(Error::NoProgram),
+        };
+        match instruction {
+            Instruction::IncPtr => {
+                self.ptr = self.ptr + 1;
+            },
+            Instruction::DecPtr => {
+                self.ptr = self.ptr - 1;
+            },
+            Instruction::IncVal => {
+                self.tape[self.ptr] = self.tape[self.ptr] + 1;
+            },
+            Instruction::DecVal => {
+                self.tape[self.ptr] = self.tape[self.ptr] - 1;
+            },
+            Instruction::Output => {
+                // TODO: Handle errors.
+                try!(self.writer.write(&self.tape[self.ptr..self.ptr + 1]));
+            },
+            Instruction::Input => {
+                // TODO: Handle errors.
+                let input = try!(match self.reader.bytes().next() {
+                    Some(b) => b,
+                    None => return Err(Error::InputEmpty),
+                });
+                self.tape[self.ptr] = input;
+            },
+            Instruction::SkipForward => {
+                if self.tape[self.ptr] == 0 {
+                    let mut numopen = 1u32;
+                    let mut tmppc = self.pc + 1;
+
+                    let mut iter = program.source.chars().skip(tmppc);
+                    while numopen != 0 {
+                        let c = iter.next().unwrap();
+                        if c == '[' {
+                            numopen = numopen + 1;
+                        } else if c == ']' {
+                            numopen = numopen - 1;
+                        }
+                        tmppc = tmppc + 1;
+                    }
+                    self.pc = tmppc;
+                }
+            },
+            Instruction::SkipBackward => {
+                if self.tape[self.ptr] != 0 {
+                    let mut numclosed = 1u32;
+                    let mut tmppc = self.pc - 1;
+
+                    let mut iter = program.source.chars().rev().skip(program.source.len() - tmppc + 1);
+                    while numclosed != 0 {
+                        let c = iter.next().unwrap();
+                        if c == ']' {
+                            numclosed = numclosed + 1;
+                        } else if c == '[' {
+                            numclosed = numclosed - 1;
+                        }
+                        tmppc = tmppc - 1;
+                    }
+                    self.pc = tmppc;
+                }
+            },
+        };
+        Ok(())
     }
 
     /// Returns the next instruction at or after the program counter. The
@@ -295,12 +303,19 @@ impl<'a> Interpreter<'a> {
     ///
     /// This function returns `None` if there are no more instructions in
     /// the code.
-    fn get_next_instruction(&mut self) -> Option<Instruction> {
-        let byte = match self.program.source.chars().nth(self.pc) {
-            Some(c) => c,
-            None => return None,
-        };
+    fn get_next_instruction(&mut self) -> Result<Option<Instruction>, Error> {
+        let byte;
+        {
+            let program = match self.program {
+                Some(ref p) => p,
+                None => return Err(Error::NoProgram),
+            };
+            byte = match program.source.chars().nth(self.pc) {
+                Some(c) => c,
+                None => return Ok(None),
+            };
+        }
         self.pc = self.pc + 1;
-        Instruction::from_char(byte).or_else(|| self.get_next_instruction())
+        Ok(Instruction::from_char(byte).or_else(|| self.get_next_instruction().expect("program loaded")))
     }
 }

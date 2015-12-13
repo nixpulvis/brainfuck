@@ -8,5 +8,5 @@ fn main() {
     let program = Program::from_file(&path).unwrap();
     let mut stdin = io::stdin();
     let mut stdout = io::stdout();
-    Interpreter::new(program, &mut stdin, &mut stdout).run();
+    Interpreter::new(&mut stdin, &mut stdout).load(program).run();
 }
