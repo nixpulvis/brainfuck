@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-32' class='srclink' href='../src/brainfuck/lib.rs.html#55-74' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-32' class='srclink' href='../src/brainfuck/lib.rs.html#65-84' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum Instruction {
     IncPtr,
     DecPtr,
@@ -66,7 +66,11 @@ instructions for skipping ahead and skipping back. More information
 on control flow below.</p>
 
 <h1 id='control-flow' class='section-header'><a href='#control-flow'>Control Flow</a></h1>
-<p>TODO: Explain the <code>[</code> and <code>]</code> instructions.</p>
+<p>Control flow in brainfuck is achieved by skipping forward, and
+backward. The <code>[</code> instruction skips past it&#39;s matching <code>]</code>
+instruction, and the <code>]</code> instruction skips back <strong>to</strong> it&#39;s
+matching <code>[</code> instruction. Matching brackets follow the intuitive
+notion, for example <code>[+[+]+]</code> has to pairs of matching</p>
 
 <h1 id='undefined-behavior' class='section-header'><a href='#undefined-behavior'>Undefined Behavior</a></h1>
 <p>TODO: Explain the choices made which are not spelled out for
