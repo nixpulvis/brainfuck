@@ -1,22 +1,29 @@
 extern crate brainfuck;
+use std::io;
 use brainfuck::*;
+
 
 #[test]
 fn load() {
-    let interp = Interpreter::load("fixtures/hello.b");
+    let mut stdin = io::stdin();
+    let mut stdout = io::stdout();
+    let interp = Interpreter::from_file("fixtures/hello.b", &mut stdin, &mut stdout);
     assert!(interp.is_ok());
 }
 
 #[test]
 fn run() {
-    let mut interp = Interpreter::load("fixtures/hello.b").unwrap();
-    interp.run();
-    // TODO: Test something.
+    let mut stdin = io::stdin();
+    let mut stdout = Vec::new();
+    Interpreter::from_file("fixtures/hello.b", &mut stdin, &mut stdout).unwrap().run();
+    assert_eq!(String::from_utf8(stdout).unwrap(), "Hello World!\n");
 }
 
 #[test]
 fn run_with_callback() {
-    let mut interp = Interpreter::load("fixtures/hello.b").unwrap();
+    let mut stdin = io::stdin();
+    let mut stdout = io::stdout();
+    let mut interp = Interpreter::from_file("fixtures/hello.b", &mut stdin, &mut stdout).unwrap();
     let mut count = 0;
     interp.run_with_callback(|_| count = count + 1);
     assert_eq!(count, 907);
@@ -24,6 +31,8 @@ fn run_with_callback() {
 
 #[test]
 fn step() {
-    let mut interp = Interpreter::load("fixtures/hello.b").unwrap();
+    let mut stdin = io::stdin();
+    let mut stdout = io::stdout();
+    let mut interp = Interpreter::from_file("fixtures/hello.b", &mut stdin, &mut stdout).unwrap();
     assert!(interp.step().unwrap() == Instruction::SkipForward);
 }
