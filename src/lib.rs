@@ -88,14 +88,12 @@ impl Instruction {
                 interp.tape[interp.ptr] = interp.tape[interp.ptr] - 1;
             },
             Instruction::Output => {
-                // TODO: Optimize, and handle errors.
-                let stdout = io::stdout();
-                stdout.lock().write(&interp.tape[interp.ptr..interp.ptr + 1]).unwrap();
+                // TODO: Handle errors.
+                (&mut interp.writer).write(&interp.tape[interp.ptr..interp.ptr + 1]).unwrap();
             },
             Instruction::Input => {
-                // TODO: Optimize, and handle errors.
-                let stdin = io::stdin();
-                let input = stdin.lock().bytes().next().unwrap().unwrap();
+                // TODO: Handle errors.
+                let input = (&mut interp.reader).bytes().next().unwrap().unwrap();
                 interp.tape[interp.ptr] = input;
             },
             Instruction::SkipForward => {
@@ -159,14 +157,29 @@ impl fmt::Display for Instruction {
 /// top level documentation for this crate. The program code is stored as
 /// a string, and can be any size. The tape is an array of 30,000 unsigned
 /// bytes. This is derived from the original description of the language.
-pub struct Interpreter {
+pub struct Interpreter<'a> {
+    // TODO: The code should be stored in something like Box<Read> with memory
+    //       of the read data as it reads it.
     code: String,
+    reader: Box<Read + 'a>,
+    writer: Box<Write + 'a>,
     tape: [u8; 30000],
     ptr: usize,
     pc: usize,
 }
 
-impl Interpreter {
+impl<'a> Interpreter<'a> {
+    fn new<R: Read + 'a, W: Write + 'a>(code: String, input: Box<R>, output: Box<W>) -> Interpreter<'a> {
+        Interpreter {
+            code: code,
+            reader: input,
+            writer: output,
+            tape: [0; 30000],
+            ptr: 0,
+            pc: 0,
+        }
+    }
+
     /// Create a new interpreter from a file.
     ///
     /// Loads the given file from the path, and creates a new
@@ -180,18 +193,21 @@ impl Interpreter {
     /// ```
     /// use brainfuck::Interpreter;
     ///
-    /// Interpreter::load("fixtures/hello.b");
+    /// Interpreter::from_file("fixtures/hello.b");
     /// ```
-    pub fn load<P: AsRef<Path>>(path: P) -> Result<Interpreter, Error> {
+    pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Interpreter<'a>, Error> {
         let mut file = try!(File::open(path));
-        let mut buf = String::new();
-        try!(file.read_to_string(&mut buf));
-        Ok(Interpreter {
-            code: buf,
-            tape: [0; 30000],
-            ptr: 0,
-            pc: 0,
-        })
+        let mut code = String::new();
+        try!(file.read_to_string(&mut code));
+        Ok(Interpreter::from_reader(code))
+    }
+
+    // TODO: Make this take a reader.
+    fn from_reader(code: String) -> Interpreter<'a> {
+        // TODO: Add configuration/arguments for the reader and writer.
+        let stdin = Box::new(io::stdin());
+        let stdout = Box::new(io::stdout());
+        Interpreter::new(code, stdin, stdout)
     }
 
     /// Run the interpreter.
@@ -201,7 +217,7 @@ impl Interpreter {
     /// ```
     /// use brainfuck::Interpreter;
     ///
-    /// Interpreter::load("fixtures/hello.b").unwrap().run();
+    /// Interpreter::from_file("fixtures/hello.b").unwrap().run();
     /// ```
     pub fn run(&mut self) {
         while self.step().is_some() {}
@@ -214,7 +230,7 @@ impl Interpreter {
     /// ```
     /// use brainfuck::Interpreter;
     ///
-    /// let mut interp = Interpreter::load("fixtures/hello.b").unwrap();
+    /// let mut interp = Interpreter::from_file("fixtures/hello.b").unwrap();
     /// interp.run_with_callback(|i| {
     ///     println!("Stepped: {}", i);
     /// });
@@ -239,7 +255,7 @@ impl Interpreter {
     /// ```
     /// use brainfuck::{Interpreter, Instruction};
     ///
-    /// let mut interp = Interpreter::load("fixtures/hello.b").unwrap();
+    /// let mut interp = Interpreter::from_file("fixtures/hello.b").unwrap();
     /// assert!(interp.step().unwrap() == Instruction::SkipForward);
     /// ```
     pub fn step(&mut self) -> Option<Instruction> {
