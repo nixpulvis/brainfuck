@@ -158,8 +158,6 @@ impl fmt::Display for Instruction {
 /// a string, and can be any size. The tape is an array of 30,000 unsigned
 /// bytes. This is derived from the original description of the language.
 pub struct Interpreter<'a> {
-    // TODO: The code should be stored in something like Box<Read> with memory
-    //       of the read data as it reads it.
     code: String,
     reader: &'a mut Read,
     writer: &'a mut Write,
