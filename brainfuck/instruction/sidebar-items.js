@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Instruction","An executable instruction in the language."]]});
