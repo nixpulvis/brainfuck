@@ -1,11 +1,12 @@
 extern crate brainfuck;
 
 use std::{io, env};
-use brainfuck::Interpreter;
+use brainfuck::{Interpreter, Program};
 
 fn main() {
     let path = env::args().nth(1).unwrap();
+    let program = Program::from_file(&path).unwrap();
     let mut stdin = io::stdin();
     let mut stdout = io::stdout();
-    Interpreter::from_file(&path, &mut stdin, &mut stdout).unwrap().run();
+    Interpreter::new(program, &mut stdin, &mut stdout).run();
 }
