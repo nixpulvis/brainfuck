@@ -25,7 +25,7 @@ fn run_with_callback() {
     let mut stdout = io::stdout();
     let mut interp = Interpreter::from_file("fixtures/hello.b", &mut stdin, &mut stdout).unwrap();
     let mut count = 0;
-    interp.run_with_callback(|_| count = count + 1);
+    interp.run_with_callback(|_, _| count = count + 1);
     assert_eq!(count, 907);
 }
 
