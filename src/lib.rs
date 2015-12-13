@@ -167,15 +167,32 @@ pub struct Interpreter<'a> {
 }
 
 impl<'a> Interpreter<'a> {
-    fn new<R: Read, W: Write>(code: String, input: &'a mut R, output: &'a mut W) -> Interpreter<'a> {
-        Interpreter {
-            code: code,
+    /// Return a new interpreter with the given code, reader, and writter.
+    ///
+    /// Interpreters are relatively large, so avoid too many calls to this
+    /// function.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use brainfuck::Interpreter;
+    ///
+    /// let mut reader = &[][..];
+    /// let mut writer = Vec::<u8>::new();
+    /// Interpreter::new("+.", &mut reader, &mut writer).unwrap().run();
+    /// ```
+    pub fn new<C: Into<String>, R: Read, W: Write>(code: C, input: &'a mut R, output: &'a mut W) -> Result<Interpreter<'a>, Error> {
+        // TODO: Compress and cache the code, removing everything but code.
+        //       This will allow running to avoid the overhead of finding
+        //       instructions and brace matching.
+        Ok(Interpreter {
+            code: code.into(),
             reader: input,
             writer: output,
             tape: [0; 30000],
             ptr: 0,
             pc: 0,
-        }
+        })
     }
 
     /// Create a new interpreter from a file.
@@ -199,7 +216,7 @@ impl<'a> Interpreter<'a> {
         let mut file = try!(File::open(path));
         let mut code = String::new();
         try!(file.read_to_string(&mut code));
-        Ok(Interpreter::new(code, input, output))
+        Interpreter::new(code, input, output)
     }
 
     /// Run the interpreter.
@@ -262,10 +279,6 @@ impl<'a> Interpreter<'a> {
             None => None,
         }
     }
-
-    // TODO: Compress and cache the code, removing everything but code.
-    //       This will allow running to avoid the overhead of finding
-    //       instructions and brace matching.
 
     /// Returns the next instruction at or after the program counter. The
     /// value of the program counter will be one greater than the returned
