@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-32' class='srclink' href='../src/brainfuck/lib.rs.html#65-84' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-32' class='srclink' href='../src/brainfuck/lib.rs.html#71-99' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum Instruction {
     IncPtr,
     DecPtr,
@@ -70,22 +70,37 @@ on control flow below.</p>
 backward. The <code>[</code> instruction skips past it&#39;s matching <code>]</code>
 instruction, and the <code>]</code> instruction skips back <strong>to</strong> it&#39;s
 matching <code>[</code> instruction. Matching brackets follow the intuitive
-notion, for example <code>[+[+]+]</code> has to pairs of matching</p>
+notion, for example <code>[+[+]+]</code> has to pairs of matching brackets.
+Skips are conditional based on the value of the cell behind the
+pointer. A forward skip only happens when the value of the cell
+is 0, and the backward skip only happens when the value of the
+cell is <strong>not</strong> 0. This allows for a relatively simple syntax for
+decrementing iteration. For example <code>+++[- &gt; operate on cell 2 &lt; ]&gt;.</code>
+is the boilerplate for a loop that operates 3 times.</p>
 
 <h1 id='undefined-behavior' class='section-header'><a href='#undefined-behavior'>Undefined Behavior</a></h1>
 <p>TODO: Explain the choices made which are not spelled out for
       the language.</p>
 </div><h2 class='variants'>Variants</h2>
-<table><tr><td id='variant.IncPtr'><code>IncPtr</code></td><td><div class='docblock'><p>Increment the pointer moving it up on the tape.</p>
-</div></td></tr><tr><td id='variant.DecPtr'><code>DecPtr</code></td><td><div class='docblock'><p>Decrement the pointer moving it down on the tape.</p>
-</div></td></tr><tr><td id='variant.IncVal'><code>IncVal</code></td><td><div class='docblock'><p>Increment the value at the pointer on the tape.</p>
-</div></td></tr><tr><td id='variant.DecVal'><code>DecVal</code></td><td><div class='docblock'><p>Decrement the value at the pointer on the tape.</p>
-</div></td></tr><tr><td id='variant.Output'><code>Output</code></td><td><div class='docblock'><p>Write the value at the pointer as a <code>char</code> to <code>STDOUT</code>.</p>
-</div></td></tr><tr><td id='variant.Input'><code>Input</code></td><td><div class='docblock'><p>Read from <code>STDIN</code> as a <code>char</code> to value at the pointer.</p>
+<table><tr><td id='variant.IncPtr'><code>IncPtr</code></td><td><div class='docblock'><p>Increment the pointer moving it up on the tape.
+TODO: Document wrapping/error behavior.</p>
+</div></td></tr><tr><td id='variant.DecPtr'><code>DecPtr</code></td><td><div class='docblock'><p>Decrement the pointer moving it down on the tape.
+TODO: Document wrapping/error behavior.</p>
+</div></td></tr><tr><td id='variant.IncVal'><code>IncVal</code></td><td><div class='docblock'><p>Increment the value at the pointer on the tape.
+TODO: Document wrapping/error behavior.</p>
+</div></td></tr><tr><td id='variant.DecVal'><code>DecVal</code></td><td><div class='docblock'><p>Decrement the value at the pointer on the tape.
+TODO: Document wrapping/error behavior.</p>
+</div></td></tr><tr><td id='variant.Output'><code>Output</code></td><td><div class='docblock'><p>Write the value at the pointer as a <code>char</code> to <code>STDOUT</code>. This
+instruction can fail if writing to the underlying writer fails.</p>
+</div></td></tr><tr><td id='variant.Input'><code>Input</code></td><td><div class='docblock'><p>Read from <code>STDIN</code> as a <code>char</code> to value at the pointer. This
+instruction can fail if reading from the underlying reader
+fails or has no more data.</p>
 </div></td></tr><tr><td id='variant.SkipForward'><code>SkipForward</code></td><td><div class='docblock'><p>Skip forward if the value at the pointer is <code>0</code>. For more
-information see the section on control flow above.</p>
+information see the section on control flow above.
+TODO: Skips should be statically guaranteed not to fail.</p>
 </div></td></tr><tr><td id='variant.SkipBackward'><code>SkipBackward</code></td><td><div class='docblock'><p>Skip backward if the value at the pointer is <strong>not</strong> <code>0</code>.
-For more information see the section on control flow above.</p>
+For more information see the section on control flow above.
+TODO: Skips should be statically guaranteed not to fail.</p>
 </div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='enum' href='../brainfuck/enum.Instruction.html' title='brainfuck::Instruction'>Instruction</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(character: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.char.html'>char</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='enum' href='../brainfuck/enum.Instruction.html' title='brainfuck::Instruction'>Instruction</a>&gt;</code></h4>
 <div class='docblock'><p>Return the instruction corrisponding to the given instruction.</p>
 </div><h4 id='method.execute' class='method'><code>fn <a href='#method.execute' class='fnname'>execute</a>(&amp;self, interp: &amp;mut <a class='struct' href='../brainfuck/struct.Interpreter.html' title='brainfuck::Interpreter'>Interpreter</a>)</code></h4>

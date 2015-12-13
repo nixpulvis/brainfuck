@@ -386,6 +386,21 @@
 <span id="343">343</span>
 <span id="344">344</span>
 <span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Simple brainfuck interpreter in Rust.</span>
 <span class='doccomment'>//!</span>
@@ -397,10 +412,10 @@
 <span class='doccomment'>//! [some material online][brainfuck]. Brainfuck itself is syntactically</span>
 <span class='doccomment'>//! challenging for humans, but is really not all that complicated. `+.`</span>
 <span class='doccomment'>//! for example increments the value in the first cell and outputs that</span>
-<span class='doccomment'>//! value. The real weird instructions are the control flow contructs</span>
-<span class='doccomment'>//! `[` and `]`. `+++&gt;,&lt;[&gt;+.&lt;-]` for example prints the 3 values after</span>
-<span class='doccomment'>//! the input value. For more about control flow in brainfuck read the</span>
-<span class='doccomment'>//! section on [control flow][control-flow].</span>
+<span class='doccomment'>//! value. The instructions that trip people up the most are the control</span>
+<span class='doccomment'>//! flow contructs `[` and `]`. `+++&gt;,&lt;[&gt;+.&lt;-]` for example prints the 3</span>
+<span class='doccomment'>//! values after the input value. For more about control flow in brainfuck</span>
+<span class='doccomment'>//! read the section on [control flow][control-flow].</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! # Semantics and Portability</span>
 <span class='doccomment'>//!</span>
@@ -444,7 +459,13 @@
 <span class='doccomment'>/// backward. The `[` instruction skips past it&#39;s matching `]`</span>
 <span class='doccomment'>/// instruction, and the `]` instruction skips back **to** it&#39;s</span>
 <span class='doccomment'>/// matching `[` instruction. Matching brackets follow the intuitive</span>
-<span class='doccomment'>/// notion, for example `[+[+]+]` has to pairs of matching</span>
+<span class='doccomment'>/// notion, for example `[+[+]+]` has to pairs of matching brackets.</span>
+<span class='doccomment'>/// Skips are conditional based on the value of the cell behind the</span>
+<span class='doccomment'>/// pointer. A forward skip only happens when the value of the cell</span>
+<span class='doccomment'>/// is 0, and the backward skip only happens when the value of the</span>
+<span class='doccomment'>/// cell is **not** 0. This allows for a relatively simple syntax for</span>
+<span class='doccomment'>/// decrementing iteration. For example `+++[- &gt; operate on cell 2 &lt; ]&gt;.`</span>
+<span class='doccomment'>/// is the boilerplate for a loop that operates 3 times.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// # Undefined Behavior</span>
 <span class='doccomment'>///</span>
@@ -453,22 +474,31 @@
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Instruction</span> {
     <span class='doccomment'>/// Increment the pointer moving it up on the tape.</span>
+    <span class='doccomment'>/// TODO: Document wrapping/error behavior.</span>
     <span class='ident'>IncPtr</span>,
     <span class='doccomment'>/// Decrement the pointer moving it down on the tape.</span>
+    <span class='doccomment'>/// TODO: Document wrapping/error behavior.</span>
     <span class='ident'>DecPtr</span>,
     <span class='doccomment'>/// Increment the value at the pointer on the tape.</span>
+    <span class='doccomment'>/// TODO: Document wrapping/error behavior.</span>
     <span class='ident'>IncVal</span>,
     <span class='doccomment'>/// Decrement the value at the pointer on the tape.</span>
+    <span class='doccomment'>/// TODO: Document wrapping/error behavior.</span>
     <span class='ident'>DecVal</span>,
-    <span class='doccomment'>/// Write the value at the pointer as a `char` to `STDOUT`.</span>
+    <span class='doccomment'>/// Write the value at the pointer as a `char` to `STDOUT`. This</span>
+    <span class='doccomment'>/// instruction can fail if writing to the underlying writer fails.</span>
     <span class='ident'>Output</span>,
-    <span class='doccomment'>/// Read from `STDIN` as a `char` to value at the pointer.</span>
+    <span class='doccomment'>/// Read from `STDIN` as a `char` to value at the pointer. This</span>
+    <span class='doccomment'>/// instruction can fail if reading from the underlying reader</span>
+    <span class='doccomment'>/// fails or has no more data.</span>
     <span class='ident'>Input</span>,
     <span class='doccomment'>/// Skip forward if the value at the pointer is `0`. For more</span>
     <span class='doccomment'>/// information see the section on control flow above.</span>
+    <span class='doccomment'>/// TODO: Skips should be statically guaranteed not to fail.</span>
     <span class='ident'>SkipForward</span>,
     <span class='doccomment'>/// Skip backward if the value at the pointer is **not** `0`.</span>
     <span class='doccomment'>/// For more information see the section on control flow above.</span>
+    <span class='doccomment'>/// TODO: Skips should be statically guaranteed not to fail.</span>
     <span class='ident'>SkipBackward</span>,
 }
 

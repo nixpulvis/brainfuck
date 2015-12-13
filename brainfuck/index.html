@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/brainfuck/lib.rs.html#1-345' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/brainfuck/lib.rs.html#1-360' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Simple brainfuck interpreter in Rust.</p>
 
 <p>The brainfuck language was created with the purpose of being a
@@ -57,10 +57,10 @@ brainfuck language start with the documentation of each
 <a href="http://www.muppetlabs.com/%7Ebreadbox/bf/">some material online</a>. Brainfuck itself is syntactically
 challenging for humans, but is really not all that complicated. <code>+.</code>
 for example increments the value in the first cell and outputs that
-value. The real weird instructions are the control flow contructs
-<code>[</code> and <code>]</code>. <code>+++&gt;,&lt;[&gt;+.&lt;-]</code> for example prints the 3 values after
-the input value. For more about control flow in brainfuck read the
-section on <a href="enum.Instruction.html#control-flow">control flow</a>.</p>
+value. The instructions that trip people up the most are the control
+flow contructs <code>[</code> and <code>]</code>. <code>+++&gt;,&lt;[&gt;+.&lt;-]</code> for example prints the 3
+values after the input value. For more about control flow in brainfuck
+read the section on <a href="enum.Instruction.html#control-flow">control flow</a>.</p>
 
 <h1 id='semantics-and-portability' class='section-header'><a href='#semantics-and-portability'>Semantics and Portability</a></h1>
 <p>There are a few extensions and devivations from the common semantics
