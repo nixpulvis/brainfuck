@@ -22,6 +22,9 @@
 //! as expected in this implmentation. For more information on portabiliy
 //! of brainfuck programs read [The Unofficial Constraints on Portable Brainfuck Implementations][portabiliy].
 //!
+//! TODO: Explain the choices made which are not spelled out for
+//!       the language.
+//!
 //! [instruction]: enum.Instruction.html
 //! [brainfuck]: http://www.muppetlabs.com/~breadbox/bf/
 //! [control-flow]: enum.Instruction.html#control-flow
@@ -62,11 +65,6 @@ pub use error::Error;
 /// cell is **not** 0. This allows for a relatively simple syntax for
 /// decrementing iteration. For example `+++[- > operate on cell 2 < ]>.`
 /// is the boilerplate for a loop that operates 3 times.
-///
-/// # Undefined Behavior
-///
-/// TODO: Explain the choices made which are not spelled out for
-///       the language.
 #[derive(Debug, PartialEq)]
 pub enum Instruction {
     /// Increment the pointer moving it up on the tape.
