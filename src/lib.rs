@@ -329,6 +329,33 @@ mod tests {
     use super::*;
 
     #[test]
+    fn program() {
+        let program = Program::from_file("fixtures/hello.b");
+        assert!(program.is_ok());
+    }
+
+    #[test]
+    fn run() {
+        let mut reader = &[][..];
+        let mut writer = Vec::<u8>::new();
+        let program = Program::from_source("++>+.");
+        assert!(Interpreter::new(&mut reader, &mut writer).load(program).run().is_ok());
+        assert_eq!(writer, [1]);
+    }
+
+    #[test]
+    fn run_with_callback() {
+        let mut reader = &[][..];
+        let mut writer = Vec::<u8>::new();
+        let program = Program::from_source("++>+.");
+        let mut interp = Interpreter::new(&mut reader, &mut writer);
+        interp.load(program);
+        let mut count = 0;
+        assert!(interp.run_with_callback(|_, _| count = count + 1).is_ok());
+        assert_eq!(count, 5);
+    }
+
+    #[test]
     fn single_step() {
         let mut reader = &[][..];
         let mut writer = Vec::<u8>::new();
