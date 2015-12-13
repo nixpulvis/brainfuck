@@ -500,7 +500,7 @@
 
 <span class='kw'>impl</span> <span class='ident'>Instruction</span> {
     <span class='doccomment'>/// Return the instruction corrisponding to the given instruction.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>character</span>: <span class='ident'>char</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Instruction</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_char</span>(<span class='ident'>character</span>: <span class='ident'>char</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Instruction</span><span class='op'>&gt;</span> {
         <span class='kw'>match</span> <span class='ident'>character</span> {
             <span class='string'>&#39;&gt;&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Instruction</span>::<span class='ident'>IncPtr</span>),
             <span class='string'>&#39;&lt;&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Instruction</span>::<span class='ident'>DecPtr</span>),
@@ -755,7 +755,7 @@
             <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>,
         };
         <span class='self'>self</span>.<span class='ident'>pc</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>pc</span> <span class='op'>+</span> <span class='number'>1</span>;
-        <span class='ident'>Instruction</span>::<span class='ident'>new</span>(<span class='ident'>byte</span>).<span class='ident'>or_else</span>(<span class='op'>||</span> <span class='self'>self</span>.<span class='ident'>get_next_instruction</span>())
+        <span class='ident'>Instruction</span>::<span class='ident'>from_char</span>(<span class='ident'>byte</span>).<span class='ident'>or_else</span>(<span class='op'>||</span> <span class='self'>self</span>.<span class='ident'>get_next_instruction</span>())
     }
 }
 </pre>
