@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-32' class='srclink' href='../src/brainfuck/lib.rs.html#71-99' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-32' class='srclink' href='../src/brainfuck/lib.rs.html#69-97' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum Instruction {
     IncPtr,
     DecPtr,
@@ -77,10 +77,6 @@ is 0, and the backward skip only happens when the value of the
 cell is <strong>not</strong> 0. This allows for a relatively simple syntax for
 decrementing iteration. For example <code>+++[- &gt; operate on cell 2 &lt; ]&gt;.</code>
 is the boilerplate for a loop that operates 3 times.</p>
-
-<h1 id='undefined-behavior' class='section-header'><a href='#undefined-behavior'>Undefined Behavior</a></h1>
-<p>TODO: Explain the choices made which are not spelled out for
-      the language.</p>
 </div><h2 class='variants'>Variants</h2>
 <table><tr><td id='variant.IncPtr'><code>IncPtr</code></td><td><div class='docblock'><p>Increment the pointer moving it up on the tape.
 TODO: Document wrapping/error behavior.</p>

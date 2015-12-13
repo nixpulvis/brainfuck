@@ -399,8 +399,6 @@
 <span id="356">356</span>
 <span id="357">357</span>
 <span id="358">358</span>
-<span id="359">359</span>
-<span id="360">360</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Simple brainfuck interpreter in Rust.</span>
 <span class='doccomment'>//!</span>
@@ -425,6 +423,9 @@
 <span class='doccomment'>//! semantics in this implmentation. Most brainfuck programs should work</span>
 <span class='doccomment'>//! as expected in this implmentation. For more information on portabiliy</span>
 <span class='doccomment'>//! of brainfuck programs read [The Unofficial Constraints on Portable Brainfuck Implementations][portabiliy].</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! TODO: Explain the choices made which are not spelled out for</span>
+<span class='doccomment'>//!       the language.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! [instruction]: enum.Instruction.html</span>
 <span class='doccomment'>//! [brainfuck]: http://www.muppetlabs.com/~breadbox/bf/</span>
@@ -466,11 +467,6 @@
 <span class='doccomment'>/// cell is **not** 0. This allows for a relatively simple syntax for</span>
 <span class='doccomment'>/// decrementing iteration. For example `+++[- &gt; operate on cell 2 &lt; ]&gt;.`</span>
 <span class='doccomment'>/// is the boilerplate for a loop that operates 3 times.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// # Undefined Behavior</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// TODO: Explain the choices made which are not spelled out for</span>
-<span class='doccomment'>///       the language.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Instruction</span> {
     <span class='doccomment'>/// Increment the pointer moving it up on the tape.</span>
