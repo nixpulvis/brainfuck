@@ -154,9 +154,29 @@ impl fmt::Display for Instruction {
 /// A brainfuck interpreter, with the needed state for execution.
 ///
 /// For more information about the brainfuck language in general see the
-/// top level documentation for this crate. The program code is stored as
-/// a string, and can be any size. The tape is an array of 30,000 unsigned
-/// bytes. This is derived from the original description of the language.
+/// [top level documentation][top-doc] for this crate. The program code
+/// is stored as a string, and can be any size. The tape is an array of
+/// 30,000 unsigned bytes. This is derived from the original description
+/// of the language.
+///
+/// Brainfuck programs traditionally read from `STDIN` and `STDOUT`, but to
+/// make things a bit more general we allow reading and writing to arbitrary
+/// readers and writers.
+///
+/// # Examples
+///
+/// Print 1 to `STDOUT`.
+///
+/// ```
+/// use std::io;
+/// use brainfuck::Interpreter;
+///
+/// let mut reader = io::stdin();
+/// let mut writer = io::stdout();
+/// Interpreter::new("+.", &mut reader, &mut writer).unwrap().run();
+/// ```
+///
+/// [top-doc]: index.html
 pub struct Interpreter<'a> {
     code: String,
     reader: &'a mut Read,
