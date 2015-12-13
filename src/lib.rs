@@ -282,14 +282,14 @@ impl<'a> Interpreter<'a> {
     /// let mut reader = &[][..];
     /// let mut writer = Vec::<u8>::new();
     /// let mut interp = Interpreter::from_file("fixtures/hello.b", &mut reader, &mut writer).unwrap();
-    /// interp.run_with_callback(|i| {
-    ///     println!("Stepped: {}", i);
+    /// interp.run_with_callback(|interp, inst| {
+    ///     println!("Stepped: {}", inst);
     /// });
     /// ```
     pub fn run_with_callback<F>(&mut self, mut hook: F)
-    where F: FnMut(&Instruction) {
+    where F: FnMut(&mut Self, &Instruction) {
         while let Some(ref i) = self.step() {
-            hook(i);
+            hook(self, i);
         }
     }
 
