@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Error","A general error type for problems inside of the interpreter."],["Instruction","An executable instruction in the language."]],"struct":[["Interpreter","A brainfuck interpreter, with the needed state for execution."]]});
+initSidebarItems({"enum":[["Error","A general error type for problems inside of the interpreter."],["Instruction","An executable instruction in the language."]],"struct":[["Interpreter","A brainfuck interpreter, with the needed state for execution."],["Program",""]]});

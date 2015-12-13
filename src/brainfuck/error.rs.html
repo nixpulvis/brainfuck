@@ -75,6 +75,10 @@
 <span id="32">32</span>
 <span id="33">33</span>
 <span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::{<span class='ident'>error</span>, <span class='ident'>fmt</span>, <span class='ident'>io</span>};
 
@@ -85,6 +89,8 @@
     <span class='ident'>Io</span>(<span class='ident'>io</span>::<span class='ident'>Error</span>),
     <span class='doccomment'>/// TODO: Is this the right name for this error.</span>
     <span class='ident'>InputEmpty</span>,
+    <span class='doccomment'>/// No program loaded.</span>
+    <span class='ident'>NoProgram</span>,
 }
 
 <span class='kw'>impl</span> <span class='ident'>error</span>::<span class='ident'>Error</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
@@ -92,6 +98,7 @@
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>Error</span>::<span class='ident'>Io</span>(_) <span class='op'>=&gt;</span> <span class='string'>&quot;Io Error&quot;</span>,
             <span class='ident'>Error</span>::<span class='ident'>InputEmpty</span> <span class='op'>=&gt;</span> <span class='string'>&quot;Input Empty Error&quot;</span>,
+            <span class='ident'>Error</span>::<span class='ident'>NoProgram</span> <span class='op'>=&gt;</span> <span class='string'>&quot;No Program&quot;</span>,
         }
     }
 }
@@ -101,6 +108,7 @@
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>Error</span>::<span class='ident'>Io</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='ident'>e</span>.<span class='ident'>fmt</span>(<span class='ident'>f</span>),
             <span class='ident'>Error</span>::<span class='ident'>InputEmpty</span> <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>error</span>::<span class='ident'>Error</span>::<span class='ident'>description</span>(<span class='self'>self</span>)),
+            <span class='ident'>Error</span>::<span class='ident'>NoProgram</span> <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>error</span>::<span class='ident'>Error</span>::<span class='ident'>description</span>(<span class='self'>self</span>)),
         }
     }
 }
