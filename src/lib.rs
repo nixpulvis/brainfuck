@@ -192,7 +192,9 @@ impl<'a> Interpreter<'a> {
         }
     }
 
+    /// Load a program for the interpreter to run.
     pub fn load(&mut self, program: Program) -> &mut Self {
+        self.pc = 0;
         self.program = Some(program);
         self
     }
@@ -212,11 +214,7 @@ impl<'a> Interpreter<'a> {
         Ok(())
     }
 
-    /// Step the interpreter one instruction.
-    ///
-    /// This function returns `None` when there are no more steps to
-    /// make in the code from the current value of the program counter.
-    pub fn step(&mut self) -> Result<Option<Result<Instruction, Error>>, Error> {
+    fn step(&mut self) -> Result<Option<Result<Instruction, Error>>, Error> {
         match try!(self.get_next_instruction()) {
             Some(i) => {
                 match self.execute(i) {
@@ -228,7 +226,7 @@ impl<'a> Interpreter<'a> {
         }
     }
 
-    pub fn execute(&mut self, instruction: Instruction) -> Result<(), Error> {
+    fn execute(&mut self, instruction: Instruction) -> Result<(), Error> {
         let program = match self.program {
             Some(ref p) => p,
             None => return Err(Error::NoProgram),

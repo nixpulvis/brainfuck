@@ -29,13 +29,3 @@ fn run_with_callback() {
     assert!(interp.run_with_callback(|_, _| count = count + 1).is_ok());
     assert_eq!(count, 907);
 }
-
-#[test]
-fn step() {
-    let mut stdin = io::stdin();
-    let mut stdout = io::stdout();
-    let program = Program::from_file("fixtures/hello.b").unwrap();
-    let mut interp = Interpreter::new(&mut stdin, &mut stdout);
-    interp.load(program);
-    assert!(interp.step().unwrap().unwrap().unwrap() == Instruction::SkipForward);
-}
