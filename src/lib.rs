@@ -204,11 +204,12 @@ impl<'a> Interpreter<'a> {
     }
 
     /// Run the interpreter with a callback hook.
-    pub fn run_with_callback<F>(&mut self, mut hook: F)
+    pub fn run_with_callback<F>(&mut self, mut hook: F) -> Result<(), Error>
     where F: FnMut(&mut Self, &Instruction) {
-        while let Ok(Some(Ok(ref i))) = self.step() {
+        while let Some(Ok(ref i)) = try!(self.step()) {
             hook(self, i);
-        }
+        };
+        Ok(())
     }
 
     /// Step the interpreter one instruction.

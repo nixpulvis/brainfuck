@@ -26,7 +26,7 @@ fn run_with_callback() {
     let mut interp = Interpreter::new(&mut stdin, &mut stdout);
     interp.load(program);
     let mut count = 0;
-    interp.run_with_callback(|_, _| count = count + 1);
+    assert!(interp.run_with_callback(|_, _| count = count + 1).is_ok());
     assert_eq!(count, 907);
 }
 
