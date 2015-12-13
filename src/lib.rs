@@ -2,12 +2,25 @@
 //!
 //! The brainfuck language was created with the purpose of being a
 //! very minimal language which is very easy to write an interpreter
-//! for. This is one such interpreters.
+//! for. This is one such interpreters. For more information on the
+//! brainfuck language start [here][brainfuck]. Brainfuck itself is
+//! syntactically challenging for humans, but is really not all that
+//! complicated. `+.` for example increments the value in the first
+//! cell and outputs that value. The real weird instructions are
+//! the control flow contructs `[` and `]`. `+++>,<[>+.<-]` for
+//! example prints the 3 values after the input value.
 //!
-//! # Undefined Behavior
+//! # Semantics
 //!
-//! TODO: Explain the choices made which are not spelled out for
-//!       the language.
+//! Each instruction is documented in detail [here][instruction-docs].
+//! This includes devivations from the common semantics of the language,
+//! and any extensions. The brainfuck language has a few areas that
+//! are undefined behavior. These undefined behaviors are given explicit
+//! semantics in this implmentation. Most brainfuck programs should work
+//! as expected in this implmentation.
+//!
+//! [brainfuck]: http://www.muppetlabs.com/~breadbox/bf/
+//! [instruction-docs]: enum.Instruction.html
 #![deny(warnings)]
 
 use std::fmt;
@@ -33,6 +46,11 @@ pub use error::Error;
 /// # Control Flow
 ///
 /// TODO: Explain the `[` and `]` instructions.
+///
+/// # Undefined Behavior
+///
+/// TODO: Explain the choices made which are not spelled out for
+///       the language.
 #[derive(Debug, PartialEq)]
 pub enum Instruction {
     /// Increment the pointer moving it up on the tape.
