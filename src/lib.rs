@@ -221,11 +221,8 @@ impl Interpreter {
     /// ```
     pub fn run_with_callback<F>(&mut self, mut hook: F)
     where F: FnMut(&Instruction) {
-        loop {
-            match self.step() {
-                Some(ref i) => hook(i),
-                None => break,
-            }
+        while let Some(ref i) = self.step() {
+            hook(i);
         }
     }
 
