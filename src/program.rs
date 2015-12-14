@@ -28,6 +28,8 @@ impl Program {
                 '-' => Instruction::DecVal,
                 '.' => Instruction::Output,
                 ',' => Instruction::Input,
+                // TODO: Come up with a smart algorithm for getting these
+                //       iptr values.
                 '[' => Instruction::SkipForward(0),
                 ']' => Instruction::SkipBackward(0),
                 _ => continue,
