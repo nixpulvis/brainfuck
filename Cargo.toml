@@ -9,3 +9,7 @@ doc = false
 
 [features]
 smoke-test = []
+
+[dependencies]
+docopt = "0.6"
+rustc-serialize = "0.3"

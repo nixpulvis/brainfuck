@@ -1,11 +1,34 @@
+extern crate rustc_serialize;
+extern crate docopt;
 extern crate brainfuck;
 
-use std::{io, env};
+use std::io;
+use docopt::Docopt;
 use brainfuck::{Interpreter, Program};
 
+const USAGE: &'static str = "
+Brainfuck
+
+Usage:
+  brainfuck <file>
+  brainfuck -e <program>
+";
+
+#[derive(Debug, RustcDecodable)]
+struct Args {
+    arg_program: Option<String>,
+    arg_file: Option<String>,
+}
+
 fn main() {
-    let path = env::args().nth(1).unwrap();
-    let program = Program::from_file(&path).unwrap();
+    let args: Args = Docopt::new(USAGE)
+        .and_then(|d| d.decode())
+        .unwrap_or_else(|e| e.exit());
+    let program = match args {
+        Args { arg_program: Some(p), .. } => Program::from_source(p),
+        Args { arg_file: Some(p), .. } => Program::from_file(p).unwrap(),
+        _ => panic!("Bad args."),
+    };
     let mut stdin = io::stdin();
     let mut stdout = io::stdout();
     Interpreter::new(&mut stdin, &mut stdout).load(program).run().unwrap();
