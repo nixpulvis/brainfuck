@@ -45,42 +45,23 @@ pub enum Instruction {
     Input,
     /// Skip forward if the value at the pointer is `0`. For more
     /// information see the section on control flow above.
-    /// TODO: Skips should be statically guaranteed not to fail.
-    SkipForward,
+    SkipForward(usize),
     /// Skip backward if the value at the pointer is **not** `0`.
     /// For more information see the section on control flow above.
-    /// TODO: Skips should be statically guaranteed not to fail.
-    SkipBackward,
-}
-
-impl Instruction {
-    /// Return the instruction corrisponding to the given instruction.
-    pub fn from_char(character: char) -> Option<Instruction> {
-        match character {
-            '>' => Some(Instruction::IncPtr),
-            '<' => Some(Instruction::DecPtr),
-            '+' => Some(Instruction::IncVal),
-            '-' => Some(Instruction::DecVal),
-            '.' => Some(Instruction::Output),
-            ',' => Some(Instruction::Input),
-            '[' => Some(Instruction::SkipForward),
-            ']' => Some(Instruction::SkipBackward),
-            _ => None,
-        }
-    }
+    SkipBackward(usize),
 }
 
 impl fmt::Display for Instruction {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Instruction::IncPtr       => write!(f, ">"),
-            Instruction::DecPtr       => write!(f, "<"),
-            Instruction::IncVal       => write!(f, "+"),
-            Instruction::DecVal       => write!(f, "-"),
-            Instruction::Output       => write!(f, "."),
-            Instruction::Input        => write!(f, ","),
-            Instruction::SkipForward  => write!(f, "["),
-            Instruction::SkipBackward => write!(f, "]"),
+            Instruction::IncPtr          => write!(f, ">"),
+            Instruction::DecPtr          => write!(f, "<"),
+            Instruction::IncVal          => write!(f, "+"),
+            Instruction::DecVal          => write!(f, "-"),
+            Instruction::Output          => write!(f, "."),
+            Instruction::Input           => write!(f, ","),
+            Instruction::SkipForward(_)  => write!(f, "["),
+            Instruction::SkipBackward(_) => write!(f, "]"),
         }
     }
 }

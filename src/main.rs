@@ -25,7 +25,7 @@ fn main() {
         .and_then(|d| d.decode())
         .unwrap_or_else(|e| e.exit());
     let program = match args {
-        Args { arg_program: Some(p), .. } => Program::from_source(p),
+        Args { arg_program: Some(p), .. } => Program::parse(&p),
         Args { arg_file: Some(p), .. } => Program::from_file(p).unwrap(),
         _ => panic!("Bad args."),
     };

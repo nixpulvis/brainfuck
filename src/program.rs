@@ -1,13 +1,13 @@
 use std::io::Read;
 use std::path::Path;
 use std::fs::File;
-use super::Error;
+use super::{Error, Instruction};
 
 // TODO: Compress and cache the code, removing everything but code.
 //       This will allow running to avoid the overhead of finding
 //       instructions and brace matching.
 pub struct Program {
-    source: String,
+    asl: Vec<Instruction>,
 }
 
 impl Program {
@@ -15,21 +15,34 @@ impl Program {
         let mut file = try!(File::open(path));
         let mut source = String::new();
         try!(file.read_to_string(&mut source));
-        Ok(Program::from_source(source))
+        Ok(Program::parse(&source))
     }
 
-    pub fn from_source<C: Into<String>>(source: C) -> Program {
+    pub fn parse(source: &str) -> Program {
+        let mut asl = Vec::new();
+        for c in source.chars() {
+            let instruction = match c {
+                '>' => Instruction::IncPtr,
+                '<' => Instruction::DecPtr,
+                '+' => Instruction::IncVal,
+                '-' => Instruction::DecVal,
+                '.' => Instruction::Output,
+                ',' => Instruction::Input,
+                '[' => Instruction::SkipForward(0),
+                ']' => Instruction::SkipBackward(0),
+                _ => continue,
+            };
+            asl.push(instruction)
+        }
         Program {
-            source: source.into(),
+            asl: asl,
         }
     }
 
-    /// TODO: Is this the right idea?
-    pub fn source(&self) -> &str {
-        &self.source
+    pub fn instruction_at(&self, iptr: usize) -> Option<Instruction> {
+        self.asl.get(iptr).map(|i| *i)
     }
 
-    // fn compress(&mut self) {}
     // fn check(&self) {}
     // fn optimize(&self) {}
 }
