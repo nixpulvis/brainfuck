@@ -20,7 +20,7 @@ pub struct Interpreter<'a> {
     writer: &'a mut Write,
     tape: [u8; 30000],
     ptr: usize,
-    pc: usize,
+    pub pc: usize,
 }
 
 impl<'a> Interpreter<'a> {
@@ -63,7 +63,10 @@ impl<'a> Interpreter<'a> {
 
     fn step(&mut self) -> Result<Option<Result<(), Error>>, Error> {
         let instruction = match self.program {
-            Some(ref p) => p.instruction_at(self.pc).expect("..."),
+            Some(ref p) => match p.instruction_at(self.pc) {
+                Some(i) => i,
+                None => return Ok(None),
+            },
             None => return Err(Error::NoProgram),
         };
         match self.execute(instruction) {
@@ -105,7 +108,7 @@ impl<'a> Interpreter<'a> {
             },
             Instruction::SkipForward(iptr) => {
                 if self.tape[self.ptr] == 0 {
-                    self.pc = iptr;
+                    self.pc = iptr + 1;
                 }
             },
             Instruction::SkipBackward(iptr) => {
@@ -114,6 +117,7 @@ impl<'a> Interpreter<'a> {
                 }
             },
         };
+        self.pc = self.pc + 1;
         Ok(())
     }
 }
