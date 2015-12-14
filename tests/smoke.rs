@@ -9,7 +9,8 @@ macro_rules! load_and_run {
             use brainfuck::*;
             let mut stdin = io::stdin();
             let mut stdout = Vec::new();
-            Interpreter::from_file("fixtures/hello.b", &mut stdin, &mut stdout).unwrap().run();
+            let program = Program::from_file($path).unwrap();
+            Interpreter::new(&mut stdin, &mut stdout).load(program).run().unwrap();
         }
     };
 }
