@@ -18,8 +18,8 @@ pub struct Interpreter<'a> {
     program: Option<Program>,
     reader: &'a mut Read,
     writer: &'a mut Write,
-    tape: [u8; 30000],
-    ptr: usize,
+    pub tape: [u8; 30000],
+    pub ptr: usize,
     pub pc: usize,
 }
 
@@ -108,7 +108,7 @@ impl<'a> Interpreter<'a> {
             },
             Instruction::SkipForward(iptr) => {
                 if self.tape[self.ptr] == 0 {
-                    self.pc = iptr + 1;
+                    self.pc = iptr;
                 }
             },
             Instruction::SkipBackward(iptr) => {
