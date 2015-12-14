@@ -125,7 +125,6 @@ impl<'a> Interpreter<'a> {
 #[cfg(test)]
 mod tests {
     use Program;
-    use Instruction;
     use super::*;
 
     #[test]
@@ -140,14 +139,14 @@ mod tests {
         let mut reader = &[][..];
         let mut writer = Vec::<u8>::new();
         let mut interp = Interpreter::new(&mut reader, &mut writer);
-        interp.load(Program::from_source("++>+."));
+        interp.load(Program::parse("++>+."));
     }
 
     #[test]
     fn run() {
         let mut reader = &[][..];
         let mut writer = Vec::<u8>::new();
-        let program = Program::from_source("++>+.");
+        let program = Program::parse("++>+.");
         assert!(Interpreter::new(&mut reader, &mut writer).load(program).run().is_ok());
         assert_eq!(writer, [1]);
     }
@@ -156,11 +155,11 @@ mod tests {
     fn run_with_callback() {
         let mut reader = &[][..];
         let mut writer = Vec::<u8>::new();
-        let program = Program::from_source("++>+.");
+        let program = Program::parse("++>+.");
         let mut interp = Interpreter::new(&mut reader, &mut writer);
         interp.load(program);
         let mut count = 0;
-        assert!(interp.run_with_callback(|_, _| count = count + 1).is_ok());
+        assert!(interp.run_with_callback(|_| count = count + 1).is_ok());
         assert_eq!(count, 5);
     }
 
@@ -171,8 +170,8 @@ mod tests {
         let mut reader = &[][..];
         let mut writer = Vec::<u8>::new();
         let mut interp = Interpreter::new(&mut reader, &mut writer);
-        interp.load(Program::from_source(">"));
-        assert_eq!(interp.step().unwrap().unwrap().unwrap(), Instruction::IncPtr);
+        interp.load(Program::parse(">"));
+        interp.step().unwrap().unwrap().unwrap();
     }
 
     #[test]
@@ -183,7 +182,7 @@ mod tests {
         let mut writer = Vec::<u8>::new();
         {
             let mut interp = Interpreter::new(&mut reader, &mut writer);
-            interp.load(Program::from_source("<."));
+            interp.load(Program::parse("<."));
             interp.run().unwrap();
         }
         assert_eq!(writer, [0]);
@@ -200,7 +199,7 @@ mod tests {
         let mut writer = Vec::<u8>::new();
         {
             let mut interp = Interpreter::new(&mut reader, &mut writer);
-            interp.load(Program::from_source("+[>-.]"));
+            interp.load(Program::parse("+[>-.]"));
             interp.run().unwrap();
         }
         assert_eq!(writer.len(), 30000);
@@ -214,7 +213,7 @@ mod tests {
         let mut writer = Vec::<u8>::new();
         {
             let mut interp = Interpreter::new(&mut reader, &mut writer);
-            interp.load(Program::from_source("-."));
+            interp.load(Program::parse("-."));
             interp.run().unwrap();
         }
         assert_eq!(writer, [255]);
@@ -228,7 +227,7 @@ mod tests {
         let mut writer = Vec::<u8>::new();
         {
             let mut interp = Interpreter::new(&mut reader, &mut writer);
-            interp.load(Program::from_source("+[+]."));
+            interp.load(Program::parse("+[+]."));
             interp.run().unwrap();
         }
         assert_eq!(writer, [0]);
