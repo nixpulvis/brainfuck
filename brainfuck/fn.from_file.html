@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `Program` struct in crate `brainfuck`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, Program">
+    <meta name="description" content="API documentation for the Rust `from_file` fn in crate `brainfuck`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, from_file">
 
-    <title>brainfuck::Program - Rust</title>
+    <title>brainfuck::from_file - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
@@ -27,7 +27,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='index.html'>brainfuck</a></p><script>window.sidebarCurrent = {name: 'Program', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'><a href='index.html'>brainfuck</a></p><script>window.sidebarCurrent = {name: 'from_file', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -41,19 +41,13 @@
         </form>
     </nav>
 
-    <section id='main' class="content struct">
-<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>brainfuck</a>::<wbr><a class='struct' href=''>Program</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content fn">
+<h1 class='fqn'><span class='in-band'>Function <a href='index.html'>brainfuck</a>::<wbr><a class='fn' href=''>from_file</a></span><span class='out-of-band'><span id='render-detail'>
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-172' class='srclink' href='../src/brainfuck/program.rs.html#9-11' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct Program {
-    // some fields omitted
-}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../brainfuck/struct.Program.html' title='brainfuck::Program'>Program</a></code></h3><div class='impl-items'><h4 id='method.from_file' class='method'><code>fn <a href='#method.from_file' class='fnname'>from_file</a>&lt;P: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>&gt;&gt;(path: P) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../brainfuck/struct.Program.html' title='brainfuck::Program'>Program</a>, <a class='enum' href='../brainfuck/enum.Error.html' title='brainfuck::Error'>Error</a>&gt;</code></h4>
-<h4 id='method.from_source' class='method'><code>fn <a href='#method.from_source' class='fnname'>from_source</a>&lt;C: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(source: C) -&gt; <a class='struct' href='../brainfuck/struct.Program.html' title='brainfuck::Program'>Program</a></code></h4>
-<h4 id='method.source' class='method'><code>fn <a href='#method.source' class='fnname'>source</a>(&amp;self) -&gt; &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
-<div class='docblock'><p>TODO: Is this the right idea?</p>
-</div></div></section>
+        </span><a id='src-201' class='srclink' href='../src/brainfuck/lib.rs.html#69-72' title='goto source code'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn from_file&lt;P: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>&gt;&gt;(path: P) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../brainfuck/enum.Error.html' title='brainfuck::Error'>Error</a>&gt;</pre></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
