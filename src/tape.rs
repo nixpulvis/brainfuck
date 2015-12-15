@@ -1,5 +1,12 @@
 use super::Error;
 
+/// A fixed length data structure for holding bytes and a pointer.
+///
+/// The tape consists of a fixed array of bytes, and a pointer into the
+/// array. The pointer is guerenteed to be in the range of the array, so
+/// lookups can be done unconditionally.
+///
+/// TODO: Overflows should cause `Err` results.
 pub struct Tape {
     cells: [u8; 30000],
     ptr: usize,
