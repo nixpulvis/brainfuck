@@ -1,5 +1,5 @@
 use std::io::{Read, Write};
-use super::{Error, Program, Instruction};
+use super::{Error, Program, Instruction, Tape};
 
 /// A brainfuck interpreter, with the needed state for execution.
 ///
@@ -18,8 +18,7 @@ pub struct Interpreter<'a> {
     program: Option<Program>,
     reader: &'a mut Read,
     writer: &'a mut Write,
-    tape: [u8; 30000],
-    ptr: usize,
+    tape: Tape,
     pc: usize,
 }
 
@@ -33,8 +32,7 @@ impl<'a> Interpreter<'a> {
             program: None,
             reader: input,
             writer: output,
-            tape: [0; 30000],
-            ptr: 0,
+            tape: Tape::new(),
             pc: 0,
         }
     }
@@ -68,7 +66,7 @@ impl<'a> Interpreter<'a> {
         Ok(())
     }
 
-    fn step(&mut self) -> Result<Option<Result<(), Error>>, Error> {
+    fn step(&mut self) -> Result<Option<Result<Instruction, Error>>, Error> {
         let instruction = match self.program {
             Some(ref p) => match p.get(self.pc) {
                 Some(i) => i,
@@ -77,7 +75,7 @@ impl<'a> Interpreter<'a> {
             None => return Err(Error::NoProgram),
         };
         match self.execute(instruction) {
-            Ok(_) => Ok(Some(Ok(()))),
+            Ok(_) => Ok(Some(Ok(instruction))),
             Err(e) => Ok(Some(Err(e))),
         }
     }
@@ -85,24 +83,29 @@ impl<'a> Interpreter<'a> {
     fn execute(&mut self, instruction: Instruction) -> Result<(), Error> {
         match instruction {
             Instruction::IncPtr => {
-                let wrapped = (self.ptr as i16 + 1) % 30000;
-                self.ptr = wrapped as usize;
+                // let wrapped = (self.ptr as i16 + 1) % 30000;
+                // self.ptr = wrapped as usize;
+                try!(self.tape.shift_ptr(1));
             },
             Instruction::DecPtr => {
-                let wrapped = (self.ptr as i16 - 1 + 30000) % 30000;
-                self.ptr = wrapped as usize;
+                // let wrapped = (self.ptr as i16 - 1 + 30000) % 30000;
+                // self.ptr = wrapped as usize;
+                try!(self.tape.shift_ptr(-1));
             },
             Instruction::IncVal => {
-                let wrapped = self.tape[self.ptr] as i16 + 1;
-                self.tape[self.ptr] = wrapped as u8;
+                // let wrapped = self.tape[self.ptr] as i16 + 1;
+                // self.tape[self.ptr] = wrapped as u8;
+                try!(self.tape.shift_value(1));
             },
             Instruction::DecVal => {
-                let wrapped = self.tape[self.ptr] as i16 - 1;
-                self.tape[self.ptr] = wrapped as u8;
+                // let wrapped = self.tape[self.ptr] as i16 - 1;
+                // self.tape[self.ptr] = wrapped as u8;
+                try!(self.tape.shift_value(-1));
             },
             Instruction::Output => {
                 // TODO: Handle errors.
-                let byte = self.tape[self.ptr];
+                // let byte = self.tape[self.ptr];
+                let byte = *self.tape.get_value();
                 try!(self.writer.write(&[byte]));
             },
             Instruction::Input => {
@@ -111,15 +114,16 @@ impl<'a> Interpreter<'a> {
                     Some(b) => b,
                     None => return Err(Error::InputEmpty),
                 });
-                self.tape[self.ptr] = input;
+                // self.tape[self.ptr] = input;
+                try!(self.tape.set_value(input));
             },
             Instruction::SkipForward(iptr) => {
-                if self.tape[self.ptr] == 0 {
+                if *self.tape == 0 {
                     self.pc = iptr;
                 }
             },
             Instruction::SkipBackward(iptr) => {
-                if self.tape[self.ptr] != 0 {
+                if *self.tape != 0 {
                     self.pc = iptr;
                 }
             },

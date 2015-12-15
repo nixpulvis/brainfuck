@@ -47,11 +47,15 @@ mod instruction;
 /// Brainfuck programs are the best kind of programs too!
 mod program;
 
+/// Brainfuck programs have the best underlying data structure.
+mod tape;
+
 // Re-exports.
 pub use error::Error;
 pub use interpreter::Interpreter;
 pub use instruction::Instruction;
 pub use program::Program;
+pub use tape::Tape;
 
 pub fn eval(program: Program) -> Result<(), Error> {
     let mut stdin = io::stdin();
