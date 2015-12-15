@@ -9,7 +9,7 @@ use super::Error;
 /// TODO: Overflows should cause `Err` results.
 pub struct Tape {
     cells: [u8; 30000],
-    ptr: usize,
+    ptr: u16,
 }
 
 impl Tape {
@@ -20,27 +20,52 @@ impl Tape {
         }
     }
 
-    pub fn get_value(&self) -> u8 {
-        *self.cells.get(self.ptr).expect("ptr must be in range.")
+    pub fn get(&self) -> u8 {
+        *self.cells.get(self.ptr as usize).expect("ptr must be in range.")
     }
 
-    pub fn set_value(&mut self, value: u8) {
-        self.cells[self.ptr] = value;
+    pub fn set(&mut self, value: u8) {
+        self.cells[self.ptr as usize] = value;
     }
 
     pub fn shift_value(&mut self, amount: i16) -> Result<(), Error> {
-        self.cells[self.ptr] = (self.cells[self.ptr] as i16 + amount) as u8;
-        Ok(())
+        if amount > 0 {
+            match self.get().checked_add(amount as u8) {
+                Some(n) => {
+                    self.set(n);
+                    Ok(())
+                },
+                _ => Err(Error::Overflow),
+            }
+        } else {
+            match self.get().checked_sub(-amount as u8) {
+                Some(n) => {
+                    self.set(n);
+                    Ok(())
+                },
+                _ => Err(Error::Overflow),
+            }
+        }
     }
 
     pub fn shift_ptr(&mut self, amount: i16) -> Result<(), Error> {
-        let wrapped = if amount < 0 {
-            (self.ptr as i16 + amount + 30000) % 30000
+        if amount > 0 {
+            match self.ptr.checked_add(amount as u16) {
+                Some(n) if n < 30000 => {
+                    self.ptr = n;
+                    Ok(())
+                },
+                _ => Err(Error::Overflow),
+            }
         } else {
-            (self.ptr as i16 + amount) % 30000
-        };
-        self.ptr = wrapped as usize;
-        Ok(())
+            match self.ptr.checked_sub(-amount as u16) {
+                Some(n) if n < 30000 => {
+                    self.ptr = n;
+                    Ok(())
+                },
+                _ => Err(Error::Overflow),
+            }
+        }
     }
 }
 
@@ -54,24 +79,24 @@ mod tests {
     }
 
     #[test]
-    fn get_value() {
+    fn get() {
         let tape = Tape::new();
-        assert_eq!(tape.get_value(), 0);
+        assert_eq!(tape.get(), 0);
     }
 
     #[test]
-    fn set_value() {
+    fn set() {
         let mut tape = Tape::new();
-        tape.set_value(20);
-        assert_eq!(tape.get_value(), 20);
+        tape.set(20);
+        assert_eq!(tape.get(), 20);
     }
 
     #[test]
     fn shift_value() {
         let mut tape = Tape::new();
-        tape.set_value(5);
+        tape.set(5);
         tape.shift_value(1).unwrap();
-        assert_eq!(tape.get_value(), 6);
+        assert_eq!(tape.get(), 6);
     }
 
     #[test]
@@ -80,8 +105,49 @@ mod tests {
         tape.shift_value(4).unwrap();
         tape.shift_ptr(1).unwrap();
         tape.shift_value(7).unwrap();
-        assert_eq!(tape.get_value(), 7);
+        assert_eq!(tape.get(), 7);
         tape.shift_ptr(-1).unwrap();
-        assert_eq!(tape.get_value(), 4);
+        assert_eq!(tape.get(), 4);
+    }
+
+    #[test]
+    fn wrapping_over_value() {
+        let mut tape = Tape::new();
+        tape.set(255);
+        assert!(tape.shift_value(1).is_err());
+    }
+
+    #[test]
+    fn non_wrapping_value() {
+        let mut tape = Tape::new();
+        for _ in 0..255 {
+            assert!(tape.shift_value(1).is_ok());
+        }
+        assert!(tape.shift_value(1).is_err());
+        assert!(tape.shift_value(255).is_err());
+        assert_eq!(tape.get(), 255);
+        for _ in 0..255 {
+            assert!(tape.shift_value(-1).is_ok());
+        }
+        assert!(tape.shift_value(-1).is_err());
+        assert!(tape.shift_value(-255).is_err());
+        assert_eq!(tape.get(), 0);
+    }
+
+    #[test]
+    fn non_wrapping_ptr() {
+        let mut tape = Tape::new();
+        for _ in 0..29999 {
+            assert!(tape.shift_ptr(1).is_ok());
+        }
+        assert_eq!(tape.ptr, 29999);
+        assert!(tape.shift_ptr(1).is_err());
+        assert!(tape.shift_ptr(30000).is_err());
+        for _ in 0..29999 {
+            assert!(tape.shift_ptr(-1).is_ok());
+        }
+        assert_eq!(tape.ptr, 0);
+        assert!(tape.shift_ptr(-1).is_err());
+        assert!(tape.shift_ptr(-30000).is_err());
     }
 }

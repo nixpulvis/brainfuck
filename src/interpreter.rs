@@ -95,7 +95,7 @@ impl<'a> Interpreter<'a> {
                 try!(self.tape.shift_value(-1));
             },
             Instruction::Output => {
-                let byte = self.tape.get_value();
+                let byte = self.tape.get();
                 try!(self.writer.write(&[byte]));
             },
             Instruction::Input => {
@@ -103,7 +103,7 @@ impl<'a> Interpreter<'a> {
                     Some(b) => b,
                     None => return Err(Error::InputEmpty),
                 });
-                self.tape.set_value(input);
+                self.tape.set(input);
             },
             Instruction::SkipForward(iptr) => {
                 if *self.tape == 0 {
@@ -174,6 +174,7 @@ mod tests {
         interp.step().unwrap().unwrap().unwrap();
     }
 
+<<<<<<< d7beaf970a09bca2d0d037f047ff1d84f8621fd3
     #[test]
     fn ub_decrement_pointer_below_min() {
         // Decrementing the pointer below the start should wrap around to
@@ -242,4 +243,64 @@ mod tests {
         interp.load(program);
         assert!(interp.run().is_err());
     }
+=======
+    // #[test]
+    // fn ub_decrement_pointer_below_min() {
+    //     // Decrementing the pointer below the start should wrap around to
+    //     // the end of the tape.
+    //     let mut reader = &[][..];
+    //     let mut writer = Vec::<u8>::new();
+    //     {
+    //         let mut interp = Interpreter::new(&mut reader, &mut writer);
+    //         interp.load(Program::from_source("<."));
+    //         interp.run().unwrap();
+    //     }
+    //     assert_eq!(writer, [0]);
+    // }
+    //
+    // #[test]
+    // fn ub_increment_pointer_above_max() {
+    //     // Incrementing the pointer above the end should wrap around to
+    //     // the start of the tape. This test sets the first cell to 1,
+    //     // and then loops incrementing the pointer and subtracting 1
+    //     // from each cell until one of the cells is 0 (i.e.) the first
+    //     // cell. This relys on correctly working value wrapping.
+    //     let mut reader = &[][..];
+    //     let mut writer = Vec::<u8>::new();
+    //     {
+    //         let mut interp = Interpreter::new(&mut reader, &mut writer);
+    //         interp.load(Program::from_source("+[>-.]"));
+    //         interp.run().unwrap();
+    //     }
+    //     assert_eq!(writer.len(), 30000);
+    // }
+    //
+    // #[test]
+    // fn ub_decrement_value_below_min() {
+    //     // Decrementing a value below it's minimum value should wrap to
+    //     // it's maximum value.
+    //     let mut reader = &[][..];
+    //     let mut writer = Vec::<u8>::new();
+    //     {
+    //         let mut interp = Interpreter::new(&mut reader, &mut writer);
+    //         interp.load(Program::from_source("-."));
+    //         interp.run().unwrap();
+    //     }
+    //     assert_eq!(writer, [255]);
+    // }
+    //
+    // #[test]
+    // fn ub_increment_value_above_max() {
+    //     // Incrementing a value above it's maximum value should wrap to
+    //     // it's minimum value.
+    //     let mut reader = &[][..];
+    //     let mut writer = Vec::<u8>::new();
+    //     {
+    //         let mut interp = Interpreter::new(&mut reader, &mut writer);
+    //         interp.load(Program::from_source("+[+]."));
+    //         interp.run().unwrap();
+    //     }
+    //     assert_eq!(writer, [0]);
+    // }
+>>>>>>> Starting wrap checking.
 }
