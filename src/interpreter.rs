@@ -83,38 +83,26 @@ impl<'a> Interpreter<'a> {
     fn execute(&mut self, instruction: Instruction) -> Result<(), Error> {
         match instruction {
             Instruction::IncPtr => {
-                // let wrapped = (self.ptr as i16 + 1) % 30000;
-                // self.ptr = wrapped as usize;
                 try!(self.tape.shift_ptr(1));
             },
             Instruction::DecPtr => {
-                // let wrapped = (self.ptr as i16 - 1 + 30000) % 30000;
-                // self.ptr = wrapped as usize;
                 try!(self.tape.shift_ptr(-1));
             },
             Instruction::IncVal => {
-                // let wrapped = self.tape[self.ptr] as i16 + 1;
-                // self.tape[self.ptr] = wrapped as u8;
                 try!(self.tape.shift_value(1));
             },
             Instruction::DecVal => {
-                // let wrapped = self.tape[self.ptr] as i16 - 1;
-                // self.tape[self.ptr] = wrapped as u8;
                 try!(self.tape.shift_value(-1));
             },
             Instruction::Output => {
-                // TODO: Handle errors.
-                // let byte = self.tape[self.ptr];
                 let byte = self.tape.get_value();
                 try!(self.writer.write(&[byte]));
             },
             Instruction::Input => {
-                // TODO: Handle errors.
                 let input = try!(match self.reader.bytes().next() {
                     Some(b) => b,
                     None => return Err(Error::InputEmpty),
                 });
-                // self.tape[self.ptr] = input;
                 try!(self.tape.set_value(input));
             },
             Instruction::SkipForward(iptr) => {
