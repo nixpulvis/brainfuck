@@ -13,8 +13,8 @@ impl Tape {
         }
     }
 
-    pub fn get_value(&self) -> &u8 {
-        self.cells.get(self.ptr).expect("ptr must be in range.")
+    pub fn get_value(&self) -> u8 {
+        *self.cells.get(self.ptr).expect("ptr must be in range.")
     }
 
     pub fn set_value(&mut self, value: u8) -> Result<(), Error> {
@@ -38,8 +38,44 @@ impl Tape {
     }
 }
 
-impl Default for Tape {
-    fn default() -> Tape {
-        Tape::new()
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new() {
+        let _ = Tape::new();
+    }
+
+    #[test]
+    fn get_value() {
+        let tape = Tape::new();
+        assert_eq!(tape.get_value(), 0);
+    }
+
+    #[test]
+    fn set_value() {
+        let mut tape = Tape::new();
+        tape.set_value(20).unwrap();
+        assert_eq!(tape.get_value(), 20);
+    }
+
+    #[test]
+    fn shift_value() {
+        let mut tape = Tape::new();
+        tape.set_value(5).unwrap();
+        tape.shift_value(1).unwrap();
+        assert_eq!(tape.get_value(), 6);
+    }
+
+    #[test]
+    fn shift_ptr() {
+        let mut tape = Tape::new();
+        tape.shift_value(4).unwrap();
+        tape.shift_ptr(1).unwrap();
+        tape.shift_value(7).unwrap();
+        assert_eq!(tape.get_value(), 7);
+        tape.shift_ptr(-1).unwrap();
+        assert_eq!(tape.get_value(), 4);
     }
 }

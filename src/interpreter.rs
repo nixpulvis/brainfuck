@@ -105,7 +105,7 @@ impl<'a> Interpreter<'a> {
             Instruction::Output => {
                 // TODO: Handle errors.
                 // let byte = self.tape[self.ptr];
-                let byte = *self.tape.get_value();
+                let byte = self.tape.get_value();
                 try!(self.writer.write(&[byte]));
             },
             Instruction::Input => {
