@@ -32,6 +32,9 @@
 //! [portabiliy]: http://www.muppetlabs.com/%7Ebreadbox/bf/standards.html
 #![deny(warnings)]
 
+use std::io;
+use std::path::Path;
+
 /// Brainfuck errors are the best kind of errors.
 mod error;
 
@@ -49,3 +52,21 @@ pub use error::Error;
 pub use interpreter::Interpreter;
 pub use instruction::Instruction;
 pub use program::Program;
+
+pub fn eval(program: Program) -> Result<(), Error> {
+    let mut stdin = io::stdin();
+    let mut stdout = io::stdout();
+    let mut interp = Interpreter::new(&mut stdin, &mut stdout);
+    interp.load(program);
+    interp.run()
+}
+
+pub fn eval_string(source: &str) -> Result<(), Error> {
+    let program = Program::from_source(source);
+    eval(program)
+}
+
+pub fn from_file<P: AsRef<Path>>(path: P) -> Result<(), Error> {
+    let program = try!(Program::from_file(path));
+    eval(program)
+}

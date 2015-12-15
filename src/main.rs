@@ -2,9 +2,8 @@ extern crate rustc_serialize;
 extern crate docopt;
 extern crate brainfuck;
 
-use std::io;
 use docopt::Docopt;
-use brainfuck::{Interpreter, Program};
+use brainfuck::Program;
 
 const USAGE: &'static str = "
 Brainfuck
@@ -29,7 +28,5 @@ fn main() {
         Args { arg_file: Some(p), .. } => Program::from_file(p).unwrap(),
         _ => panic!("Bad args."),
     };
-    let mut stdin = io::stdin();
-    let mut stdout = io::stdout();
-    Interpreter::new(&mut stdin, &mut stdout).load(program).run().unwrap();
+    brainfuck::eval(program).unwrap();
 }
