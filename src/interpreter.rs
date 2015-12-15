@@ -95,15 +95,14 @@ impl<'a> Interpreter<'a> {
                 try!(self.tape.shift_value(-1));
             },
             Instruction::Output => {
-                let byte = self.tape.get();
-                try!(self.writer.write(&[byte]));
+                try!(self.writer.write(&[*self.tape]));
             },
             Instruction::Input => {
                 let input = try!(match self.reader.bytes().next() {
                     Some(b) => b,
                     None => return Err(Error::InputEmpty),
                 });
-                self.tape.set(input);
+                *self.tape = input;
             },
             Instruction::SkipForward(iptr) => {
                 if *self.tape == 0 {

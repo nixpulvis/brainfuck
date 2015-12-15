@@ -1,3 +1,4 @@
+use std::ops;
 use super::Error;
 
 /// A fixed length data structure for holding bytes and a pointer.
@@ -20,27 +21,19 @@ impl Tape {
         }
     }
 
-    pub fn get(&self) -> u8 {
-        *self.cells.get(self.ptr as usize).expect("ptr must be in range.")
-    }
-
-    pub fn set(&mut self, value: u8) {
-        self.cells[self.ptr as usize] = value;
-    }
-
     pub fn shift_value(&mut self, amount: i16) -> Result<(), Error> {
         if amount > 0 {
-            match self.get().checked_add(amount as u8) {
+            match (*self).checked_add(amount as u8) {
                 Some(n) => {
-                    self.set(n);
+                    **self = n;
                     Ok(())
                 },
                 _ => Err(Error::Overflow),
             }
         } else {
-            match self.get().checked_sub(-amount as u8) {
+            match (*self).checked_sub(-amount as u8) {
                 Some(n) => {
-                    self.set(n);
+                    **self = n;
                     Ok(())
                 },
                 _ => Err(Error::Overflow),
@@ -69,6 +62,20 @@ impl Tape {
     }
 }
 
+impl ops::Deref for Tape {
+    type Target = u8;
+
+    fn deref(&self) -> &Self::Target {
+        self.cells.get(self.ptr as usize).expect("ptr must be in range.")
+    }
+}
+
+impl ops::DerefMut for Tape {
+    fn deref_mut(&mut self) -> &mut u8 {
+        &mut self.cells[self.ptr as usize]
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -79,24 +86,24 @@ mod tests {
     }
 
     #[test]
-    fn get() {
+    fn deref() {
         let tape = Tape::new();
-        assert_eq!(tape.get(), 0);
+        assert_eq!(*tape, 0);
     }
 
     #[test]
-    fn set() {
+    fn deref_mut() {
         let mut tape = Tape::new();
-        tape.set(20);
-        assert_eq!(tape.get(), 20);
+        *tape = 20;
+        assert_eq!(*tape, 20);
     }
 
     #[test]
     fn shift_value() {
         let mut tape = Tape::new();
-        tape.set(5);
+        *tape = 5;
         tape.shift_value(1).unwrap();
-        assert_eq!(tape.get(), 6);
+        assert_eq!(*tape, 6);
     }
 
     #[test]
@@ -105,15 +112,15 @@ mod tests {
         tape.shift_value(4).unwrap();
         tape.shift_ptr(1).unwrap();
         tape.shift_value(7).unwrap();
-        assert_eq!(tape.get(), 7);
+        assert_eq!(*tape, 7);
         tape.shift_ptr(-1).unwrap();
-        assert_eq!(tape.get(), 4);
+        assert_eq!(*tape, 4);
     }
 
     #[test]
     fn wrapping_over_value() {
         let mut tape = Tape::new();
-        tape.set(255);
+        *tape = 255;
         assert!(tape.shift_value(1).is_err());
     }
 
@@ -125,13 +132,13 @@ mod tests {
         }
         assert!(tape.shift_value(1).is_err());
         assert!(tape.shift_value(255).is_err());
-        assert_eq!(tape.get(), 255);
+        assert_eq!(*tape, 255);
         for _ in 0..255 {
             assert!(tape.shift_value(-1).is_ok());
         }
         assert!(tape.shift_value(-1).is_err());
         assert!(tape.shift_value(-255).is_err());
-        assert_eq!(tape.get(), 0);
+        assert_eq!(*tape, 0);
     }
 
     #[test]
