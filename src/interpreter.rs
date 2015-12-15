@@ -63,7 +63,7 @@ impl<'a> Interpreter<'a> {
 
     fn step(&mut self) -> Result<Option<Result<(), Error>>, Error> {
         let instruction = match self.program {
-            Some(ref p) => match p.instruction_at(self.pc) {
+            Some(ref p) => match p.get(self.pc) {
                 Some(i) => i,
                 None => return Ok(None),
             },
