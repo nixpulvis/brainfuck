@@ -155,7 +155,7 @@
 <span class='doccomment'>/// cell is **not** 0. This allows for a relatively simple syntax for</span>
 <span class='doccomment'>/// decrementing iteration. For example `+++[- &gt; operate on cell 2 &lt; ]&gt;.`</span>
 <span class='doccomment'>/// is the boilerplate for a loop that operates 3 times.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>, <span class='ident'>Hash</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Instruction</span> {
     <span class='doccomment'>/// Increment the pointer moving it up on the tape.</span>
     <span class='doccomment'>/// TODO: Document wrapping/error behavior.</span>
