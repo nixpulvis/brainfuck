@@ -22,7 +22,7 @@ use std::fmt;
 /// cell is **not** 0. This allows for a relatively simple syntax for
 /// decrementing iteration. For example `+++[- > operate on cell 2 < ]>.`
 /// is the boilerplate for a loop that operates 3 times.
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Instruction {
     /// Increment the pointer moving it up on the tape.
     /// TODO: Document wrapping/error behavior.
