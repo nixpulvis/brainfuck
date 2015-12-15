@@ -58,9 +58,12 @@ impl<'a> Interpreter<'a> {
 
     /// Run the interpreter with a callback hook.
     pub fn run_with_callback<F>(&mut self, mut hook: F) -> Result<(), Error>
-    where F: FnMut(&mut Self) {
-        while let Some(Ok(_)) = try!(self.step()) {
-            hook(self);
+    where F: FnMut(&mut Self, &Instruction) {
+        while let Some(r) = try!(self.step()) {
+            match r {
+                Ok(i) => hook(self, &i),
+                Err(e) => return Err(e),
+            }
         };
         Ok(())
     }
