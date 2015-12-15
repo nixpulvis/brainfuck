@@ -103,7 +103,7 @@ impl<'a> Interpreter<'a> {
                     Some(b) => b,
                     None => return Err(Error::InputEmpty),
                 });
-                try!(self.tape.set_value(input));
+                self.tape.set_value(input);
             },
             Instruction::SkipForward(iptr) => {
                 if *self.tape == 0 {

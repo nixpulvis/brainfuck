@@ -24,9 +24,8 @@ impl Tape {
         *self.cells.get(self.ptr).expect("ptr must be in range.")
     }
 
-    pub fn set_value(&mut self, value: u8) -> Result<(), Error> {
+    pub fn set_value(&mut self, value: u8) {
         self.cells[self.ptr] = value;
-        Ok(())
     }
 
     pub fn shift_value(&mut self, amount: i16) -> Result<(), Error> {
@@ -63,14 +62,14 @@ mod tests {
     #[test]
     fn set_value() {
         let mut tape = Tape::new();
-        tape.set_value(20).unwrap();
+        tape.set_value(20);
         assert_eq!(tape.get_value(), 20);
     }
 
     #[test]
     fn shift_value() {
         let mut tape = Tape::new();
-        tape.set_value(5).unwrap();
+        tape.set_value(5);
         tape.shift_value(1).unwrap();
         assert_eq!(tape.get_value(), 6);
     }
