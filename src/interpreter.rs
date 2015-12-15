@@ -83,16 +83,16 @@ impl<'a> Interpreter<'a> {
     fn execute(&mut self, instruction: Instruction) -> Result<(), Error> {
         match instruction {
             Instruction::IncPtr => {
-                try!(self.tape.shift_ptr(1));
+                self.tape >>= 1;
             },
             Instruction::DecPtr => {
-                try!(self.tape.shift_ptr(-1));
+                self.tape <<= 1;
             },
             Instruction::IncVal => {
-                try!(self.tape.shift_value(1));
+                self.tape += 1;
             },
             Instruction::DecVal => {
-                try!(self.tape.shift_value(-1));
+                self.tape -= 1;
             },
             Instruction::Output => {
                 try!(self.writer.write(&[*self.tape]));

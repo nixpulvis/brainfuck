@@ -30,6 +30,7 @@
 //! [control-flow]: enum.Instruction.html#control-flow
 //! [instruction-docs]: enum.Instruction.html
 //! [portabiliy]: http://www.muppetlabs.com/%7Ebreadbox/bf/standards.html
+#![feature(op_assign_traits, augmented_assignments)]
 #![deny(warnings)]
 
 use std::io;
