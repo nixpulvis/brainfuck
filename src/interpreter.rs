@@ -48,7 +48,11 @@ impl<'a> Interpreter<'a> {
 
     /// Run the interpreter.
     pub fn run(&mut self) -> Result<(), Error> {
-        while try!(self.step()).is_some() {}
+        while let Some(r) = try!(self.step()) {
+            if let Err(e) = r {
+                return Err(e)
+            }
+        };
         Ok(())
     }
 
@@ -124,6 +128,7 @@ impl<'a> Interpreter<'a> {
 
 #[cfg(test)]
 mod tests {
+    use std::io;
     use Program;
     use super::*;
 
@@ -231,5 +236,15 @@ mod tests {
             interp.run().unwrap();
         }
         assert_eq!(writer, [0]);
+    }
+
+    #[test]
+    fn empty_io() {
+        let mut reader = io::empty();
+        let mut writer = Vec::<u8>::new();
+        let program = Program::from_source(",");
+        let mut interp = Interpreter::new(&mut reader, &mut writer);
+        interp.load(program);
+        assert!(interp.run().is_err());
     }
 }
