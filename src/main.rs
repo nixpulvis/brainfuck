@@ -43,9 +43,13 @@ fn main() {
         interp.run_with_callback(|_, i| {
             let counter = instruction_map.entry(*i).or_insert(0);
             *counter += 1;
-        }).unwrap();
+        }).unwrap_or_else(|e| {
+            println!("\nWARN: {:?}", e);
+        });
         println!("{:?}", instruction_map);
     } else {
-        interp.run().unwrap();
+        interp.run().unwrap_or_else(|e| {
+            println!("\nWARN: {:?}", e);
+        });
     }
 }
