@@ -54,30 +54,28 @@ impl<'a> Interpreter<'a> {
 
     /// Run the interpreter with a callback hook.
     pub fn run_with_callback<F>(&mut self, mut hook: F) -> Result<(), Error>
-    where F: FnMut(&mut Self, &Instruction) {
-        while let Some(Ok(ref i)) = try!(self.step()) {
-            hook(self, i);
+    where F: FnMut(&mut Self) {
+        while let Some(Ok(_)) = try!(self.step()) {
+            hook(self);
         };
         Ok(())
     }
 
-    fn step(&mut self) -> Result<Option<Result<Instruction, Error>>, Error> {
-        match try!(self.get_next_instruction()) {
-            Some(i) => {
-                match self.execute(i) {
-                    Ok(_) => Ok(Some(Ok(i))),
-                    Err(e) => Ok(Some(Err(e.into()))),
-                }
-            }
-            None => Ok(None),
+    fn step(&mut self) -> Result<Option<Result<(), Error>>, Error> {
+        let instruction = match self.program {
+            Some(ref p) => match p.get(self.pc) {
+                Some(i) => i,
+                None => return Ok(None),
+            },
+            None => return Err(Error::NoProgram),
+        };
+        match self.execute(instruction) {
+            Ok(_) => Ok(Some(Ok(()))),
+            Err(e) => Ok(Some(Err(e))),
         }
     }
 
     fn execute(&mut self, instruction: Instruction) -> Result<(), Error> {
-        let program = match self.program {
-            Some(ref p) => p,
-            None => return Err(Error::NoProgram),
-        };
         match instruction {
             Instruction::IncPtr => {
                 let wrapped = (self.ptr as i16 + 1) % 30000;
@@ -108,73 +106,25 @@ impl<'a> Interpreter<'a> {
                 });
                 self.tape[self.ptr] = input;
             },
-            Instruction::SkipForward => {
+            Instruction::SkipForward(iptr) => {
                 if self.tape[self.ptr] == 0 {
-                    let mut numopen = 1u32;
-                    let mut tmppc = self.pc + 1;
-
-                    let mut iter = program.source().chars().skip(tmppc);
-                    while numopen != 0 {
-                        let c = iter.next().unwrap();
-                        if c == '[' {
-                            numopen = numopen + 1;
-                        } else if c == ']' {
-                            numopen = numopen - 1;
-                        }
-                        tmppc = tmppc + 1;
-                    }
-                    self.pc = tmppc;
+                    self.pc = iptr;
                 }
             },
-            Instruction::SkipBackward => {
+            Instruction::SkipBackward(iptr) => {
                 if self.tape[self.ptr] != 0 {
-                    let mut numclosed = 1u32;
-                    let mut tmppc = self.pc - 1;
-
-                    let mut iter = program.source().chars().rev().skip(program.source().len() - tmppc + 1);
-                    while numclosed != 0 {
-                        let c = iter.next().unwrap();
-                        if c == ']' {
-                            numclosed = numclosed + 1;
-                        } else if c == '[' {
-                            numclosed = numclosed - 1;
-                        }
-                        tmppc = tmppc - 1;
-                    }
-                    self.pc = tmppc;
+                    self.pc = iptr;
                 }
             },
         };
-        Ok(())
-    }
-
-    /// Returns the next instruction at or after the program counter. The
-    /// value of the program counter will be one greater than the returned
-    /// instruction's program counter value.
-    ///
-    /// This function returns `None` if there are no more instructions in
-    /// the code.
-    fn get_next_instruction(&mut self) -> Result<Option<Instruction>, Error> {
-        let byte;
-        {
-            let program = match self.program {
-                Some(ref p) => p,
-                None => return Err(Error::NoProgram),
-            };
-            byte = match program.source().chars().nth(self.pc) {
-                Some(c) => c,
-                None => return Ok(None),
-            };
-        }
         self.pc = self.pc + 1;
-        Ok(Instruction::from_char(byte).or_else(|| self.get_next_instruction().expect("program loaded")))
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use Program;
-    use Instruction;
     use super::*;
 
     #[test]
@@ -189,14 +139,14 @@ mod tests {
         let mut reader = &[][..];
         let mut writer = Vec::<u8>::new();
         let mut interp = Interpreter::new(&mut reader, &mut writer);
-        interp.load(Program::from_source("++>+."));
+        interp.load(Program::parse("++>+."));
     }
 
     #[test]
     fn run() {
         let mut reader = &[][..];
         let mut writer = Vec::<u8>::new();
-        let program = Program::from_source("++>+.");
+        let program = Program::parse("++>+.");
         assert!(Interpreter::new(&mut reader, &mut writer).load(program).run().is_ok());
         assert_eq!(writer, [1]);
     }
@@ -205,11 +155,11 @@ mod tests {
     fn run_with_callback() {
         let mut reader = &[][..];
         let mut writer = Vec::<u8>::new();
-        let program = Program::from_source("++>+.");
+        let program = Program::parse("++>+.");
         let mut interp = Interpreter::new(&mut reader, &mut writer);
         interp.load(program);
         let mut count = 0;
-        assert!(interp.run_with_callback(|_, _| count = count + 1).is_ok());
+        assert!(interp.run_with_callback(|_| count = count + 1).is_ok());
         assert_eq!(count, 5);
     }
 
@@ -220,8 +170,8 @@ mod tests {
         let mut reader = &[][..];
         let mut writer = Vec::<u8>::new();
         let mut interp = Interpreter::new(&mut reader, &mut writer);
-        interp.load(Program::from_source(">"));
-        assert_eq!(interp.step().unwrap().unwrap().unwrap(), Instruction::IncPtr);
+        interp.load(Program::parse(">"));
+        interp.step().unwrap().unwrap().unwrap();
     }
 
     #[test]
@@ -232,7 +182,7 @@ mod tests {
         let mut writer = Vec::<u8>::new();
         {
             let mut interp = Interpreter::new(&mut reader, &mut writer);
-            interp.load(Program::from_source("<."));
+            interp.load(Program::parse("<."));
             interp.run().unwrap();
         }
         assert_eq!(writer, [0]);
@@ -249,7 +199,7 @@ mod tests {
         let mut writer = Vec::<u8>::new();
         {
             let mut interp = Interpreter::new(&mut reader, &mut writer);
-            interp.load(Program::from_source("+[>-.]"));
+            interp.load(Program::parse("+[>-.]"));
             interp.run().unwrap();
         }
         assert_eq!(writer.len(), 30000);
@@ -263,7 +213,7 @@ mod tests {
         let mut writer = Vec::<u8>::new();
         {
             let mut interp = Interpreter::new(&mut reader, &mut writer);
-            interp.load(Program::from_source("-."));
+            interp.load(Program::parse("-."));
             interp.run().unwrap();
         }
         assert_eq!(writer, [255]);
@@ -277,7 +227,7 @@ mod tests {
         let mut writer = Vec::<u8>::new();
         {
             let mut interp = Interpreter::new(&mut reader, &mut writer);
-            interp.load(Program::from_source("+[+]."));
+            interp.load(Program::parse("+[+]."));
             interp.run().unwrap();
         }
         assert_eq!(writer, [0]);
