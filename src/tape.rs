@@ -7,13 +7,13 @@ use std::ops;
 /// lookups can be done unconditionally.
 ///
 /// TODO: Overflows should cause `Err` results.
-pub struct Tape {
-    cells: [u8; 30000],
+pub struct Tape<C> {
+    cells: C,
     ptr: usize,
 }
 
-impl Tape {
-    pub fn new() -> Tape {
+impl Tape<[u8; 30000]> {
+    pub fn new() -> Tape<[u8; 30000]> {
         Tape {
             cells: [0; 30000],
             ptr: 0,
@@ -21,21 +21,21 @@ impl Tape {
     }
 }
 
-impl ops::Deref for Tape {
+impl ops::Deref for Tape<[u8; 30000]> {
     type Target = u8;
 
     fn deref(&self) -> &Self::Target {
-        self.cells.get(self.ptr as usize).expect("ptr must be in range.")
+        &self.cells[self.ptr]
     }
 }
 
-impl ops::DerefMut for Tape {
+impl ops::DerefMut for Tape<[u8; 30000]> {
     fn deref_mut(&mut self) -> &mut u8 {
         &mut self.cells[self.ptr as usize]
     }
 }
 
-impl ops::AddAssign<u8> for Tape {
+impl ops::AddAssign<u8> for Tape<[u8; 30000]> {
     fn add_assign(&mut self, rhs: u8) {
         match (*self).checked_add(rhs) {
             Some(n) => **self = n,
@@ -44,7 +44,7 @@ impl ops::AddAssign<u8> for Tape {
     }
 }
 
-impl ops::SubAssign<u8> for Tape {
+impl ops::SubAssign<u8> for Tape<[u8; 30000]> {
     fn sub_assign(&mut self, rhs: u8) {
         match (*self).checked_sub(rhs) {
             Some(n) => **self = n,
@@ -53,7 +53,7 @@ impl ops::SubAssign<u8> for Tape {
     }
 }
 
-impl ops::ShrAssign<usize> for Tape {
+impl ops::ShrAssign<usize> for Tape<[u8; 30000]> {
     fn shr_assign(&mut self, rhs: usize) {
         match self.ptr.checked_add(rhs) {
             Some(n) if n < 30000 => self.ptr = n,
@@ -62,7 +62,7 @@ impl ops::ShrAssign<usize> for Tape {
     }
 }
 
-impl ops::ShlAssign<usize> for Tape {
+impl ops::ShlAssign<usize> for Tape<[u8; 30000]> {
     fn shl_assign(&mut self, rhs: usize) {
         match self.ptr.checked_sub(rhs) {
             Some(n) if n < 30000 => self.ptr = n,

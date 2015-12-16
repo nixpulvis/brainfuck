@@ -18,7 +18,7 @@ pub struct Interpreter<'a> {
     program: Option<Program>,
     reader: &'a mut Read,
     writer: &'a mut Write,
-    tape: Tape,
+    tape: Tape<[u8; 30000]>,
     pc: usize,
 }
 
