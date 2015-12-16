@@ -142,7 +142,7 @@ For those interested, the state table of the Turing machine itself is
 10<L1    201L2    30cR1    40cL2
 11<L1    210R2    311R3    410R4
 1b>R1    2b>L3    3b<R4    4bcL2
-1<0R1    2<>L2    3< H     4<   
+1<0R1    2<>L2    3< H     4<
 1>bL1    2><R2    3>bR3    4><R4
 1c0R4    2cbR2    3c1R1    4cbR4
 where the initial state is 1, the blank symbol is "0", tape cells are set as
@@ -154,7 +154,7 @@ isomorphic to their original form (each "b" replaced with ">" and each "1"
 unchanged); they are followed by a series of "1" cells, then a "c" (the
 leftmost one at that time), then the cells representing the final state of the
 transformed string, then a "c" and a sequence of "1" cells representing a[n+1]
-as mentioned. 
+as mentioned.
 
 The minimal test case b1b1bbb1c1c11111 represents the tag-system where P(a[1])
 = a[1]a[1] and P(a[2]) = STOP, applied to the string a[1]a[1]a[2]. This runs
@@ -199,10 +199,10 @@ Read input, producing
 where "x" is a nonzero cell and "i" is the input.
 While i is nonzero, run this loop:
 -set up
-... x 0 'i 5 0 ... 
+... x 0 'i 5 0 ...
 -If the input was six or greater, the [[->]<<] part will five times decrement
 both i and 5; the sixth time, it will only decrement i, and move to the cell
-left of i, producing 
+left of i, producing
 ... x '0 i 0 0 ...
 following which the code <[>]> will restore the pointer to i:
 ... x 0 'i 0 0 ...
@@ -225,7 +225,7 @@ cell but leave
 ... x 0 0 '0 ...
 If r was 2, i mod 6 was 3, meaning "c". So we set up
 ... x 5 0 '0 ...
-If r was 3, i mod 6 was 2, meaning "b". In this case we set up 
+If r was 3, i mod 6 was 2, meaning "b". In this case we set up
 ... x 1 0 '0 ...
 and skip the innermost [->] loop, then step left leaving
 ... x 1 '0 0 ...
@@ -341,7 +341,7 @@ g>=3; y=0
 g>=4; y=2, d=1
 
 [<<-->->>+++<-
-g>=5; y=0, d=0, s=4 
+g>=5; y=0, d=0, s=4
 
 [<<+>+>>--<-
 g>=6; y=1, d=1, s=2
@@ -422,7 +422,7 @@ main Turing machine loop again.
 
 >[-[---[-<]]>]
 
-Now the Turing machine has halted. The situation is 
+Now the Turing machine has halted. The situation is
 4 0 0 '0 x x ... x x 0 0 0 ...
 where each x is either 1, 4, or 5, and the leftmost 5 ("c") marks the start of
 the transformed string. So we scan through the tape looking for that 5, and
@@ -435,7 +435,7 @@ we find a 5, we decrement it down to 0, move left, move right to the space the
 >[+++[<+++++>--]>]
 
 Now we want to output the part of the tape that represents the transformed
-string; the situation is 
+string; the situation is
 ... 0 '0 x x x ... x x x 0 0 0 ...
 where each x is either 1, representing "1", or 5, representing "c". To
 transform each to the right ASCII value we first add 3, producing 4 for "1"
@@ -487,5 +487,3 @@ The entire program again without comments:
                                             [<<->>-
 ]]]]]]]]]]]]]]]]]]]]]]<[->>[<<+>>-]<<<[>>>+<<<-]<[>>>+<<<-]]>>]
 >[-[---[-<]]>]>[+++[<+++++>--]>]+<++[[>+++++<-]<]>>[-.>]
-
-
