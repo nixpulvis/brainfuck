@@ -5,7 +5,7 @@ use brainfuck::*;
 macro_rules! load_and_run {
     ($name:ident, $path:expr) => {
         #[test]
-        #[cfg(feature="smoke-test")]
+    
         fn $name() {
             let mut reader = &[1, 2, 3, 4, 5][..];
             let mut writer = Vec::<u8>::new();
@@ -18,7 +18,7 @@ macro_rules! load_and_run {
 macro_rules! load_and_run_limit {
     ($name:ident, $path:expr) => {
         #[test]
-        #[cfg(feature="smoke-test")]
+    
         fn $name() {
             let mut reader = &[][..];
             let mut writer = Vec::<u8>::new();
@@ -36,7 +36,7 @@ macro_rules! load_and_run_limit {
 macro_rules! load_and_run_io {
     ($name:ident, $path:expr) => {
         #[test]
-        #[cfg(feature="smoke-test")]
+    
         fn $name() {
             let mut reader = &[1, 2, 55][..];
             let mut writer = Vec::<u8>::new();
@@ -73,7 +73,6 @@ load_and_run_io!(bf_wc, "fixtures/wc.b");
 
 
 #[test]
-#[cfg(feature="smoke-test")]
 fn bf_dbf2c() {
     let mut reader = "+>".as_bytes();
     let mut writer = Vec::<u8>::new();
@@ -85,7 +84,6 @@ fn bf_dbf2c() {
 }
 
 #[test]
-#[cfg(feature="smoke-test")]
 fn bf_dbfi() {
     let mut reader = ",.!1".as_bytes();
     let mut writer = Vec::<u8>::new();
