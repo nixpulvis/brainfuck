@@ -47,20 +47,13 @@
 use std::io;
 use std::path::Path;
 
-/// Brainfuck errors are the best kind of errors.
-mod error;
+/// The number of instructions allowed to execute before the interpreter
+/// errors with `Error::CycleLimit`.
+pub const CYCLE_LIMIT: u64 = 50000000;
 
-/// Brainfuck interpreters are my favorite kind of interpreter.
-mod interpreter;
-
-/// Brainfuck instructions are the best kind of instructions.
-mod instruction;
-
-/// Brainfuck programs are the best kind of programs too!
-mod program;
-
-/// Brainfuck programs have the best underlying data structure.
-mod tape;
+/// The number of cells the tape contains. Attempts to access above or
+/// below this limit will result in an error.
+pub const TAPE_LENGTH: usize = 30000;
 
 // Re-exports.
 pub use error::Error;
@@ -86,3 +79,18 @@ pub fn from_file<P: AsRef<Path>>(path: P) -> Result<(), Error> {
     let program = try!(Program::from_file(path));
     eval(program)
 }
+
+/// Brainfuck errors are the best kind of errors.
+mod error;
+
+/// Brainfuck interpreters are my favorite kind of interpreter.
+mod interpreter;
+
+/// Brainfuck instructions are the best kind of instructions.
+mod instruction;
+
+/// Brainfuck programs are the best kind of programs too!
+mod program;
+
+/// Brainfuck programs have the best underlying data structure.
+mod tape;

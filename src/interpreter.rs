@@ -1,5 +1,5 @@
 use std::io::{Read, Write};
-use super::{Error, Program, Instruction, Tape};
+use super::{CYCLE_LIMIT, TAPE_LENGTH, Error, Program, Instruction, Tape};
 
 /// A brainfuck interpreter, with the needed state for execution.
 ///
@@ -18,7 +18,7 @@ pub struct Interpreter<'a> {
     program: Option<Program>,
     reader: &'a mut Read,
     writer: &'a mut Write,
-    tape: Tape<[u8; 30000]>,
+    tape: Tape<[u8; TAPE_LENGTH]>,
     pc: usize,
     cycles: u64,
 }
@@ -69,7 +69,7 @@ impl<'a> Interpreter<'a> {
     }
 
     fn step(&mut self) -> Result<Option<Result<Instruction, Error>>, Error> {
-        if self.cycles >= 5000000 {
+        if self.cycles >= CYCLE_LIMIT {
             return Err(Error::CycleLimit)
         }
         let instruction = match self.program {

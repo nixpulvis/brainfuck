@@ -1,4 +1,5 @@
 use std::ops;
+use super::TAPE_LENGTH;
 
 /// A fixed length data structure for holding bytes and a pointer.
 ///
@@ -12,16 +13,16 @@ pub struct Tape<C> {
     ptr: usize,
 }
 
-impl Tape<[u8; 30000]> {
-    pub fn new() -> Tape<[u8; 30000]> {
+impl Tape<[u8; TAPE_LENGTH]> {
+    pub fn new() -> Tape<[u8; TAPE_LENGTH]> {
         Tape {
-            cells: [0; 30000],
+            cells: [0; TAPE_LENGTH],
             ptr: 0,
         }
     }
 }
 
-impl ops::Deref for Tape<[u8; 30000]> {
+impl ops::Deref for Tape<[u8; TAPE_LENGTH]> {
     type Target = u8;
 
     fn deref(&self) -> &Self::Target {
@@ -29,13 +30,13 @@ impl ops::Deref for Tape<[u8; 30000]> {
     }
 }
 
-impl ops::DerefMut for Tape<[u8; 30000]> {
+impl ops::DerefMut for Tape<[u8; TAPE_LENGTH]> {
     fn deref_mut(&mut self) -> &mut u8 {
         &mut self.cells[self.ptr as usize]
     }
 }
 
-impl ops::AddAssign<u8> for Tape<[u8; 30000]> {
+impl ops::AddAssign<u8> for Tape<[u8; TAPE_LENGTH]> {
     fn add_assign(&mut self, rhs: u8) {
         match (*self).checked_add(rhs) {
             Some(n) => **self = n,
@@ -44,7 +45,7 @@ impl ops::AddAssign<u8> for Tape<[u8; 30000]> {
     }
 }
 
-impl ops::SubAssign<u8> for Tape<[u8; 30000]> {
+impl ops::SubAssign<u8> for Tape<[u8; TAPE_LENGTH]> {
     fn sub_assign(&mut self, rhs: u8) {
         match (*self).checked_sub(rhs) {
             Some(n) => **self = n,
@@ -53,19 +54,19 @@ impl ops::SubAssign<u8> for Tape<[u8; 30000]> {
     }
 }
 
-impl ops::ShrAssign<usize> for Tape<[u8; 30000]> {
+impl ops::ShrAssign<usize> for Tape<[u8; TAPE_LENGTH]> {
     fn shr_assign(&mut self, rhs: usize) {
         match self.ptr.checked_add(rhs) {
-            Some(n) if n < 30000 => self.ptr = n,
+            Some(n) if n < TAPE_LENGTH => self.ptr = n,
             _ => panic!("overflow in ptr right shift."),
         }
     }
 }
 
-impl ops::ShlAssign<usize> for Tape<[u8; 30000]> {
+impl ops::ShlAssign<usize> for Tape<[u8; TAPE_LENGTH]> {
     fn shl_assign(&mut self, rhs: usize) {
         match self.ptr.checked_sub(rhs) {
-            Some(n) if n < 30000 => self.ptr = n,
+            Some(n) if n < TAPE_LENGTH => self.ptr = n,
             _ => panic!("overflow in ptr left shift."),
         }
     }
