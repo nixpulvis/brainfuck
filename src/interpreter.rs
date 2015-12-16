@@ -106,11 +106,9 @@ impl<'a> Interpreter<'a> {
                 try!(self.writer.write(&[*self.tape]));
             },
             Instruction::Input => {
-                let input = try!(match self.reader.bytes().next() {
-                    Some(b) => b,
-                    None => return Err(Error::InputEmpty),
-                });
-                *self.tape = input;
+                if let Some(b) = self.reader.bytes().next() {
+                    *self.tape = try!(b);
+                }
             },
             Instruction::SkipForward(iptr) => {
                 if *self.tape == 0 {
@@ -212,9 +210,12 @@ mod tests {
     fn empty_io() {
         let mut reader = io::empty();
         let mut writer = Vec::<u8>::new();
-        let program = Program::parse(",");
-        let mut interp = Interpreter::new(&mut reader, &mut writer);
-        interp.load(program);
-        assert!(interp.run().is_err());
+        let program = Program::parse("+,.");
+        {
+            let mut interp = Interpreter::new(&mut reader, &mut writer);
+            interp.load(program);
+            interp.run().unwrap();
+        }
+        assert_eq!(writer, [1]);
     }
 }
