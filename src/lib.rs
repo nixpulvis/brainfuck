@@ -67,7 +67,7 @@ pub fn eval(program: Program) -> Result<(), Error> {
 }
 
 pub fn eval_string(source: &str) -> Result<(), Error> {
-    let program = Program::from_source(source);
+    let program = Program::parse(source);
     eval(program)
 }
 
