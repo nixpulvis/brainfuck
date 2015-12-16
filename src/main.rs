@@ -15,6 +15,7 @@ Usage:
     brainfuck [options] -e <program>
 
 Options:
+    -a --asl              Don't run, simply print the ASL.
     -i --instrumentation  Enable program instrumentation.
 ";
 
@@ -22,6 +23,7 @@ Options:
 struct Args {
     arg_program: Option<String>,
     arg_file: Option<String>,
+    flag_asl: bool,
     flag_instrumentation: bool,
 }
 
@@ -34,22 +36,27 @@ fn main() {
         Args { arg_file: Some(p), .. } => Program::from_file(p).unwrap(),
         _ => panic!("Bad args."),
     };
-    let mut stdin = io::stdin();
-    let mut stdout = io::stdout();
-    let mut interp = Interpreter::new(&mut stdin, &mut stdout);
-    interp.load(program);
-    if args.flag_instrumentation {
-        let mut instruction_map: HashMap<Instruction, usize> = HashMap::new();
-        interp.run_with_callback(|_, i| {
-            let counter = instruction_map.entry(*i).or_insert(0);
-            *counter += 1;
-        }).unwrap_or_else(|e| {
-            println!("\nWARN: {:?}", e);
-        });
-        println!("{:?}", instruction_map);
+    if args.flag_asl {
+        println!("{}", program);
+
     } else {
-        interp.run().unwrap_or_else(|e| {
-            println!("\nWARN: {:?}", e);
-        });
+        let mut stdin = io::stdin();
+        let mut stdout = io::stdout();
+        let mut interp = Interpreter::new(&mut stdin, &mut stdout);
+        interp.load(program);
+        if args.flag_instrumentation {
+            let mut instruction_map: HashMap<Instruction, usize> = HashMap::new();
+            interp.run_with_callback(|_, i| {
+                let counter = instruction_map.entry(*i).or_insert(0);
+                *counter += 1;
+            }).unwrap_or_else(|e| {
+                println!("\nWARN: {:?}", e);
+            });
+            println!("{:?}", instruction_map);
+        } else {
+            interp.run().unwrap_or_else(|e| {
+                println!("\nWARN: {:?}", e);
+            });
+        }
     }
 }

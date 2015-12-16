@@ -1,3 +1,4 @@
+use std::fmt;
 use std::io::Read;
 use std::path::Path;
 use std::fs::File;
@@ -10,6 +11,7 @@ use super::{Error, Instruction};
 /// brainfuck source text. The main operations of a program is creating
 /// one with the `parse` function, and getting the instruction for a
 /// given program counter with the `get` function.
+#[derive(Debug)]
 pub struct Program {
     asl: Vec<Instruction>,
 }
@@ -74,6 +76,16 @@ impl Program {
             count = count + 1;
         }
         map
+    }
+}
+
+impl fmt::Display for Program {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut string = String::new();
+        for i in &self.asl {
+            string = format!("{}{}", string, i);
+        }
+        write!(f, "{}", string)
     }
 }
 
