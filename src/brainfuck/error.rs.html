@@ -79,6 +79,10 @@
 <span id="36">36</span>
 <span id="37">37</span>
 <span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::{<span class='ident'>error</span>, <span class='ident'>fmt</span>, <span class='ident'>io</span>};
 
@@ -91,6 +95,8 @@
     <span class='ident'>InputEmpty</span>,
     <span class='doccomment'>/// No program loaded.</span>
     <span class='ident'>NoProgram</span>,
+    <span class='doccomment'>/// Overflows.</span>
+    <span class='ident'>Overflow</span>,
 }
 
 <span class='kw'>impl</span> <span class='ident'>error</span>::<span class='ident'>Error</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
@@ -99,6 +105,7 @@
             <span class='ident'>Error</span>::<span class='ident'>Io</span>(_) <span class='op'>=&gt;</span> <span class='string'>&quot;Io Error&quot;</span>,
             <span class='ident'>Error</span>::<span class='ident'>InputEmpty</span> <span class='op'>=&gt;</span> <span class='string'>&quot;Input Empty Error&quot;</span>,
             <span class='ident'>Error</span>::<span class='ident'>NoProgram</span> <span class='op'>=&gt;</span> <span class='string'>&quot;No Program&quot;</span>,
+            <span class='ident'>Error</span>::<span class='ident'>Overflow</span> <span class='op'>=&gt;</span> <span class='string'>&quot;Overflow&quot;</span>,
         }
     }
 }
@@ -109,6 +116,7 @@
             <span class='ident'>Error</span>::<span class='ident'>Io</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='ident'>e</span>.<span class='ident'>fmt</span>(<span class='ident'>f</span>),
             <span class='ident'>Error</span>::<span class='ident'>InputEmpty</span> <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>error</span>::<span class='ident'>Error</span>::<span class='ident'>description</span>(<span class='self'>self</span>)),
             <span class='ident'>Error</span>::<span class='ident'>NoProgram</span> <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>error</span>::<span class='ident'>Error</span>::<span class='ident'>description</span>(<span class='self'>self</span>)),
+            <span class='ident'>Error</span>::<span class='ident'>Overflow</span> <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>error</span>::<span class='ident'>Error</span>::<span class='ident'>description</span>(<span class='self'>self</span>)),
         }
     }
 }

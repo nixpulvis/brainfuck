@@ -111,25 +111,6 @@
 <span id="68">68</span>
 <span id="69">69</span>
 <span id="70">70</span>
-<span id="71">71</span>
-<span id="72">72</span>
-<span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
-<span id="81">81</span>
-<span id="82">82</span>
-<span id="83">83</span>
-<span id="84">84</span>
-<span id="85">85</span>
-<span id="86">86</span>
-<span id="87">87</span>
-<span id="88">88</span>
-<span id="89">89</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
 
@@ -178,42 +159,23 @@
     <span class='ident'>Input</span>,
     <span class='doccomment'>/// Skip forward if the value at the pointer is `0`. For more</span>
     <span class='doccomment'>/// information see the section on control flow above.</span>
-    <span class='doccomment'>/// TODO: Skips should be statically guaranteed not to fail.</span>
-    <span class='ident'>SkipForward</span>,
+    <span class='ident'>SkipForward</span>(<span class='ident'>usize</span>),
     <span class='doccomment'>/// Skip backward if the value at the pointer is **not** `0`.</span>
     <span class='doccomment'>/// For more information see the section on control flow above.</span>
-    <span class='doccomment'>/// TODO: Skips should be statically guaranteed not to fail.</span>
-    <span class='ident'>SkipBackward</span>,
-}
-
-<span class='kw'>impl</span> <span class='ident'>Instruction</span> {
-    <span class='doccomment'>/// Return the instruction corrisponding to the given instruction.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_char</span>(<span class='ident'>character</span>: <span class='ident'>char</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Instruction</span><span class='op'>&gt;</span> {
-        <span class='kw'>match</span> <span class='ident'>character</span> {
-            <span class='string'>&#39;&gt;&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Instruction</span>::<span class='ident'>IncPtr</span>),
-            <span class='string'>&#39;&lt;&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Instruction</span>::<span class='ident'>DecPtr</span>),
-            <span class='string'>&#39;+&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Instruction</span>::<span class='ident'>IncVal</span>),
-            <span class='string'>&#39;-&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Instruction</span>::<span class='ident'>DecVal</span>),
-            <span class='string'>&#39;.&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Instruction</span>::<span class='ident'>Output</span>),
-            <span class='string'>&#39;,&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Instruction</span>::<span class='ident'>Input</span>),
-            <span class='string'>&#39;[&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Instruction</span>::<span class='ident'>SkipForward</span>),
-            <span class='string'>&#39;]&#39;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Instruction</span>::<span class='ident'>SkipBackward</span>),
-            _ <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
-        }
-    }
+    <span class='ident'>SkipBackward</span>(<span class='ident'>usize</span>),
 }
 
 <span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Display</span> <span class='kw'>for</span> <span class='ident'>Instruction</span> {
     <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
-            <span class='ident'>Instruction</span>::<span class='ident'>IncPtr</span>       <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;&gt;&quot;</span>),
-            <span class='ident'>Instruction</span>::<span class='ident'>DecPtr</span>       <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;&lt;&quot;</span>),
-            <span class='ident'>Instruction</span>::<span class='ident'>IncVal</span>       <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;+&quot;</span>),
-            <span class='ident'>Instruction</span>::<span class='ident'>DecVal</span>       <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;-&quot;</span>),
-            <span class='ident'>Instruction</span>::<span class='ident'>Output</span>       <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;.&quot;</span>),
-            <span class='ident'>Instruction</span>::<span class='ident'>Input</span>        <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;,&quot;</span>),
-            <span class='ident'>Instruction</span>::<span class='ident'>SkipForward</span>  <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;[&quot;</span>),
-            <span class='ident'>Instruction</span>::<span class='ident'>SkipBackward</span> <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;]&quot;</span>),
+            <span class='ident'>Instruction</span>::<span class='ident'>IncPtr</span>          <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;&gt;&quot;</span>),
+            <span class='ident'>Instruction</span>::<span class='ident'>DecPtr</span>          <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;&lt;&quot;</span>),
+            <span class='ident'>Instruction</span>::<span class='ident'>IncVal</span>          <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;+&quot;</span>),
+            <span class='ident'>Instruction</span>::<span class='ident'>DecVal</span>          <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;-&quot;</span>),
+            <span class='ident'>Instruction</span>::<span class='ident'>Output</span>          <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;.&quot;</span>),
+            <span class='ident'>Instruction</span>::<span class='ident'>Input</span>           <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;,&quot;</span>),
+            <span class='ident'>Instruction</span>::<span class='ident'>SkipForward</span>(_)  <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;[&quot;</span>),
+            <span class='ident'>Instruction</span>::<span class='ident'>SkipBackward</span>(_) <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;]&quot;</span>),
         }
     }
 }

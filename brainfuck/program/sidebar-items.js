@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Program",""]]});
+initSidebarItems({"struct":[["Program","The logic desired to be run by the brainfuck interpreter."]]});

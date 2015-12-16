@@ -46,13 +46,21 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-180' class='srclink' href='../src/brainfuck/program.rs.html#9-11' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-181' class='srclink' href='../src/brainfuck/program.rs.html#13-15' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Program {
     // some fields omitted
-}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../brainfuck/struct.Program.html' title='brainfuck::Program'>Program</a></code></h3><div class='impl-items'><h4 id='method.from_file' class='method'><code>fn <a href='#method.from_file' class='fnname'>from_file</a>&lt;P: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>&gt;&gt;(path: P) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../brainfuck/struct.Program.html' title='brainfuck::Program'>Program</a>, <a class='enum' href='../brainfuck/enum.Error.html' title='brainfuck::Error'>Error</a>&gt;</code></h4>
-<h4 id='method.from_source' class='method'><code>fn <a href='#method.from_source' class='fnname'>from_source</a>&lt;C: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(source: C) -&gt; <a class='struct' href='../brainfuck/struct.Program.html' title='brainfuck::Program'>Program</a></code></h4>
-<h4 id='method.source' class='method'><code>fn <a href='#method.source' class='fnname'>source</a>(&amp;self) -&gt; &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
-<div class='docblock'><p>TODO: Is this the right idea?</p>
+}</pre><div class='docblock'><p>The logic desired to be run by the brainfuck interpreter.</p>
+
+<p>A program consists of the Abstract Syntax List (ASL) of a given
+brainfuck source text. The main operations of a program is creating
+one with the <code>parse</code> function, and getting the instruction for a
+given program counter with the <code>get</code> function.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../brainfuck/struct.Program.html' title='brainfuck::Program'>Program</a></code></h3><div class='impl-items'><h4 id='method.parse' class='method'><code>fn <a href='#method.parse' class='fnname'>parse</a>(source: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../brainfuck/struct.Program.html' title='brainfuck::Program'>Program</a></code></h4>
+<div class='docblock'><p>Create a program from source text.</p>
+</div><h4 id='method.get' class='method'><code>fn <a href='#method.get' class='fnname'>get</a>(&amp;self, iptr: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='enum' href='../brainfuck/enum.Instruction.html' title='brainfuck::Instruction'>Instruction</a>&gt;</code></h4>
+<div class='docblock'><p>Get the instruction at the given program counter.</p>
+</div><h4 id='method.from_file' class='method'><code>fn <a href='#method.from_file' class='fnname'>from_file</a>&lt;P: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>&gt;&gt;(path: P) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../brainfuck/struct.Program.html' title='brainfuck::Program'>Program</a>, <a class='enum' href='../brainfuck/enum.Error.html' title='brainfuck::Error'>Error</a>&gt;</code></h4>
+<div class='docblock'><p>Create a program from a file.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
 

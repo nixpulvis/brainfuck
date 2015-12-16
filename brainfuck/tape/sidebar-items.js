@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Tape","A fixed length data structure for holding bytes and a pointer."]]});
