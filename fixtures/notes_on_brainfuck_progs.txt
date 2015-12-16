@@ -1,0 +1,111 @@
+Rob Pike noted that comments on data are usually much more helpful than on
+algorithms. So here are some notes on the data layouts used in my brainfuck
+programs, for anyone who wants to understand them and would like a hint.
+
+
+collatz.b
+The layout is 0 i 0 n tn c tc n tn c tc ...
+where n are binary digits of the number n, least significant at left, and tn
+mark how far right n extends (as far as tn are nonzero); c are decimal digits
+of the step counter, and extend as far as tc are nonzero (note that the first
+c-tc pair is special, used for outputting the linefeed); and i is where the
+input digits are stored until integrated into n.
+
+dbf2c.b
+During the main processing period, the values are
+0 0 0 '{' '1' 'w' 'e' '+' ';' '\n' 0 i 0 0 0 ...
+where commands are read into spot i, changed into codes as follows:
+[]<>+- ,.
+123456 89
+just to the left of i, and those codes used to choose which text to output.
+
+dbfi.b
+The brainfuck commands ][><.-,+ are stored as numbers 1-8 respectively. They
+are laid out contiguously from the start of the array, except for a two-cell
+gap just left of the next command to execute, which serves as instruction
+pointer. The last instruction in the program is followed by two zeroes,
+followed by the cells in the (simulated) array, each preceded by a 1 if the
+(simulated) data pointer is at or to the right of that cell, and a 0 otherwise.
+
+dquine.b
+>+<[]-. are represented by 1-7 respectively, with a 0 at left.
+
+factorial.b
+The format at the start of the main loop is normally
+0 10 0 0 n t o c b n t o c b... 
+where b is the number whose factorial was output last, stored in binary, least
+significant digit to the left, using the values 2 and 1 in place of 1 and 0; c
+is where that number will be copied to, only using 1 and 0; o holds decimal
+digits of the last factorial output, t are temps that are nonzero as far as
+n has been set, and n is where the next factorial will be accumulated.
+
+fib.b
+The format is
+0 10 a t b a t b ... a t b 0 0 0 0 0 ...
+where a and b are (decimal) digits of the two Fibonacci numbers most recently
+calculated, stored with the most significant digit to the right, and t are
+temporaries which are nonzero when not in use, to mark how far b extends to the
+right. The 10 is just used to output a linefeed.
+
+numwarp.b
+Sample output:
+    /\
+    \/\
+  /\ \/
+  \/\
+/\ \/
+\/\
+ \/
+
+map of structure of the above output:
+ssssccr
+sss1cccr
+ssbb1ccr
+s1bbbr
+aa1bbr
+aaar
+1aar
+
+And as it's represented in memory, just before the output loop:
+00aa1330aaa30bb1aa0bbb10cc1bb0ccc10333cc0000000n0000...
+r's and s's are not represented directly in memory;
+n contains the number of s's in the first line.
+We have a series of frames, in reverse order of output, separated by zeroes.
+1 represents space, 2 slash or backslash, 3 "no output" (used at ends).
+
+random.b
+The basic format is
+r 0 a t a t ... a t 0 0 0 0 ...
+where r holds the random bits accumulated so far, a are states of cells of the
+automaton (the leftmost a also tells how many bits are still required to
+complete the next byte), and t are temporaries as in fib.b, except that the
+middle one holds a 2; we have to mark it because successive values of the
+middle cell are used as the "random" bit stream.
+
+thuemorse.b
+The format is
+0 0 p c n n ... n 0 0 ...
+where n are bits of a binary number, least significant bit to left.
+p is 1 for even parity or 2 for odd parity.
+c is 48 for even parity and 49 for odd parity.
+We output c, increment the number, and then update p and c.
+
+utm.b
+Squares of the Turing machine's tape are laid out consecutively, with 0-5
+representing symbols 01b<>c and a three-cell gap for the Turing machine's head;
+the rightmost of the three holds the state (1-4 or 0 for "halt"). During input,
+the head is always kept just right of the rightmost "b" found so far. During
+processing, the new state, symbol, and direction are calculated from the old
+using the layout:
+tape tape nsym ndir (ost-1)*6+osym nst tape tape
+
+wc.b
+The format is
+0 0 0 o 0 n i l t w t c t l t w t c t ... c t 0 0 0 ...
+where o and n are the old and new whitespace flags; i is the character just
+input; l, w, and c are decimal digits of the respective counts, least
+significant to the left; and t are used as temporaries and otherwise set to 1
+to mark the extent of the counts.
+
+Daniel B Cristofani (cristofdathevanetdotcom)
+(http://www.hevanet.com/cristofd/brainfuck/)

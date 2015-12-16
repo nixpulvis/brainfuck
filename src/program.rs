@@ -83,7 +83,7 @@ mod tests {
 
     #[test]
     fn program() {
-        let program = Program::from_file("fixtures/hello.b");
+        let program = Program::from_file("fixtures/helloworld.b");
         assert!(program.is_ok());
     }
 }
