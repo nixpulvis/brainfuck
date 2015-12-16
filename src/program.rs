@@ -64,7 +64,7 @@ impl Program {
                     opens.push(count);
                 },
                 ']' => {
-                    let open = opens.pop().unwrap();
+                    let open = opens.pop().expect("valid program");
                     map.insert(count, open);
                     let o = map.get_mut(&open).expect("in");
                     *o = count;
