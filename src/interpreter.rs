@@ -20,6 +20,7 @@ pub struct Interpreter<'a> {
     writer: &'a mut Write,
     tape: Tape<[u8; 30000]>,
     pc: usize,
+    cycles: u64,
 }
 
 impl<'a> Interpreter<'a> {
@@ -34,6 +35,7 @@ impl<'a> Interpreter<'a> {
             writer: output,
             tape: Tape::new(),
             pc: 0,
+            cycles: 0,
         }
     }
 
@@ -67,6 +69,9 @@ impl<'a> Interpreter<'a> {
     }
 
     fn step(&mut self) -> Result<Option<Result<Instruction, Error>>, Error> {
+        if self.cycles >= 5000000 {
+            return Err(Error::CycleLimit)
+        }
         let instruction = match self.program {
             Some(ref p) => match p.get(self.pc) {
                 Some(i) => i,
@@ -75,7 +80,10 @@ impl<'a> Interpreter<'a> {
             None => return Err(Error::NoProgram),
         };
         match self.execute(instruction) {
-            Ok(_) => Ok(Some(Ok(instruction))),
+            Ok(_) => {
+                self.cycles += 1;
+                Ok(Some(Ok(instruction)))
+            },
             Err(e) => Ok(Some(Err(e))),
         }
     }

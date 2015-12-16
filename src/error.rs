@@ -11,6 +11,8 @@ pub enum Error {
     NoProgram,
     /// Overflows.
     Overflow,
+    /// Interpreter cycle limit hit.
+    CycleLimit,
 }
 
 impl error::Error for Error {
@@ -20,6 +22,7 @@ impl error::Error for Error {
             Error::InputEmpty => "Input Empty Error",
             Error::NoProgram => "No Program",
             Error::Overflow => "Overflow",
+            Error::CycleLimit => "Cycle Limit",
         }
     }
 }
@@ -31,6 +34,7 @@ impl fmt::Display for Error {
             Error::InputEmpty => write!(f, "{}", error::Error::description(self)),
             Error::NoProgram => write!(f, "{}", error::Error::description(self)),
             Error::Overflow => write!(f, "{}", error::Error::description(self)),
+            Error::CycleLimit => write!(f, "{}", error::Error::description(self)),
         }
     }
 }
