@@ -126,45 +126,4 @@ mod tests {
         tape <<= 1;
         assert_eq!(*tape, 4);
     }
-
-    // #[test]
-    // fn wrapping_over_value() {
-    //     let mut tape = Tape::new();
-    //     *tape = 255;
-    //     assert!(tape.shift_value(1).is_err());
-    // }
-    //
-    // #[test]
-    // fn non_wrapping_value() {
-    //     let mut tape = Tape::new();
-    //     for _ in 0..255 {
-    //         assert!(tape.shift_value(1).is_ok());
-    //     }
-    //     assert!(tape.shift_value(1).is_err());
-    //     assert!(tape.shift_value(255).is_err());
-    //     assert_eq!(*tape, 255);
-    //     for _ in 0..255 {
-    //         assert!(tape.shift_value(-1).is_ok());
-    //     }
-    //     assert!(tape.shift_value(-1).is_err());
-    //     assert!(tape.shift_value(-255).is_err());
-    //     assert_eq!(*tape, 0);
-    // }
-    //
-    // #[test]
-    // fn non_wrapping_ptr() {
-    //     let mut tape = Tape::new();
-    //     for _ in 0..29999 {
-    //         assert!(tape.shift_ptr(1).is_ok());
-    //     }
-    //     assert_eq!(tape.ptr, 29999);
-    //     assert!(tape.shift_ptr(1).is_err());
-    //     assert!(tape.shift_ptr(30000).is_err());
-    //     for _ in 0..29999 {
-    //         assert!(tape.shift_ptr(-1).is_ok());
-    //     }
-    //     assert_eq!(tape.ptr, 0);
-    //     assert!(tape.shift_ptr(-1).is_err());
-    //     assert!(tape.shift_ptr(-30000).is_err());
-    // }
 }

@@ -80,7 +80,7 @@ impl<'a> Interpreter<'a> {
         }
     }
 
-    fn execute(&mut self, instruction: Instruction) -> Result<(), Error> {
+    fn execute(&mut self, instruction: Instruction) -> Result<Instruction, Error> {
         match instruction {
             Instruction::IncPtr => {
                 self.tape >>= 1;
@@ -116,15 +116,18 @@ impl<'a> Interpreter<'a> {
             },
         };
         self.pc = self.pc + 1;
-        Ok(())
+        Ok(instruction)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use std::io;
+    use Instruction;
     use Program;
     use super::*;
+
+    // Public functions.
 
     #[test]
     fn new() {
@@ -160,6 +163,32 @@ mod tests {
         let mut count = 0;
         assert!(interp.run_with_callback(|_, _| count = count + 1).is_ok());
         assert_eq!(count, 5);
+    }
+
+    // Private tests.
+
+    #[test]
+    fn step() {
+        let mut reader = &[][..];
+        let mut writer = Vec::<u8>::new();
+        let program = Program::parse("++>+.");
+        let mut interp = Interpreter::new(&mut reader, &mut writer);
+        interp.load(program);
+        let result = interp.step();
+        assert!(result.is_ok());
+        let run = result.unwrap();
+        assert!(run.is_some());
+        assert!(run.unwrap().is_ok());
+    }
+
+    #[test]
+    fn execute() {
+        let mut reader = &[][..];
+        let mut writer = Vec::<u8>::new();
+        let mut interp = Interpreter::new(&mut reader, &mut writer);
+        let instruction = Instruction::IncVal;
+        let result = interp.execute(instruction);
+        assert!(result.is_ok());
     }
 
     #[test]
