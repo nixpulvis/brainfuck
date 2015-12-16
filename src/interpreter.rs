@@ -162,8 +162,6 @@ mod tests {
         assert_eq!(count, 5);
     }
 
-    // Private
-
     #[test]
     fn single_step() {
         let mut reader = &[][..];
@@ -171,65 +169,6 @@ mod tests {
         let mut interp = Interpreter::new(&mut reader, &mut writer);
         interp.load(Program::parse(">"));
         interp.step().unwrap().unwrap().unwrap();
-    }
-
-    #[test]
-    fn ub_decrement_pointer_below_min() {
-        // Decrementing the pointer below the start should wrap around to
-        // the end of the tape.
-        let mut reader = &[][..];
-        let mut writer = Vec::<u8>::new();
-        {
-            let mut interp = Interpreter::new(&mut reader, &mut writer);
-            interp.load(Program::parse("<."));
-            interp.run().unwrap();
-        }
-        assert_eq!(writer, [0]);
-    }
-
-    #[test]
-    fn ub_increment_pointer_above_max() {
-        // Incrementing the pointer above the end should wrap around to
-        // the start of the tape. This test sets the first cell to 1,
-        // and then loops incrementing the pointer and subtracting 1
-        // from each cell until one of the cells is 0 (i.e.) the first
-        // cell. This relys on correctly working value wrapping.
-        let mut reader = &[][..];
-        let mut writer = Vec::<u8>::new();
-        {
-            let mut interp = Interpreter::new(&mut reader, &mut writer);
-            interp.load(Program::parse("+[>-.]"));
-            interp.run().unwrap();
-        }
-        assert_eq!(writer.len(), 30000);
-    }
-
-    #[test]
-    fn ub_decrement_value_below_min() {
-        // Decrementing a value below it's minimum value should wrap to
-        // it's maximum value.
-        let mut reader = &[][..];
-        let mut writer = Vec::<u8>::new();
-        {
-            let mut interp = Interpreter::new(&mut reader, &mut writer);
-            interp.load(Program::parse("-."));
-            interp.run().unwrap();
-        }
-        assert_eq!(writer, [255]);
-    }
-
-    #[test]
-    fn ub_increment_value_above_max() {
-        // Incrementing a value above it's maximum value should wrap to
-        // it's minimum value.
-        let mut reader = &[][..];
-        let mut writer = Vec::<u8>::new();
-        {
-            let mut interp = Interpreter::new(&mut reader, &mut writer);
-            interp.load(Program::parse("+[+]."));
-            interp.run().unwrap();
-        }
-        assert_eq!(writer, [0]);
     }
 
     #[test]
