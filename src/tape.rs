@@ -9,7 +9,7 @@ use std::ops;
 /// TODO: Overflows should cause `Err` results.
 pub struct Tape {
     cells: [u8; 30000],
-    ptr: u16,
+    ptr: usize,
 }
 
 impl Tape {
@@ -53,8 +53,8 @@ impl ops::SubAssign<u8> for Tape {
     }
 }
 
-impl ops::ShrAssign<u16> for Tape {
-    fn shr_assign(&mut self, rhs: u16) {
+impl ops::ShrAssign<usize> for Tape {
+    fn shr_assign(&mut self, rhs: usize) {
         match self.ptr.checked_add(rhs) {
             Some(n) if n < 30000 => self.ptr = n,
             _ => panic!("overflow in ptr right shift."),
@@ -62,8 +62,8 @@ impl ops::ShrAssign<u16> for Tape {
     }
 }
 
-impl ops::ShlAssign<u16> for Tape {
-    fn shl_assign(&mut self, rhs: u16) {
+impl ops::ShlAssign<usize> for Tape {
+    fn shl_assign(&mut self, rhs: usize) {
         match self.ptr.checked_sub(rhs) {
             Some(n) if n < 30000 => self.ptr = n,
             _ => panic!("overflow in ptr left shift."),
