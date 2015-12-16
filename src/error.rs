@@ -9,6 +9,8 @@ pub enum Error {
     InputEmpty,
     /// No program loaded.
     NoProgram,
+    /// Overflows.
+    Overflow,
 }
 
 impl error::Error for Error {
@@ -17,6 +19,7 @@ impl error::Error for Error {
             Error::Io(_) => "Io Error",
             Error::InputEmpty => "Input Empty Error",
             Error::NoProgram => "No Program",
+            Error::Overflow => "Overflow",
         }
     }
 }
@@ -27,6 +30,7 @@ impl fmt::Display for Error {
             Error::Io(ref e) => e.fmt(f),
             Error::InputEmpty => write!(f, "{}", error::Error::description(self)),
             Error::NoProgram => write!(f, "{}", error::Error::description(self)),
+            Error::Overflow => write!(f, "{}", error::Error::description(self)),
         }
     }
 }

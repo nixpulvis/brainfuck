@@ -30,6 +30,7 @@
 //! [control-flow]: enum.Instruction.html#control-flow
 //! [instruction-docs]: enum.Instruction.html
 //! [portabiliy]: http://www.muppetlabs.com/%7Ebreadbox/bf/standards.html
+#![feature(op_assign_traits, augmented_assignments)]
 #![deny(warnings)]
 
 use std::io;
@@ -47,11 +48,15 @@ mod instruction;
 /// Brainfuck programs are the best kind of programs too!
 mod program;
 
+/// Brainfuck programs have the best underlying data structure.
+mod tape;
+
 // Re-exports.
 pub use error::Error;
 pub use interpreter::Interpreter;
 pub use instruction::Instruction;
 pub use program::Program;
+pub use tape::Tape;
 
 pub fn eval(program: Program) -> Result<(), Error> {
     let mut stdin = io::stdin();
@@ -62,7 +67,7 @@ pub fn eval(program: Program) -> Result<(), Error> {
 }
 
 pub fn eval_string(source: &str) -> Result<(), Error> {
-    let program = Program::from_source(source);
+    let program = Program::parse(source);
     eval(program)
 }
 

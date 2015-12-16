@@ -1,5 +1,5 @@
 use std::io::{Read, Write};
-use super::{Error, Program, Instruction};
+use super::{Error, Program, Instruction, Tape};
 
 /// A brainfuck interpreter, with the needed state for execution.
 ///
@@ -18,8 +18,7 @@ pub struct Interpreter<'a> {
     program: Option<Program>,
     reader: &'a mut Read,
     writer: &'a mut Write,
-    tape: [u8; 30000],
-    ptr: usize,
+    tape: Tape,
     pc: usize,
 }
 
@@ -33,8 +32,7 @@ impl<'a> Interpreter<'a> {
             program: None,
             reader: input,
             writer: output,
-            tape: [0; 30000],
-            ptr: 0,
+            tape: Tape::new(),
             pc: 0,
         }
     }
@@ -68,7 +66,7 @@ impl<'a> Interpreter<'a> {
         Ok(())
     }
 
-    fn step(&mut self) -> Result<Option<Result<(), Error>>, Error> {
+    fn step(&mut self) -> Result<Option<Result<Instruction, Error>>, Error> {
         let instruction = match self.program {
             Some(ref p) => match p.get(self.pc) {
                 Some(i) => i,
@@ -77,7 +75,7 @@ impl<'a> Interpreter<'a> {
             None => return Err(Error::NoProgram),
         };
         match self.execute(instruction) {
-            Ok(_) => Ok(Some(Ok(()))),
+            Ok(_) => Ok(Some(Ok(instruction))),
             Err(e) => Ok(Some(Err(e))),
         }
     }
@@ -85,41 +83,34 @@ impl<'a> Interpreter<'a> {
     fn execute(&mut self, instruction: Instruction) -> Result<(), Error> {
         match instruction {
             Instruction::IncPtr => {
-                let wrapped = (self.ptr as i16 + 1) % 30000;
-                self.ptr = wrapped as usize;
+                self.tape >>= 1;
             },
             Instruction::DecPtr => {
-                let wrapped = (self.ptr as i16 - 1 + 30000) % 30000;
-                self.ptr = wrapped as usize;
+                self.tape <<= 1;
             },
             Instruction::IncVal => {
-                let wrapped = self.tape[self.ptr] as i16 + 1;
-                self.tape[self.ptr] = wrapped as u8;
+                self.tape += 1;
             },
             Instruction::DecVal => {
-                let wrapped = self.tape[self.ptr] as i16 - 1;
-                self.tape[self.ptr] = wrapped as u8;
+                self.tape -= 1;
             },
             Instruction::Output => {
-                // TODO: Handle errors.
-                let byte = self.tape[self.ptr];
-                try!(self.writer.write(&[byte]));
+                try!(self.writer.write(&[*self.tape]));
             },
             Instruction::Input => {
-                // TODO: Handle errors.
                 let input = try!(match self.reader.bytes().next() {
                     Some(b) => b,
                     None => return Err(Error::InputEmpty),
                 });
-                self.tape[self.ptr] = input;
+                *self.tape = input;
             },
             Instruction::SkipForward(iptr) => {
-                if self.tape[self.ptr] == 0 {
+                if *self.tape == 0 {
                     self.pc = iptr;
                 }
             },
             Instruction::SkipBackward(iptr) => {
-                if self.tape[self.ptr] != 0 {
+                if *self.tape != 0 {
                     self.pc = iptr;
                 }
             },
@@ -167,7 +158,7 @@ mod tests {
         let mut interp = Interpreter::new(&mut reader, &mut writer);
         interp.load(program);
         let mut count = 0;
-        assert!(interp.run_with_callback(|_| count = count + 1).is_ok());
+        assert!(interp.run_with_callback(|_, _| count = count + 1).is_ok());
         assert_eq!(count, 5);
     }
 
@@ -245,7 +236,7 @@ mod tests {
     fn empty_io() {
         let mut reader = io::empty();
         let mut writer = Vec::<u8>::new();
-        let program = Program::from_source(",");
+        let program = Program::parse(",");
         let mut interp = Interpreter::new(&mut reader, &mut writer);
         interp.load(program);
         assert!(interp.run().is_err());
