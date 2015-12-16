@@ -20,10 +20,21 @@
 //! undefined behavior. These undefined behaviors are given explicit
 //! semantics in this implmentation. Most brainfuck programs should work
 //! as expected in this implmentation. For more information on portabiliy
-//! of brainfuck programs read [The Unofficial Constraints on Portable Brainfuck Implementations][portabiliy].
+//! of brainfuck programs read [The Unofficial Constraints on Portable Brainfuck Implementations][portabiliy]. The deatils below should cover
+//! all of the undefined behavior in brainfuck with respect to this
+//! implmentation.
 //!
-//! TODO: Explain the choices made which are not spelled out for
-//!       the language.
+//! - The tape contains 30,000 cells.
+//! - The tape's pointer may **not** be moved below or above the begining
+//! or the end of the tape. The interpreter will return an `Err` if the
+//! program does so.
+//! - The values of the tape are unsigned bytes (`u8` in rust).
+//! - Values may not be incremented or decremented above 255, or below 0.
+//! The interpreter will return an `Err` if the program does so.
+//! - Attpempts to read input when there is no more input to be read will
+//! be effective noops (potentially with a warning).
+//! - Programs cannot contain unmatching brackets, and functions like
+//! `parse` ensure this before running the program.
 //!
 //! [instruction]: enum.Instruction.html
 //! [brainfuck]: http://www.muppetlabs.com/~breadbox/bf/
