@@ -46,12 +46,12 @@ impl<'a> Interpreter<'a> {
         self
     }
 
-    pub fn reader<R: Read>(&mut self, reader: &'a mut R) -> &mut Self {
+    pub fn read_from<R: Read>(&mut self, reader: &'a mut R) -> &mut Self {
         self.reader = Some(reader);
         self
     }
 
-    pub fn writer<W: Write>(&mut self, writer: &'a mut W) -> &mut Self {
+    pub fn write_to<W: Write>(&mut self, writer: &'a mut W) -> &mut Self {
         self.writer = Some(writer);
         self
     }
@@ -218,8 +218,8 @@ mod tests {
         let program = Program::parse("+,.");
         {
             let mut interp = Interpreter::new();
-            interp.reader(&mut reader);
-            interp.writer(&mut writer);
+            interp.read_from(&mut reader);
+            interp.write_to(&mut writer);
             interp.load(program);
             interp.run().unwrap();
         }

@@ -44,8 +44,8 @@ fn main() {
         let mut stdout = io::stdout();
         let mut interp = Interpreter::new();
         interp.load(program);
-        interp.reader(&mut stdin);
-        interp.writer(&mut stdout);
+        interp.read_from(&mut stdin);
+        interp.write_to(&mut stdout);
         if args.flag_instrumentation {
             let mut instruction_map: HashMap<Instruction, usize> = HashMap::new();
             interp.run_with_callback(|_, i| {

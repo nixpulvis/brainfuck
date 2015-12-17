@@ -55,8 +55,8 @@ fn bf_dbf2c() {
     let program = Program::from_file("fixtures/dbf2c.b").unwrap();
     {
         let mut interp = Interpreter::new();
-        interp.reader(&mut reader);
-        interp.writer(&mut writer);
+        interp.read_from(&mut reader);
+        interp.write_to(&mut writer);
         interp.load(program);
         interp.run().unwrap();
     }
@@ -72,8 +72,8 @@ fn bf_dbfi() {
     let program = Program::from_file("fixtures/dbfi.b").unwrap();
     {
         let mut interp = Interpreter::new();
-        interp.reader(&mut reader);
-        interp.writer(&mut writer);
+        interp.read_from(&mut reader);
+        interp.write_to(&mut writer);
         interp.load(program);
         interp.run().unwrap();
     }
