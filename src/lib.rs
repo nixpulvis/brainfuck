@@ -49,7 +49,7 @@ use std::path::Path;
 
 /// The number of instructions allowed to execute before the interpreter
 /// errors with `Error::CycleLimit`.
-pub const CYCLE_LIMIT: u64 = 50000000;
+pub const CYCLE_LIMIT: u64 = 10000000;
 
 /// The number of cells the tape contains. Attempts to access above or
 /// below this limit will result in an error.
