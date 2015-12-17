@@ -7,10 +7,8 @@ macro_rules! load_and_run {
         #[test]
 
         fn $name() {
-            let mut reader = &[1, 2, 3, 4, 5][..];
-            let mut writer = Vec::<u8>::new();
             let program = Program::from_file($path).unwrap();
-            Interpreter::new(&mut reader, &mut writer).load(program).run().unwrap();
+            Interpreter::new().load(program).run().unwrap();
         }
     };
 }
@@ -20,12 +18,8 @@ macro_rules! load_and_run_limit {
         #[test]
 
         fn $name() {
-            let mut reader = &[][..];
-            let mut writer = Vec::<u8>::new();
             let program = Program::from_file($path).unwrap();
-            let mut interp = Interpreter::new(&mut reader, &mut writer);
-            interp.load(program);
-            match interp.run() {
+            match Interpreter::new().load(program).run() {
                 Err(Error::CycleLimit) => assert!(true),
                 _ => assert!(false),
             }
@@ -59,7 +53,13 @@ fn bf_dbf2c() {
     let mut reader = "+>".as_bytes();
     let mut writer = Vec::<u8>::new();
     let program = Program::from_file("fixtures/dbf2c.b").unwrap();
-    Interpreter::new(&mut reader, &mut writer).load(program).run().ok();
+    {
+        let mut interp = Interpreter::new();
+        interp.reader(&mut reader);
+        interp.writer(&mut writer);
+        interp.load(program);
+        interp.run().unwrap();
+    }
     let got = String::from_utf8(writer).unwrap();
     let expected = "#include <unistd.h>\nchar r[65536],*e=r;\nmain(){\n++*e;\n++e;\nexit(0);\n}\n";
     assert_eq!(got, expected);
@@ -70,6 +70,12 @@ fn bf_dbfi() {
     let mut reader = ",.!1".as_bytes();
     let mut writer = Vec::<u8>::new();
     let program = Program::from_file("fixtures/dbfi.b").unwrap();
-    Interpreter::new(&mut reader, &mut writer).load(program).run().ok();
+    {
+        let mut interp = Interpreter::new();
+        interp.reader(&mut reader);
+        interp.writer(&mut writer);
+        interp.load(program);
+        interp.run().unwrap();
+    }
     assert_eq!(String::from_utf8(writer).unwrap(), "1");
 }

@@ -65,9 +65,11 @@ pub use tape::Tape;
 pub fn eval(program: Program) -> Result<(), Error> {
     let mut stdin = io::stdin();
     let mut stdout = io::stdout();
-    let mut interp = Interpreter::new(&mut stdin, &mut stdout);
-    interp.load(program);
-    interp.run()
+    Interpreter::new()
+        .reader(&mut stdin)
+        .writer(&mut stdout)
+        .load(program)
+        .run()
 }
 
 pub fn eval_string(source: &str) -> Result<(), Error> {
@@ -75,7 +77,7 @@ pub fn eval_string(source: &str) -> Result<(), Error> {
     eval(program)
 }
 
-pub fn from_file<P: AsRef<Path>>(path: P) -> Result<(), Error> {
+pub fn eval_file<P: AsRef<Path>>(path: P) -> Result<(), Error> {
     let program = try!(Program::from_file(path));
     eval(program)
 }

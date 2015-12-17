@@ -16,8 +16,8 @@ use super::{CYCLE_LIMIT, TAPE_LENGTH, Error, Program, Instruction, Tape};
 /// [top-doc]: index.html
 pub struct Interpreter<'a> {
     program: Option<Program>,
-    reader: &'a mut Read,
-    writer: &'a mut Write,
+    reader: Option<&'a mut Read>,
+    writer: Option<&'a mut Write>,
     tape: Tape<[u8; TAPE_LENGTH]>,
     pc: usize,
     cycles: u64,
@@ -28,11 +28,11 @@ impl<'a> Interpreter<'a> {
     ///
     /// Interpreters are relatively large, so avoid too many calls to this
     /// function.
-    pub fn new<R: Read, W: Write>(input: &'a mut R, output: &'a mut W) -> Interpreter<'a> {
+    pub fn new() -> Interpreter<'a> {
         Interpreter {
             program: None,
-            reader: input,
-            writer: output,
+            reader: None,
+            writer: None,
             tape: Tape::new(),
             pc: 0,
             cycles: 0,
@@ -43,6 +43,16 @@ impl<'a> Interpreter<'a> {
     pub fn load(&mut self, program: Program) -> &mut Self {
         self.pc = 0;
         self.program = Some(program);
+        self
+    }
+
+    pub fn reader<R: Read>(&mut self, reader: &'a mut R) -> &mut Self {
+        self.reader = Some(reader);
+        self
+    }
+
+    pub fn writer<W: Write>(&mut self, writer: &'a mut W) -> &mut Self {
+        self.writer = Some(writer);
         self
     }
 
@@ -70,7 +80,7 @@ impl<'a> Interpreter<'a> {
 
     fn step(&mut self) -> Result<Option<Result<Instruction, Error>>, Error> {
         if self.cycles >= CYCLE_LIMIT {
-            return Err(Error::CycleLimit)
+            return Ok(Some(Err(Error::CycleLimit)))
         }
         let instruction = match self.program {
             Some(ref p) => match p.get(self.pc) {
@@ -103,11 +113,15 @@ impl<'a> Interpreter<'a> {
                 self.tape -= 1;
             },
             Instruction::Output => {
-                try!(self.writer.write(&[*self.tape]));
+                if let Some(ref mut w) = self.writer {
+                    try!(w.write(&[*self.tape]));
+                }
             },
             Instruction::Input => {
-                if let Some(b) = self.reader.bytes().next() {
-                    *self.tape = try!(b);
+                if let Some(ref mut r) = self.reader {
+                    if let Some(b) = r.bytes().next() {
+                        *self.tape = try!(b);
+                    }
                 }
             },
             Instruction::SkipForward(iptr) => {
@@ -137,37 +151,33 @@ mod tests {
 
     #[test]
     fn new() {
-        let mut reader = &[][..];
-        let mut writer = Vec::<u8>::new();
-        let _ = Interpreter::new(&mut reader, &mut writer);
+        let _ = Interpreter::new();
     }
 
     #[test]
     fn load() {
-        let mut reader = &[][..];
-        let mut writer = Vec::<u8>::new();
-        let mut interp = Interpreter::new(&mut reader, &mut writer);
-        interp.load(Program::parse("++>+."));
+        let program = Program::parse("++>+.");
+        let mut interp = Interpreter::new();
+        interp.load(program);
     }
 
     #[test]
     fn run() {
-        let mut reader = &[][..];
-        let mut writer = Vec::<u8>::new();
         let program = Program::parse("++>+.");
-        assert!(Interpreter::new(&mut reader, &mut writer).load(program).run().is_ok());
-        assert_eq!(writer, [1]);
+        let mut interp = Interpreter::new();
+        interp.load(program);
+        assert!(interp.run().is_ok());
     }
 
     #[test]
     fn run_with_callback() {
-        let mut reader = &[][..];
-        let mut writer = Vec::<u8>::new();
         let program = Program::parse("++>+.");
-        let mut interp = Interpreter::new(&mut reader, &mut writer);
+        let mut interp = Interpreter::new();
         interp.load(program);
         let mut count = 0;
-        assert!(interp.run_with_callback(|_, _| count = count + 1).is_ok());
+        assert!(interp.run_with_callback(|_, _| {
+            count = count + 1
+        }).is_ok());
         assert_eq!(count, 5);
     }
 
@@ -175,10 +185,8 @@ mod tests {
 
     #[test]
     fn step() {
-        let mut reader = &[][..];
-        let mut writer = Vec::<u8>::new();
         let program = Program::parse("++>+.");
-        let mut interp = Interpreter::new(&mut reader, &mut writer);
+        let mut interp = Interpreter::new();
         interp.load(program);
         let result = interp.step();
         assert!(result.is_ok());
@@ -189,9 +197,7 @@ mod tests {
 
     #[test]
     fn execute() {
-        let mut reader = &[][..];
-        let mut writer = Vec::<u8>::new();
-        let mut interp = Interpreter::new(&mut reader, &mut writer);
+        let mut interp = Interpreter::new();
         let instruction = Instruction::IncVal;
         let result = interp.execute(instruction);
         assert!(result.is_ok());
@@ -199,10 +205,9 @@ mod tests {
 
     #[test]
     fn single_step() {
-        let mut reader = &[][..];
-        let mut writer = Vec::<u8>::new();
-        let mut interp = Interpreter::new(&mut reader, &mut writer);
-        interp.load(Program::parse(">"));
+        let program = Program::parse(">");
+        let mut interp = Interpreter::new();
+        interp.load(program);
         interp.step().unwrap().unwrap().unwrap();
     }
 
@@ -212,7 +217,9 @@ mod tests {
         let mut writer = Vec::<u8>::new();
         let program = Program::parse("+,.");
         {
-            let mut interp = Interpreter::new(&mut reader, &mut writer);
+            let mut interp = Interpreter::new();
+            interp.reader(&mut reader);
+            interp.writer(&mut writer);
             interp.load(program);
             interp.run().unwrap();
         }

@@ -42,8 +42,10 @@ fn main() {
     } else {
         let mut stdin = io::stdin();
         let mut stdout = io::stdout();
-        let mut interp = Interpreter::new(&mut stdin, &mut stdout);
+        let mut interp = Interpreter::new();
         interp.load(program);
+        interp.reader(&mut stdin);
+        interp.writer(&mut stdout);
         if args.flag_instrumentation {
             let mut instruction_map: HashMap<Instruction, usize> = HashMap::new();
             interp.run_with_callback(|_, i| {
