@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/brainfuck/lib.rs.html#1-77' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/brainfuck/lib.rs.html#1-98' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Simple brainfuck interpreter in Rust.</p>
 
 <p>The brainfuck language was created with the purpose of being a
@@ -68,10 +68,23 @@ of the language. The brainfuck language has a few areas that are
 undefined behavior. These undefined behaviors are given explicit
 semantics in this implmentation. Most brainfuck programs should work
 as expected in this implmentation. For more information on portabiliy
-of brainfuck programs read <a href="http://www.muppetlabs.com/%7Ebreadbox/bf/standards.html">The Unofficial Constraints on Portable Brainfuck Implementations</a>.</p>
+of brainfuck programs read <a href="http://www.muppetlabs.com/%7Ebreadbox/bf/standards.html">The Unofficial Constraints on Portable Brainfuck Implementations</a>. The deatils below should cover
+all of the undefined behavior in brainfuck with respect to this
+implmentation.</p>
 
-<p>TODO: Explain the choices made which are not spelled out for
-      the language.</p>
+<ul>
+<li>The tape contains 30,000 cells.</li>
+<li>The tape&#39;s pointer may <strong>not</strong> be moved below or above the begining
+or the end of the tape. The interpreter will return an <code>Err</code> if the
+program does so.</li>
+<li>The values of the tape are unsigned bytes (<code>u8</code> in rust).</li>
+<li>Values may not be incremented or decremented above 255, or below 0.
+The interpreter will return an <code>Err</code> if the program does so.</li>
+<li>Attpempts to read input when there is no more input to be read will
+be effective noops (potentially with a warning).</li>
+<li>Programs cannot contain unmatching brackets, and functions like
+<code>parse</code> ensure this before running the program.</li>
+</ul>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                     <tr class=' module-item'>
@@ -119,6 +132,27 @@ of brainfuck programs read <a href="http://www.muppetlabs.com/%7Ebreadbox/bf/sta
 
                         </td>
                     </tr>
+                </table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CYCLE_LIMIT.html'
+                               title='brainfuck::CYCLE_LIMIT'>CYCLE_LIMIT</a></td>
+                        <td class='docblock short'>
+                             <p>The number of instructions allowed to execute before the interpreter
+errors with <code>Error::CycleLimit</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.TAPE_LENGTH.html'
+                               title='brainfuck::TAPE_LENGTH'>TAPE_LENGTH</a></td>
+                        <td class='docblock short'>
+                             <p>The number of cells the tape contains. Attempts to access above or
+below this limit will result in an error.</p>
+
+                        </td>
+                    </tr>
                 </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
                     <tr class=' module-item'>
@@ -130,16 +164,16 @@ of brainfuck programs read <a href="http://www.muppetlabs.com/%7Ebreadbox/bf/sta
                     </tr>
                 
                     <tr class=' module-item'>
-                        <td><a class='fn' href='fn.eval_string.html'
-                               title='brainfuck::eval_string'>eval_string</a></td>
+                        <td><a class='fn' href='fn.eval_file.html'
+                               title='brainfuck::eval_file'>eval_file</a></td>
                         <td class='docblock short'>
                              
                         </td>
                     </tr>
                 
                     <tr class=' module-item'>
-                        <td><a class='fn' href='fn.from_file.html'
-                               title='brainfuck::from_file'>from_file</a></td>
+                        <td><a class='fn' href='fn.eval_string.html'
+                               title='brainfuck::eval_string'>eval_string</a></td>
                         <td class='docblock short'>
                              
                         </td>

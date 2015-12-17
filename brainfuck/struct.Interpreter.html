@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-45' class='srclink' href='../src/brainfuck/interpreter.rs.html#17-23' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-65' class='srclink' href='../src/brainfuck/interpreter.rs.html#17-24' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Interpreter&lt;'a&gt; {
     // some fields omitted
 }</pre><div class='docblock'><p>A brainfuck interpreter, with the needed state for execution.</p>
@@ -60,14 +60,16 @@ of the language.</p>
 <p>Brainfuck programs traditionally read from <code>STDIN</code> and <code>STDOUT</code>, but to
 make things a bit more general we allow reading and writing to arbitrary
 readers and writers.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;'a&gt; <a class='struct' href='../brainfuck/struct.Interpreter.html' title='brainfuck::Interpreter'>Interpreter</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>&lt;R: <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>, W: <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>&gt;(input: &amp;'a mut R, output: &amp;'a mut W) -&gt; <a class='struct' href='../brainfuck/struct.Interpreter.html' title='brainfuck::Interpreter'>Interpreter</a>&lt;'a&gt;</code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;'a&gt; <a class='struct' href='../brainfuck/struct.Interpreter.html' title='brainfuck::Interpreter'>Interpreter</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../brainfuck/struct.Interpreter.html' title='brainfuck::Interpreter'>Interpreter</a>&lt;'a&gt;</code></h4>
 <div class='docblock'><p>Return a new interpreter with the given code, reader, and writter.</p>
 
 <p>Interpreters are relatively large, so avoid too many calls to this
 function.</p>
 </div><h4 id='method.load' class='method'><code>fn <a href='#method.load' class='fnname'>load</a>(&amp;mut self, program: <a class='struct' href='../brainfuck/struct.Program.html' title='brainfuck::Program'>Program</a>) -&gt; &amp;mut Self</code></h4>
 <div class='docblock'><p>Load a program for the interpreter to run.</p>
-</div><h4 id='method.run' class='method'><code>fn <a href='#method.run' class='fnname'>run</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../brainfuck/enum.Error.html' title='brainfuck::Error'>Error</a>&gt;</code></h4>
+</div><h4 id='method.read_from' class='method'><code>fn <a href='#method.read_from' class='fnname'>read_from</a>&lt;R: <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>&gt;(&amp;mut self, reader: &amp;'a mut R) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.write_to' class='method'><code>fn <a href='#method.write_to' class='fnname'>write_to</a>&lt;W: <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>&gt;(&amp;mut self, writer: &amp;'a mut W) -&gt; &amp;mut Self</code></h4>
+<h4 id='method.run' class='method'><code>fn <a href='#method.run' class='fnname'>run</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../brainfuck/enum.Error.html' title='brainfuck::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>Run the interpreter.</p>
 </div><h4 id='method.run_with_callback' class='method'><code>fn <a href='#method.run_with_callback' class='fnname'>run_with_callback</a>&lt;F&gt;(&amp;mut self, hook: F) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../brainfuck/enum.Error.html' title='brainfuck::Error'>Error</a>&gt; <span class='where'>where F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(&amp;mut Self, &amp;<a class='enum' href='../brainfuck/enum.Instruction.html' title='brainfuck::Instruction'>Instruction</a>)</span></code></h4>
 <div class='docblock'><p>Run the interpreter with a callback hook.</p>

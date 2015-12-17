@@ -46,18 +46,18 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-9' class='srclink' href='../src/brainfuck/error.rs.html#5-14' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-29' class='srclink' href='../src/brainfuck/error.rs.html#5-14' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum Error {
     Io(<a class='struct' href='https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html' title='std::io::error::Error'>Error</a>),
-    InputEmpty,
     NoProgram,
     Overflow,
+    CycleLimit,
 }</pre><div class='docblock'><p>A general error type for problems inside of the interpreter.</p>
 </div><h2 class='variants'>Variants</h2>
 <table><tr><td id='variant.Io'><code>Io</code></td><td><div class='docblock'><p>Errors with reading or writing to IO.</p>
-</div></td></tr><tr><td id='variant.InputEmpty'><code>InputEmpty</code></td><td><div class='docblock'><p>TODO: Is this the right name for this error.</p>
 </div></td></tr><tr><td id='variant.NoProgram'><code>NoProgram</code></td><td><div class='docblock'><p>No program loaded.</p>
 </div></td></tr><tr><td id='variant.Overflow'><code>Overflow</code></td><td><div class='docblock'><p>Overflows.</p>
+</div></td></tr><tr><td id='variant.CycleLimit'><code>CycleLimit</code></td><td><div class='docblock'><p>Interpreter cycle limit hit.</p>
 </div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/std/error/trait.Error.html' title='std::error::Error'>Error</a> for <a class='enum' href='../brainfuck/enum.Error.html' title='brainfuck::Error'>Error</a></code></h3><div class='impl-items'><h4 id='method.description' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/std/error/trait.Error.html#method.description' class='fnname'>description</a>(&amp;self) -&gt; &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
 <h4 id='method.cause' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/std/error/trait.Error.html#method.cause' class='fnname'>cause</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='trait' href='https://doc.rust-lang.org/nightly/std/error/trait.Error.html' title='std::error::Error'>Error</a>&gt;</code></h4>
 </div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html' title='core::fmt::Display'>Display</a> for <a class='enum' href='../brainfuck/enum.Error.html' title='brainfuck::Error'>Error</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html#method.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>

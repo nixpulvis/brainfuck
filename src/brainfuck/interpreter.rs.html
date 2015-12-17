@@ -253,9 +253,25 @@
 <span id="210">210</span>
 <span id="211">211</span>
 <span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='ident'>Read</span>, <span class='ident'>Write</span>};
-<span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>Error</span>, <span class='ident'>Program</span>, <span class='ident'>Instruction</span>, <span class='ident'>Tape</span>};
+<span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>CYCLE_LIMIT</span>, <span class='ident'>TAPE_LENGTH</span>, <span class='ident'>Error</span>, <span class='ident'>Program</span>, <span class='ident'>Instruction</span>, <span class='ident'>Tape</span>};
 
 <span class='doccomment'>/// A brainfuck interpreter, with the needed state for execution.</span>
 <span class='doccomment'>///</span>
@@ -272,10 +288,11 @@
 <span class='doccomment'>/// [top-doc]: index.html</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Interpreter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
     <span class='ident'>program</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Program</span><span class='op'>&gt;</span>,
-    <span class='ident'>reader</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Read</span>,
-    <span class='ident'>writer</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Write</span>,
-    <span class='ident'>tape</span>: <span class='ident'>Tape</span>,
+    <span class='ident'>reader</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Read</span><span class='op'>&gt;</span>,
+    <span class='ident'>writer</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Write</span><span class='op'>&gt;</span>,
+    <span class='ident'>tape</span>: <span class='ident'>Tape</span><span class='op'>&lt;</span>[<span class='ident'>u8</span>; <span class='ident'>TAPE_LENGTH</span>]<span class='op'>&gt;</span>,
     <span class='ident'>pc</span>: <span class='ident'>usize</span>,
+    <span class='ident'>cycles</span>: <span class='ident'>u64</span>,
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Interpreter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
@@ -283,13 +300,14 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Interpreters are relatively large, so avoid too many calls to this</span>
     <span class='doccomment'>/// function.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>Read</span>, <span class='ident'>W</span>: <span class='ident'>Write</span><span class='op'>&gt;</span>(<span class='ident'>input</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>R</span>, <span class='ident'>output</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>W</span>) <span class='op'>-&gt;</span> <span class='ident'>Interpreter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Interpreter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
         <span class='ident'>Interpreter</span> {
             <span class='ident'>program</span>: <span class='prelude-val'>None</span>,
-            <span class='ident'>reader</span>: <span class='ident'>input</span>,
-            <span class='ident'>writer</span>: <span class='ident'>output</span>,
+            <span class='ident'>reader</span>: <span class='prelude-val'>None</span>,
+            <span class='ident'>writer</span>: <span class='prelude-val'>None</span>,
             <span class='ident'>tape</span>: <span class='ident'>Tape</span>::<span class='ident'>new</span>(),
             <span class='ident'>pc</span>: <span class='number'>0</span>,
+            <span class='ident'>cycles</span>: <span class='number'>0</span>,
         }
     }
 
@@ -297,6 +315,16 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>load</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>program</span>: <span class='ident'>Program</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='kw'>Self</span> {
         <span class='self'>self</span>.<span class='ident'>pc</span> <span class='op'>=</span> <span class='number'>0</span>;
         <span class='self'>self</span>.<span class='ident'>program</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>program</span>);
+        <span class='self'>self</span>
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_from</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>Read</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>reader</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='kw'>Self</span> {
+        <span class='self'>self</span>.<span class='ident'>reader</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>reader</span>);
+        <span class='self'>self</span>
+    }
+
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>write_to</span><span class='op'>&lt;</span><span class='ident'>W</span>: <span class='ident'>Write</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>writer</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>W</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='kw'>Self</span> {
+        <span class='self'>self</span>.<span class='ident'>writer</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>writer</span>);
         <span class='self'>self</span>
     }
 
@@ -323,6 +351,9 @@
     }
 
     <span class='kw'>fn</span> <span class='ident'>step</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Instruction</span>, <span class='ident'>Error</span><span class='op'>&gt;&gt;</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>cycles</span> <span class='op'>&gt;=</span> <span class='ident'>CYCLE_LIMIT</span> {
+            <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='prelude-val'>Some</span>(<span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>CycleLimit</span>)))
+        }
         <span class='kw'>let</span> <span class='ident'>instruction</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>program</span> {
             <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>p</span>) <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>p</span>.<span class='ident'>get</span>(<span class='self'>self</span>.<span class='ident'>pc</span>) {
                 <span class='prelude-val'>Some</span>(<span class='ident'>i</span>) <span class='op'>=&gt;</span> <span class='ident'>i</span>,
@@ -331,7 +362,10 @@
             <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>NoProgram</span>),
         };
         <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>execute</span>(<span class='ident'>instruction</span>) {
-            <span class='prelude-val'>Ok</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='prelude-val'>Some</span>(<span class='prelude-val'>Ok</span>(<span class='ident'>instruction</span>))),
+            <span class='prelude-val'>Ok</span>(_) <span class='op'>=&gt;</span> {
+                <span class='self'>self</span>.<span class='ident'>cycles</span> <span class='op'>+=</span> <span class='number'>1</span>;
+                <span class='prelude-val'>Ok</span>(<span class='prelude-val'>Some</span>(<span class='prelude-val'>Ok</span>(<span class='ident'>instruction</span>)))
+            },
             <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='prelude-val'>Some</span>(<span class='prelude-val'>Err</span>(<span class='ident'>e</span>))),
         }
     }
@@ -351,14 +385,16 @@
                 <span class='self'>self</span>.<span class='ident'>tape</span> <span class='op'>-=</span> <span class='number'>1</span>;
             },
             <span class='ident'>Instruction</span>::<span class='ident'>Output</span> <span class='op'>=&gt;</span> {
-                <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>writer</span>.<span class='ident'>write</span>(<span class='kw-2'>&amp;</span>[<span class='op'>*</span><span class='self'>self</span>.<span class='ident'>tape</span>]));
+                <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>w</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>writer</span> {
+                    <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>w</span>.<span class='ident'>write</span>(<span class='kw-2'>&amp;</span>[<span class='op'>*</span><span class='self'>self</span>.<span class='ident'>tape</span>]));
+                }
             },
             <span class='ident'>Instruction</span>::<span class='ident'>Input</span> <span class='op'>=&gt;</span> {
-                <span class='kw'>let</span> <span class='ident'>input</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>reader</span>.<span class='ident'>bytes</span>().<span class='ident'>next</span>() {
-                    <span class='prelude-val'>Some</span>(<span class='ident'>b</span>) <span class='op'>=&gt;</span> <span class='ident'>b</span>,
-                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>InputEmpty</span>),
-                });
-                <span class='op'>*</span><span class='self'>self</span>.<span class='ident'>tape</span> <span class='op'>=</span> <span class='ident'>input</span>;
+                <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>r</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>reader</span> {
+                    <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>b</span>) <span class='op'>=</span> <span class='ident'>r</span>.<span class='ident'>bytes</span>().<span class='ident'>next</span>() {
+                        <span class='op'>*</span><span class='self'>self</span>.<span class='ident'>tape</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>b</span>);
+                    }
+                }
             },
             <span class='ident'>Instruction</span>::<span class='ident'>SkipForward</span>(<span class='ident'>iptr</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>if</span> <span class='op'>*</span><span class='self'>self</span>.<span class='ident'>tape</span> <span class='op'>==</span> <span class='number'>0</span> {
@@ -387,37 +423,33 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>new</span>() {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>reader</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span>[][..];
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>writer</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
-        <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>reader</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>writer</span>);
+        <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>new</span>();
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>load</span>() {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>reader</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span>[][..];
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>writer</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>reader</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>writer</span>);
-        <span class='ident'>interp</span>.<span class='ident'>load</span>(<span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;++&gt;+.&quot;</span>));
+        <span class='kw'>let</span> <span class='ident'>program</span> <span class='op'>=</span> <span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;++&gt;+.&quot;</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>new</span>();
+        <span class='ident'>interp</span>.<span class='ident'>load</span>(<span class='ident'>program</span>);
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>run</span>() {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>reader</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span>[][..];
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>writer</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='ident'>program</span> <span class='op'>=</span> <span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;++&gt;+.&quot;</span>);
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>Interpreter</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>reader</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>writer</span>).<span class='ident'>load</span>(<span class='ident'>program</span>).<span class='ident'>run</span>().<span class='ident'>is_ok</span>());
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>writer</span>, [<span class='number'>1</span>]);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>new</span>();
+        <span class='ident'>interp</span>.<span class='ident'>load</span>(<span class='ident'>program</span>);
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>interp</span>.<span class='ident'>run</span>().<span class='ident'>is_ok</span>());
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>run_with_callback</span>() {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>reader</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span>[][..];
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>writer</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='ident'>program</span> <span class='op'>=</span> <span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;++&gt;+.&quot;</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>reader</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>writer</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>new</span>();
         <span class='ident'>interp</span>.<span class='ident'>load</span>(<span class='ident'>program</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>count</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>interp</span>.<span class='ident'>run_with_callback</span>(<span class='op'>|</span>_, _<span class='op'>|</span> <span class='ident'>count</span> <span class='op'>=</span> <span class='ident'>count</span> <span class='op'>+</span> <span class='number'>1</span>).<span class='ident'>is_ok</span>());
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>interp</span>.<span class='ident'>run_with_callback</span>(<span class='op'>|</span>_, _<span class='op'>|</span> {
+            <span class='ident'>count</span> <span class='op'>=</span> <span class='ident'>count</span> <span class='op'>+</span> <span class='number'>1</span>
+        }).<span class='ident'>is_ok</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>count</span>, <span class='number'>5</span>);
     }
 
@@ -425,10 +457,8 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>step</span>() {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>reader</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span>[][..];
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>writer</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='ident'>program</span> <span class='op'>=</span> <span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;++&gt;+.&quot;</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>reader</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>writer</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>new</span>();
         <span class='ident'>interp</span>.<span class='ident'>load</span>(<span class='ident'>program</span>);
         <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>interp</span>.<span class='ident'>step</span>();
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>result</span>.<span class='ident'>is_ok</span>());
@@ -439,9 +469,7 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>execute</span>() {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>reader</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span>[][..];
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>writer</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>reader</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>writer</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='ident'>instruction</span> <span class='op'>=</span> <span class='ident'>Instruction</span>::<span class='ident'>IncVal</span>;
         <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>interp</span>.<span class='ident'>execute</span>(<span class='ident'>instruction</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>result</span>.<span class='ident'>is_ok</span>());
@@ -449,10 +477,9 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>single_step</span>() {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>reader</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span>[][..];
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>writer</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>reader</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>writer</span>);
-        <span class='ident'>interp</span>.<span class='ident'>load</span>(<span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;&gt;&quot;</span>));
+        <span class='kw'>let</span> <span class='ident'>program</span> <span class='op'>=</span> <span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;&gt;&quot;</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>new</span>();
+        <span class='ident'>interp</span>.<span class='ident'>load</span>(<span class='ident'>program</span>);
         <span class='ident'>interp</span>.<span class='ident'>step</span>().<span class='ident'>unwrap</span>().<span class='ident'>unwrap</span>().<span class='ident'>unwrap</span>();
     }
 
@@ -460,10 +487,15 @@
     <span class='kw'>fn</span> <span class='ident'>empty_io</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>reader</span> <span class='op'>=</span> <span class='ident'>io</span>::<span class='ident'>empty</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>writer</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
-        <span class='kw'>let</span> <span class='ident'>program</span> <span class='op'>=</span> <span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;,&quot;</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>reader</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>writer</span>);
-        <span class='ident'>interp</span>.<span class='ident'>load</span>(<span class='ident'>program</span>);
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>interp</span>.<span class='ident'>run</span>().<span class='ident'>is_err</span>());
+        <span class='kw'>let</span> <span class='ident'>program</span> <span class='op'>=</span> <span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;+,.&quot;</span>);
+        {
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='ident'>new</span>();
+            <span class='ident'>interp</span>.<span class='ident'>read_from</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>reader</span>);
+            <span class='ident'>interp</span>.<span class='ident'>write_to</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>writer</span>);
+            <span class='ident'>interp</span>.<span class='ident'>load</span>(<span class='ident'>program</span>);
+            <span class='ident'>interp</span>.<span class='ident'>run</span>().<span class='ident'>unwrap</span>();
+        }
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>writer</span>, [<span class='number'>1</span>]);
     }
 }
 </pre>
