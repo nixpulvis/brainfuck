@@ -171,6 +171,8 @@
 <span id="128">128</span>
 <span id="129">129</span>
 <span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>;
 <span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>TAPE_LENGTH</span>;
@@ -188,6 +190,8 @@
 }
 
 <span class='kw'>impl</span> <span class='ident'>Tape</span><span class='op'>&lt;</span>[<span class='ident'>u8</span>; <span class='ident'>TAPE_LENGTH</span>]<span class='op'>&gt;</span> {
+    <span class='doccomment'>/// Return a new tape with all values set to 0, and the pointer</span>
+    <span class='doccomment'>/// at the first cell.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Tape</span><span class='op'>&lt;</span>[<span class='ident'>u8</span>; <span class='ident'>TAPE_LENGTH</span>]<span class='op'>&gt;</span> {
         <span class='ident'>Tape</span> {
             <span class='ident'>cells</span>: [<span class='number'>0</span>; <span class='ident'>TAPE_LENGTH</span>],

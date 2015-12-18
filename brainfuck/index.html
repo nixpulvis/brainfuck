@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/brainfuck/lib.rs.html#1-98' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/brainfuck/lib.rs.html#1-100' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Simple brainfuck interpreter in Rust.</p>
 
 <p>The brainfuck language was created with the purpose of being a
@@ -63,17 +63,16 @@ values after the input value. For more about control flow in brainfuck
 read the section on <a href="enum.Instruction.html#control-flow">control flow</a>.</p>
 
 <h1 id='semantics-and-portability' class='section-header'><a href='#semantics-and-portability'>Semantics and Portability</a></h1>
-<p>There are a few extensions and devivations from the common semantics
-of the language. The brainfuck language has a few areas that are
-undefined behavior. These undefined behaviors are given explicit
-semantics in this implmentation. Most brainfuck programs should work
-as expected in this implmentation. For more information on portabiliy
-of brainfuck programs read <a href="http://www.muppetlabs.com/%7Ebreadbox/bf/standards.html">The Unofficial Constraints on Portable Brainfuck Implementations</a>. The deatils below should cover
-all of the undefined behavior in brainfuck with respect to this
-implmentation.</p>
+<p>The brainfuck language has a few areas that are undefined behavior. These
+undefined behaviors are given explicit semantics in this implmentation.
+Most brainfuck programs should work as expected in this implmentation.
+For more information on portabiliy of brainfuck programs read
+<a href="http://www.muppetlabs.com/%7Ebreadbox/bf/standards.html">The Unofficial Constraints on Portable Brainfuck Implementations</a>.
+The deatils below should cover all of the undefined behavior in brainfuck
+with respect to this implmentation.</p>
 
 <ul>
-<li>The tape contains 30,000 cells.</li>
+<li>The tape contains <code>TAPE_LENGTH</code> (currently 30,000) cells.</li>
 <li>The tape&#39;s pointer may <strong>not</strong> be moved below or above the begining
 or the end of the tape. The interpreter will return an <code>Err</code> if the
 program does so.</li>
@@ -83,7 +82,7 @@ The interpreter will return an <code>Err</code> if the program does so.</li>
 <li>Attpempts to read input when there is no more input to be read will
 be effective noops (potentially with a warning).</li>
 <li>Programs cannot contain unmatching brackets, and functions like
-<code>parse</code> ensure this before running the program.</li>
+<code>Program::parse</code> ensure this before running the program.</li>
 </ul>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
@@ -159,7 +158,8 @@ below this limit will result in an error.</p>
                         <td><a class='fn' href='fn.eval.html'
                                title='brainfuck::eval'>eval</a></td>
                         <td class='docblock short'>
-                             
+                             <p>Run the given program with STDIN and STDOUT as the IO buffers.</p>
+
                         </td>
                     </tr>
                 
@@ -167,7 +167,8 @@ below this limit will result in an error.</p>
                         <td><a class='fn' href='fn.eval_file.html'
                                title='brainfuck::eval_file'>eval_file</a></td>
                         <td class='docblock short'>
-                             
+                             <p>Parse a program from the given file path and <code>eval</code> it.</p>
+
                         </td>
                     </tr>
                 
@@ -175,7 +176,8 @@ below this limit will result in an error.</p>
                         <td><a class='fn' href='fn.eval_string.html'
                                title='brainfuck::eval_string'>eval_string</a></td>
                         <td class='docblock short'>
-                             
+                             <p>Parse a program from the given string and <code>eval</code> it.</p>
+
                         </td>
                     </tr>
                 </table></section>

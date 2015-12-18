@@ -269,6 +269,9 @@
 <span id="226">226</span>
 <span id="227">227</span>
 <span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='ident'>Read</span>, <span class='ident'>Write</span>};
 <span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>CYCLE_LIMIT</span>, <span class='ident'>TAPE_LENGTH</span>, <span class='ident'>Error</span>, <span class='ident'>Program</span>, <span class='ident'>Instruction</span>, <span class='ident'>Tape</span>};
@@ -276,14 +279,18 @@
 <span class='doccomment'>/// A brainfuck interpreter, with the needed state for execution.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// For more information about the brainfuck language in general see the</span>
-<span class='doccomment'>/// [top level documentation][top-doc] for this crate. The program code</span>
-<span class='doccomment'>/// is stored as a string, and can be any size. The tape is an array of</span>
-<span class='doccomment'>/// 30,000 unsigned bytes. This is derived from the original description</span>
-<span class='doccomment'>/// of the language.</span>
+<span class='doccomment'>/// [top level documentation][top-doc] for this crate. This implmentation</span>
+<span class='doccomment'>/// of a brainfuck interpreter allows for optional programs, readers, and</span>
+<span class='doccomment'>/// writers. Each of which can be set dynamically with the `load`,</span>
+<span class='doccomment'>/// `read_from`, and `write_to` methods. The interpreter is also in charge</span>
+<span class='doccomment'>/// of managing the program counter, which is `0` by default.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// Brainfuck programs traditionally read from `STDIN` and `STDOUT`, but to</span>
-<span class='doccomment'>/// make things a bit more general we allow reading and writing to arbitrary</span>
-<span class='doccomment'>/// readers and writers.</span>
+<span class='doccomment'>/// Each interpreter stores a tape for the execution of the program. The</span>
+<span class='doccomment'>/// current tape uses a statically allocated array of `TAPE_LENGTH` elements.</span>
+<span class='doccomment'>/// This is something that may change, but the semantics will remain the same.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// Other fields used for instrumentation may also be stored in the</span>
+<span class='doccomment'>/// interpreter.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// [top-doc]: index.html</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Interpreter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
@@ -296,10 +303,7 @@
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Interpreter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Return a new interpreter with the given code, reader, and writter.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Interpreters are relatively large, so avoid too many calls to this</span>
-    <span class='doccomment'>/// function.</span>
+    <span class='doccomment'>/// Return a new interpreter, without a program or IO.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Interpreter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
         <span class='ident'>Interpreter</span> {
             <span class='ident'>program</span>: <span class='prelude-val'>None</span>,
@@ -318,11 +322,13 @@
         <span class='self'>self</span>
     }
 
+    <span class='doccomment'>/// Use the given reader for the `Input` instruction.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_from</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>Read</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>reader</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='kw'>Self</span> {
         <span class='self'>self</span>.<span class='ident'>reader</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>reader</span>);
         <span class='self'>self</span>
     }
 
+    <span class='doccomment'>/// Use the given writer for the `Output` instruction.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>write_to</span><span class='op'>&lt;</span><span class='ident'>W</span>: <span class='ident'>Write</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>writer</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>W</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='kw'>Self</span> {
         <span class='self'>self</span>.<span class='ident'>writer</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>writer</span>);
         <span class='self'>self</span>
