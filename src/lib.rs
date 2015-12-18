@@ -15,16 +15,15 @@
 //!
 //! # Semantics and Portability
 //!
-//! There are a few extensions and devivations from the common semantics
-//! of the language. The brainfuck language has a few areas that are
-//! undefined behavior. These undefined behaviors are given explicit
-//! semantics in this implmentation. Most brainfuck programs should work
-//! as expected in this implmentation. For more information on portabiliy
-//! of brainfuck programs read [The Unofficial Constraints on Portable Brainfuck Implementations][portabiliy]. The deatils below should cover
-//! all of the undefined behavior in brainfuck with respect to this
-//! implmentation.
+//! The brainfuck language has a few areas that are undefined behavior. These
+//! undefined behaviors are given explicit semantics in this implmentation.
+//! Most brainfuck programs should work as expected in this implmentation.
+//! For more information on portabiliy of brainfuck programs read
+//! [The Unofficial Constraints on Portable Brainfuck Implementations][portabiliy].
+//! The deatils below should cover all of the undefined behavior in brainfuck
+//! with respect to this implmentation.
 //!
-//! - The tape contains 30,000 cells.
+//! - The tape contains `TAPE_LENGTH` (currently 30,000) cells.
 //! - The tape's pointer may **not** be moved below or above the begining
 //! or the end of the tape. The interpreter will return an `Err` if the
 //! program does so.
@@ -34,7 +33,7 @@
 //! - Attpempts to read input when there is no more input to be read will
 //! be effective noops (potentially with a warning).
 //! - Programs cannot contain unmatching brackets, and functions like
-//! `parse` ensure this before running the program.
+//! `Program::parse` ensure this before running the program.
 //!
 //! [instruction]: enum.Instruction.html
 //! [brainfuck]: http://www.muppetlabs.com/~breadbox/bf/
@@ -62,6 +61,7 @@ pub use instruction::Instruction;
 pub use program::Program;
 pub use tape::Tape;
 
+/// Run the given program with STDIN and STDOUT as the IO buffers.
 pub fn eval(program: Program) -> Result<(), Error> {
     let mut stdin = io::stdin();
     let mut stdout = io::stdout();
@@ -72,11 +72,13 @@ pub fn eval(program: Program) -> Result<(), Error> {
         .run()
 }
 
+/// Parse a program from the given string and `eval` it.
 pub fn eval_string(source: &str) -> Result<(), Error> {
     let program = Program::parse(source);
     eval(program)
 }
 
+/// Parse a program from the given file path and `eval` it.
 pub fn eval_file<P: AsRef<Path>>(path: P) -> Result<(), Error> {
     let program = try!(Program::from_file(path));
     eval(program)

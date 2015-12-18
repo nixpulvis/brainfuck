@@ -14,6 +14,8 @@ pub struct Tape<C> {
 }
 
 impl Tape<[u8; TAPE_LENGTH]> {
+    /// Return a new tape with all values set to 0, and the pointer
+    /// at the first cell.
     pub fn new() -> Tape<[u8; TAPE_LENGTH]> {
         Tape {
             cells: [0; TAPE_LENGTH],

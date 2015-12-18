@@ -4,14 +4,18 @@ use super::{CYCLE_LIMIT, TAPE_LENGTH, Error, Program, Instruction, Tape};
 /// A brainfuck interpreter, with the needed state for execution.
 ///
 /// For more information about the brainfuck language in general see the
-/// [top level documentation][top-doc] for this crate. The program code
-/// is stored as a string, and can be any size. The tape is an array of
-/// 30,000 unsigned bytes. This is derived from the original description
-/// of the language.
+/// [top level documentation][top-doc] for this crate. This implmentation
+/// of a brainfuck interpreter allows for optional programs, readers, and
+/// writers. Each of which can be set dynamically with the `load`,
+/// `read_from`, and `write_to` methods. The interpreter is also in charge
+/// of managing the program counter, which is `0` by default.
 ///
-/// Brainfuck programs traditionally read from `STDIN` and `STDOUT`, but to
-/// make things a bit more general we allow reading and writing to arbitrary
-/// readers and writers.
+/// Each interpreter stores a tape for the execution of the program. The
+/// current tape uses a statically allocated array of `TAPE_LENGTH` elements.
+/// This is something that may change, but the semantics will remain the same.
+///
+/// Other fields used for instrumentation may also be stored in the
+/// interpreter.
 ///
 /// [top-doc]: index.html
 pub struct Interpreter<'a> {
@@ -24,10 +28,7 @@ pub struct Interpreter<'a> {
 }
 
 impl<'a> Interpreter<'a> {
-    /// Return a new interpreter with the given code, reader, and writter.
-    ///
-    /// Interpreters are relatively large, so avoid too many calls to this
-    /// function.
+    /// Return a new interpreter, without a program or IO.
     pub fn new() -> Interpreter<'a> {
         Interpreter {
             program: None,
@@ -46,11 +47,13 @@ impl<'a> Interpreter<'a> {
         self
     }
 
+    /// Use the given reader for the `Input` instruction.
     pub fn read_from<R: Read>(&mut self, reader: &'a mut R) -> &mut Self {
         self.reader = Some(reader);
         self
     }
 
+    /// Use the given writer for the `Output` instruction.
     pub fn write_to<W: Write>(&mut self, writer: &'a mut W) -> &mut Self {
         self.writer = Some(writer);
         self
