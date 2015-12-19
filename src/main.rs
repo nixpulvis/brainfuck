@@ -4,8 +4,9 @@ extern crate brainfuck;
 
 use std::io;
 use std::collections::HashMap;
+use std::process;
 use docopt::Docopt;
-use brainfuck::{Interpreter, Program, Instruction};
+use brainfuck::{Interpreter, Program, Instruction, Error};
 
 const USAGE: &'static str = "
 Brainfuck
@@ -31,11 +32,14 @@ fn main() {
     let args: Args = Docopt::new(USAGE)
         .and_then(|d| d.decode())
         .unwrap_or_else(|e| e.exit());
-    let program = match args {
+    let program = (match args {
         Args { arg_program: Some(p), .. } => Program::parse(&p),
-        Args { arg_file: Some(p), .. } => Program::from_file(p).unwrap(),
+        Args { arg_file: Some(p), .. } => Program::from_file(p),
         _ => panic!("Bad args."),
-    };
+    }).unwrap_or_else(|e| {
+        println!("FATAL: {}", e);
+        process::exit(1);
+    });
     if args.flag_asl {
         println!("{}", program);
 
