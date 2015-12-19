@@ -32,14 +32,16 @@ impl Program {
                 ',' => Instruction::Input,
                 '[' => {
                     stack.push(count);
-                    // placeholder Instruction. iptr will be resolved later
+                    // Insert a placeholder Instruction into the ASL. The
+                    // iptr value will be resolved later when the matching
+                    // brace is encountered.
                     Instruction::SkipForward(0)
                 },
                 ']' => {
-                    let open_ind = stack.pop().expect("valid program");
-                    let open = asl.get_mut(open_ind).expect("in");
+                    let open_pc = stack.pop().expect("valid program");
+                    let open = asl.get_mut(open_pc).expect("in");
                     *open = Instruction::SkipForward(count);
-                    Instruction::SkipBackward(open_ind)
+                    Instruction::SkipBackward(open_pc)
                 },
                 _ => continue,
             };
