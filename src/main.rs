@@ -31,11 +31,11 @@ fn main() {
     let args: Args = Docopt::new(USAGE)
         .and_then(|d| d.decode())
         .unwrap_or_else(|e| e.exit());
-    let program = match args {
+    let program = (match args {
         Args { arg_program: Some(p), .. } => Program::parse(&p),
-        Args { arg_file: Some(p), .. } => Program::from_file(p).unwrap(),
+        Args { arg_file: Some(p), .. } => Program::from_file(p),
         _ => panic!("Bad args."),
-    };
+    }).unwrap();
     if args.flag_asl {
         println!("{}", program);
 

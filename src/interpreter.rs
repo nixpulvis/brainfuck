@@ -161,14 +161,14 @@ mod tests {
     fn load() {
         let program = Program::parse("++>+.");
         let mut interp = Interpreter::new();
-        interp.load(program);
+        interp.load(program.unwrap());
     }
 
     #[test]
     fn run() {
         let program = Program::parse("++>+.");
         let mut interp = Interpreter::new();
-        interp.load(program);
+        interp.load(program.unwrap());
         assert!(interp.run().is_ok());
     }
 
@@ -176,7 +176,7 @@ mod tests {
     fn run_with_callback() {
         let program = Program::parse("++>+.");
         let mut interp = Interpreter::new();
-        interp.load(program);
+        interp.load(program.unwrap());
         let mut count = 0;
         assert!(interp.run_with_callback(|_, _| {
             count = count + 1
@@ -190,7 +190,7 @@ mod tests {
     fn step() {
         let program = Program::parse("++>+.");
         let mut interp = Interpreter::new();
-        interp.load(program);
+        interp.load(program.unwrap());
         let result = interp.step();
         assert!(result.is_ok());
         let run = result.unwrap();
@@ -210,7 +210,7 @@ mod tests {
     fn single_step() {
         let program = Program::parse(">");
         let mut interp = Interpreter::new();
-        interp.load(program);
+        interp.load(program.unwrap());
         interp.step().unwrap().unwrap().unwrap();
     }
 
@@ -223,7 +223,7 @@ mod tests {
             let mut interp = Interpreter::new();
             interp.read_from(&mut reader);
             interp.write_to(&mut writer);
-            interp.load(program);
+            interp.load(program.unwrap());
             interp.run().unwrap();
         }
         assert_eq!(writer, [1]);

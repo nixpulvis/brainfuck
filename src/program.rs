@@ -2,7 +2,6 @@ use std::fmt;
 use std::io::Read;
 use std::path::Path;
 use std::fs::File;
-use std::collections::HashMap;
 use super::{Error, Instruction};
 
 /// The logic desired to be run by the brainfuck interpreter.
@@ -18,11 +17,10 @@ pub struct Program {
 
 impl Program {
     /// Create a program from source text.
-    // TODO: Make this function return a Result.
-    pub fn parse(source: &str) -> Program {
-        let bracket_map = Program::bracket_map(source);
+    pub fn parse(source: &str) -> Result<Program, Error> {
         let mut asl = Vec::new();
         let mut count = 0usize;
+        let mut stack = Vec::new();
         for c in source.chars() {
             let instruction = match c {
                 '>' => Instruction::IncPtr,
@@ -31,14 +29,31 @@ impl Program {
                 '-' => Instruction::DecVal,
                 '.' => Instruction::Output,
                 ',' => Instruction::Input,
-                '[' => Instruction::SkipForward(bracket_map[&count]),
-                ']' => Instruction::SkipBackward(bracket_map[&count]),
+                '[' => {
+                    stack.push(count);
+                    // Insert a placeholder Instruction into the ASL. The
+                    // iptr value will be resolved later when the matching
+                    // brace is encountered.
+                    Instruction::SkipForward(0)
+                },
+                ']' => {
+                    let open_pc = match stack.pop() {
+                        Some(o) => o,
+                        None => return Err(Error::InvalidProgram)
+                    };
+                    let open = asl.get_mut(open_pc).expect("in");
+                    *open = Instruction::SkipForward(count);
+                    Instruction::SkipBackward(open_pc)
+                },
                 _ => continue,
             };
             count = count + 1;
             asl.push(instruction)
         }
-        Program { asl: asl }
+        if !stack.is_empty() {
+            return Err(Error::InvalidProgram)
+        }
+        Ok(Program { asl: asl })
     }
 
     /// Get the instruction at the given program counter.
@@ -51,31 +66,7 @@ impl Program {
         let mut file = try!(File::open(path));
         let mut source = String::new();
         try!(file.read_to_string(&mut source));
-        Ok(Program::parse(&source))
-    }
-
-    fn bracket_map(source: &str) -> HashMap<usize, usize> {
-        let mut map = HashMap::new();
-        let mut opens = Vec::new();
-        let mut count = 0usize;
-        for c in source.chars() {
-            match c {
-                '>' | '<' | '+' | '-' | '.' | ',' => {},
-                '[' => {
-                    map.insert(count, 0);
-                    opens.push(count);
-                },
-                ']' => {
-                    let open = opens.pop().expect("valid program");
-                    map.insert(count, open);
-                    let o = map.get_mut(&open).expect("in");
-                    *o = count;
-                },
-                _ => continue,
-            }
-            count = count + 1;
-        }
-        map
+        Program::parse(&source)
     }
 }
 
@@ -97,5 +88,23 @@ mod tests {
     fn program() {
         let program = Program::from_file("fixtures/helloworld.b");
         assert!(program.is_ok());
+    }
+
+    #[test]
+    fn equal_brackets() {
+        let program = Program::parse("[[]]");
+        assert!(program.is_ok());
+    }
+
+    #[test]
+    fn more_open_brackets() {
+        let program = Program::parse("[[[]]");
+        assert!(program.is_err());
+    }
+
+    #[test]
+    fn more_close_brackets() {
+        let program = Program::parse("[[]]]");
+        assert!(program.is_err());
     }
 }

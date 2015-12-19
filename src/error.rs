@@ -7,6 +7,8 @@ pub enum Error {
     Io(io::Error),
     /// No program loaded.
     NoProgram,
+    /// Invalid program loaded.
+    InvalidProgram,
     /// Overflows.
     Overflow,
     /// Interpreter cycle limit hit.
@@ -20,6 +22,7 @@ impl error::Error for Error {
             Error::NoProgram => "No Program",
             Error::Overflow => "Overflow",
             Error::CycleLimit => "Cycle Limit",
+            Error::InvalidProgram => "Invalid Program",
         }
     }
 }
@@ -31,6 +34,7 @@ impl fmt::Display for Error {
             Error::NoProgram => write!(f, "{}", error::Error::description(self)),
             Error::Overflow => write!(f, "{}", error::Error::description(self)),
             Error::CycleLimit => write!(f, "{}", error::Error::description(self)),
+            Error::InvalidProgram => write!(f, "{}", error::Error::description(self)),
         }
     }
 }
