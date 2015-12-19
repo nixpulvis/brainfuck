@@ -74,10 +74,7 @@ pub fn eval(program: Program) -> Result<(), Error> {
 
 /// Parse a program from the given string and `eval` it.
 pub fn eval_string(source: &str) -> Result<(), Error> {
-    match Program::parse(source) {
-        Ok(p) => eval(p),
-        Err(e) => Err(e)
-    }
+    eval(try!(Program::parse(source)))
 }
 
 /// Parse a program from the given file path and `eval` it.
