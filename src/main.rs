@@ -4,7 +4,6 @@ extern crate brainfuck;
 
 use std::io;
 use std::collections::HashMap;
-use std::process;
 use docopt::Docopt;
 use brainfuck::{Interpreter, Program, Instruction};
 
@@ -36,10 +35,7 @@ fn main() {
         Args { arg_program: Some(p), .. } => Program::parse(&p),
         Args { arg_file: Some(p), .. } => Program::from_file(p),
         _ => panic!("Bad args."),
-    }).unwrap_or_else(|e| {
-        println!("FATAL: {}", e);
-        process::exit(1);
-    });
+    }).unwrap();
     if args.flag_asl {
         println!("{}", program);
 
