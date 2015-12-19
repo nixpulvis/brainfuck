@@ -6,7 +6,7 @@ use std::io;
 use std::collections::HashMap;
 use std::process;
 use docopt::Docopt;
-use brainfuck::{Interpreter, Program, Instruction, Error};
+use brainfuck::{Interpreter, Program, Instruction};
 
 const USAGE: &'static str = "
 Brainfuck
