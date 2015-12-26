@@ -1,5 +1,5 @@
 use std::io::{Read, Write};
-use super::{CYCLE_LIMIT, TAPE_LENGTH, Error, Program, Instruction, Tape};
+use super::{CYCLE_LIMIT, Error, Program, Instruction, Tape};
 
 /// A brainfuck interpreter, with the needed state for execution.
 ///
@@ -11,8 +11,7 @@ use super::{CYCLE_LIMIT, TAPE_LENGTH, Error, Program, Instruction, Tape};
 /// of managing the program counter, which is `0` by default.
 ///
 /// Each interpreter stores a tape for the execution of the program. The
-/// current tape uses a statically allocated array of `TAPE_LENGTH` elements.
-/// This is something that may change, but the semantics will remain the same.
+/// current tape uses a dynamically allocated array of `TAPE_LENGTH` elements.
 ///
 /// Other fields used for instrumentation may also be stored in the
 /// interpreter.
@@ -22,7 +21,7 @@ pub struct Interpreter<'a> {
     program: Option<Program>,
     reader: Option<&'a mut Read>,
     writer: Option<&'a mut Write>,
-    tape: Tape<[u8; TAPE_LENGTH]>,
+    tape: Tape<Vec<u8>>,
     pc: usize,
     cycles: u64,
 }

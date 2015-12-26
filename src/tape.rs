@@ -13,18 +13,21 @@ pub struct Tape<C> {
     ptr: usize,
 }
 
-impl Tape<[u8; TAPE_LENGTH]> {
+impl Tape<Vec<u8>> {
     /// Return a new tape with all values set to 0, and the pointer
     /// at the first cell.
-    pub fn new() -> Tape<[u8; TAPE_LENGTH]> {
+    pub fn new() -> Tape<Vec<u8>> {
+        let mut vec = Vec::new();
+        // Create the first cell.
+        vec.push(0);
         Tape {
-            cells: [0; TAPE_LENGTH],
+            cells: vec,
             ptr: 0,
         }
     }
 }
 
-impl ops::Deref for Tape<[u8; TAPE_LENGTH]> {
+impl ops::Deref for Tape<Vec<u8>> {
     type Target = u8;
 
     fn deref(&self) -> &Self::Target {
@@ -32,13 +35,13 @@ impl ops::Deref for Tape<[u8; TAPE_LENGTH]> {
     }
 }
 
-impl ops::DerefMut for Tape<[u8; TAPE_LENGTH]> {
+impl ops::DerefMut for Tape<Vec<u8>> {
     fn deref_mut(&mut self) -> &mut u8 {
         &mut self.cells[self.ptr as usize]
     }
 }
 
-impl ops::AddAssign<u8> for Tape<[u8; TAPE_LENGTH]> {
+impl ops::AddAssign<u8> for Tape<Vec<u8>> {
     fn add_assign(&mut self, rhs: u8) {
         match (*self).checked_add(rhs) {
             Some(n) => **self = n,
@@ -47,7 +50,7 @@ impl ops::AddAssign<u8> for Tape<[u8; TAPE_LENGTH]> {
     }
 }
 
-impl ops::SubAssign<u8> for Tape<[u8; TAPE_LENGTH]> {
+impl ops::SubAssign<u8> for Tape<Vec<u8>> {
     fn sub_assign(&mut self, rhs: u8) {
         match (*self).checked_sub(rhs) {
             Some(n) => **self = n,
@@ -56,16 +59,23 @@ impl ops::SubAssign<u8> for Tape<[u8; TAPE_LENGTH]> {
     }
 }
 
-impl ops::ShrAssign<usize> for Tape<[u8; TAPE_LENGTH]> {
+impl ops::ShrAssign<usize> for Tape<Vec<u8>> {
     fn shr_assign(&mut self, rhs: usize) {
         match self.ptr.checked_add(rhs) {
-            Some(n) if n < TAPE_LENGTH => self.ptr = n,
+            Some(n) if n < TAPE_LENGTH => {
+                let mut extension = Vec::new();
+                for _ in self.cells.len()..(self.cells.len() + rhs) {
+                    extension.push(0);
+                }
+                self.cells.extend(extension);
+                self.ptr = n;
+            },
             _ => panic!("overflow in ptr right shift."),
         }
     }
 }
 
-impl ops::ShlAssign<usize> for Tape<[u8; TAPE_LENGTH]> {
+impl ops::ShlAssign<usize> for Tape<Vec<u8>> {
     fn shl_assign(&mut self, rhs: usize) {
         match self.ptr.checked_sub(rhs) {
             Some(n) if n < TAPE_LENGTH => self.ptr = n,
