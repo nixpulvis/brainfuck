@@ -262,17 +262,6 @@
 <span id="219">219</span>
 <span id="220">220</span>
 <span id="221">221</span>
-<span id="222">222</span>
-<span id="223">223</span>
-<span id="224">224</span>
-<span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
-<span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='ident'>Read</span>, <span class='ident'>Write</span>};
 <span class='kw'>use</span> <span class='ident'>tape</span>::<span class='ident'>Tape</span>;
@@ -294,6 +283,7 @@
 <span class='doccomment'>/// interpreter.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// [top-doc]: index.html</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Default</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Interpreter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span>: <span class='ident'>Tape</span> <span class='op'>+</span> <span class='ident'>Default</span><span class='op'>&gt;</span> {
     <span class='ident'>program</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Program</span><span class='op'>&gt;</span>,
     <span class='ident'>reader</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Read</span><span class='op'>&gt;</span>,
@@ -304,18 +294,6 @@
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span>: <span class='ident'>Tape</span> <span class='op'>+</span> <span class='ident'>Default</span><span class='op'>&gt;</span> <span class='ident'>Interpreter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Return a new interpreter, without a program or IO.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Interpreter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='ident'>Interpreter</span> {
-            <span class='ident'>program</span>: <span class='prelude-val'>None</span>,
-            <span class='ident'>reader</span>: <span class='prelude-val'>None</span>,
-            <span class='ident'>writer</span>: <span class='prelude-val'>None</span>,
-            <span class='ident'>tape</span>: <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>T</span>::<span class='ident'>default</span>()),
-            <span class='ident'>pc</span>: <span class='number'>0</span>,
-            <span class='ident'>cycles</span>: <span class='number'>0</span>,
-        }
-    }
-
     <span class='doccomment'>/// Load a program for the interpreter to run.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>load</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>program</span>: <span class='ident'>Program</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='kw'>Self</span> {
         <span class='self'>self</span>.<span class='ident'>pc</span> <span class='op'>=</span> <span class='number'>0</span>;
@@ -431,20 +409,20 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>new</span>() {
-        <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>default</span>();
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>load</span>() {
         <span class='kw'>let</span> <span class='ident'>program</span> <span class='op'>=</span> <span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;++&gt;+.&quot;</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>default</span>();
         <span class='ident'>interp</span>.<span class='ident'>load</span>(<span class='ident'>program</span>.<span class='ident'>unwrap</span>());
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>run</span>() {
         <span class='kw'>let</span> <span class='ident'>program</span> <span class='op'>=</span> <span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;++&gt;+.&quot;</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>default</span>();
         <span class='ident'>interp</span>.<span class='ident'>load</span>(<span class='ident'>program</span>.<span class='ident'>unwrap</span>());
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>interp</span>.<span class='ident'>run</span>().<span class='ident'>is_ok</span>());
     }
@@ -452,7 +430,7 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>run_with_callback</span>() {
         <span class='kw'>let</span> <span class='ident'>program</span> <span class='op'>=</span> <span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;++&gt;+.&quot;</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>default</span>();
         <span class='ident'>interp</span>.<span class='ident'>load</span>(<span class='ident'>program</span>.<span class='ident'>unwrap</span>());
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>count</span> <span class='op'>=</span> <span class='number'>0</span>;
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>interp</span>.<span class='ident'>run_with_callback</span>(<span class='op'>|</span>_, _<span class='op'>|</span> {
@@ -466,7 +444,7 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>step</span>() {
         <span class='kw'>let</span> <span class='ident'>program</span> <span class='op'>=</span> <span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;++&gt;+.&quot;</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>default</span>();
         <span class='ident'>interp</span>.<span class='ident'>load</span>(<span class='ident'>program</span>.<span class='ident'>unwrap</span>());
         <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>interp</span>.<span class='ident'>step</span>();
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>result</span>.<span class='ident'>is_ok</span>());
@@ -477,7 +455,7 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>execute</span>() {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>default</span>();
         <span class='kw'>let</span> <span class='ident'>instruction</span> <span class='op'>=</span> <span class='ident'>Instruction</span>::<span class='ident'>IncVal</span>;
         <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>interp</span>.<span class='ident'>execute</span>(<span class='ident'>instruction</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>result</span>.<span class='ident'>is_ok</span>());
@@ -486,7 +464,7 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>single_step</span>() {
         <span class='kw'>let</span> <span class='ident'>program</span> <span class='op'>=</span> <span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;&gt;&quot;</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>default</span>();
         <span class='ident'>interp</span>.<span class='ident'>load</span>(<span class='ident'>program</span>.<span class='ident'>unwrap</span>());
         <span class='ident'>interp</span>.<span class='ident'>step</span>().<span class='ident'>unwrap</span>().<span class='ident'>unwrap</span>().<span class='ident'>unwrap</span>();
     }
@@ -497,7 +475,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>writer</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='ident'>program</span> <span class='op'>=</span> <span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;+,.&quot;</span>);
         {
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>VecTape</span><span class='op'>&gt;</span>::<span class='ident'>default</span>();
             <span class='ident'>interp</span>.<span class='ident'>read_from</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>reader</span>);
             <span class='ident'>interp</span>.<span class='ident'>write_to</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>writer</span>);
             <span class='ident'>interp</span>.<span class='ident'>load</span>(<span class='ident'>program</span>.<span class='ident'>unwrap</span>());
