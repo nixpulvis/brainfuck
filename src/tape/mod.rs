@@ -46,5 +46,9 @@ impl fmt::Display for Error {
 /// A `Vec` based tape.
 mod vec_tape;
 
+/// A `[]` (array) based tape.
+mod array_tape;
+
 // Re-exports.
 pub use self::vec_tape::VecTape;
+pub use self::array_tape::ArrayTape;
