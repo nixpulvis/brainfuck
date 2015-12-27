@@ -21,7 +21,7 @@ pub struct Interpreter<'a> {
     program: Option<Program>,
     reader: Option<&'a mut Read>,
     writer: Option<&'a mut Write>,
-    tape: VecTape,
+    tape: Box<Tape<Target=u8, Cell=u8>>,
     pc: usize,
     cycles: u64,
 }
@@ -33,7 +33,7 @@ impl<'a> Interpreter<'a> {
             program: None,
             reader: None,
             writer: None,
-            tape: VecTape::new(),
+            tape: Box::new(VecTape::new()),
             pc: 0,
             cycles: 0,
         }
@@ -116,23 +116,23 @@ impl<'a> Interpreter<'a> {
             },
             Instruction::Output => {
                 if let Some(ref mut w) = self.writer {
-                    try!(w.write(&[*self.tape]));
+                    try!(w.write(&[**self.tape]));
                 }
             },
             Instruction::Input => {
                 if let Some(ref mut r) = self.reader {
                     if let Some(b) = r.bytes().next() {
-                        *self.tape = try!(b);
+                        **self.tape = try!(b);
                     }
                 }
             },
             Instruction::SkipForward(iptr) => {
-                if *self.tape == 0 {
+                if **self.tape == 0 {
                     self.pc = iptr;
                 }
             },
             Instruction::SkipBackward(iptr) => {
-                if *self.tape != 0 {
+                if **self.tape != 0 {
                     self.pc = iptr;
                 }
             },
