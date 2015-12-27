@@ -1,5 +1,9 @@
 use std::{fmt, error, ops};
 
+/// The number of cells a portable tape contains. Attempts to access above or
+/// below this limit will result in an error.
+pub const TAPE_LENGTH: usize = 30000;
+
 /// TODO: ...
 pub trait Tape: ops::Deref<Target=u8> + ops::DerefMut {
     type Cell;

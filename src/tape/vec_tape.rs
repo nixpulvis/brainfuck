@@ -1,9 +1,5 @@
 use std::ops;
 
-/// The number of cells a vec tape tape contains. Attempts to access above or
-/// below this limit will result in an error.
-pub const TAPE_LENGTH: usize = 30000;
-
 /// A fixed length data structure for holding bytes and a pointer.
 ///
 /// The tape consists of a fixed array of bytes, and a pointer into the
@@ -51,7 +47,7 @@ impl super::Tape for VecTape {
 
     fn inc_ptr(&mut self) -> Result<usize, super::Error> {
         match self.ptr.checked_add(1) {
-            Some(v) if v < TAPE_LENGTH => {
+            Some(v) if v < super::TAPE_LENGTH => {
                 if v >= self.cells.len() {
                     // Add another cell dynamically.
                     self.cells.push(0);
@@ -65,7 +61,7 @@ impl super::Tape for VecTape {
 
     fn dec_ptr(&mut self) -> Result<usize, super::Error> {
         match self.ptr.checked_sub(1) {
-            Some(v) if v < TAPE_LENGTH => {
+            Some(v) if v < super::TAPE_LENGTH => {
                 self.ptr = v;
                 Ok(v)
             },
