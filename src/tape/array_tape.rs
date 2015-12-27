@@ -1,10 +1,11 @@
 use std::ops;
 
-/// A tape with dynamically allocated cells.
+/// A tape with statically allocated cells.
 ///
-/// This tape is implemented with a `Vec<u8>` so it only uses memory it
-/// needs. The cells are of type `u8`, and the tape's length is forced to
-/// be no greater than `TAPE_LENGTH` so this tape is *nice*.
+/// This tape is implemented with a `[u8]` so it uses the memory for all
+/// 30,000 cells all the time, but allocation is done up front. The cells
+/// are of type `u8`, and the tape's length is forced to be no greater
+/// than `TAPE_LENGTH` so this tape is *nice*.
 pub struct ArrayTape {
     cells: [u8; super::TAPE_LENGTH],
     ptr: usize,
