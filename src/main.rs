@@ -42,7 +42,7 @@ fn main() {
     } else {
         let mut stdin = io::stdin();
         let mut stdout = io::stdout();
-        let mut interp = Interpreter::<tape::VecTape>::new();
+        let mut interp = Interpreter::<tape::VecTape>::default();
         interp.load(program);
         interp.read_from(&mut stdin);
         interp.write_to(&mut stdout);

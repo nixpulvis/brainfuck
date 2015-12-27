@@ -61,7 +61,7 @@ pub use program::Program;
 pub fn eval(program: Program) -> Result<(), Error> {
     let mut stdin = io::stdin();
     let mut stdout = io::stdout();
-    Interpreter::<VecTape>::new()
+    Interpreter::<VecTape>::default()
         .read_from(&mut stdin)
         .write_to(&mut stdout)
         .load(program)

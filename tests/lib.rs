@@ -8,7 +8,7 @@ macro_rules! load_and_run {
 
         fn $name() {
             let program = Program::from_file($path).unwrap();
-            Interpreter::<tape::VecTape>::new().load(program).run().unwrap();
+            Interpreter::<tape::VecTape>::default().load(program).run().unwrap();
         }
     };
 }
@@ -19,7 +19,7 @@ macro_rules! load_and_run_limit {
 
         fn $name() {
             let program = Program::from_file($path).unwrap();
-            match Interpreter::<tape::VecTape>::new().load(program).run() {
+            match Interpreter::<tape::VecTape>::default().load(program).run() {
                 Err(Error::CycleLimit) => assert!(true),
                 _ => assert!(false),
             }
@@ -54,7 +54,7 @@ fn bf_dbf2c() {
     let mut writer = Vec::<u8>::new();
     let program = Program::from_file("fixtures/dbf2c.b").unwrap();
     {
-        let mut interp = Interpreter::<tape::VecTape>::new();
+        let mut interp = Interpreter::<tape::VecTape>::default();
         interp.read_from(&mut reader);
         interp.write_to(&mut writer);
         interp.load(program);
@@ -71,7 +71,7 @@ fn bf_dbfi() {
     let mut writer = Vec::<u8>::new();
     let program = Program::from_file("fixtures/dbfi.b").unwrap();
     {
-        let mut interp = Interpreter::<tape::VecTape>::new();
+        let mut interp = Interpreter::<tape::VecTape>::default();
         interp.read_from(&mut reader);
         interp.write_to(&mut writer);
         interp.load(program);
