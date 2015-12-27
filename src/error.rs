@@ -19,11 +19,11 @@ pub enum Error {
 impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
-            Error::Io(_) => "Io Error",
-            Error::Tape(_) => "Tape Error",
-            Error::NoProgram => "No Program",
-            Error::CycleLimit => "Cycle Limit",
-            Error::InvalidProgram => "Invalid Program",
+            Error::Io(_) => "IO error.",
+            Error::Tape(_) => "Tape error.",
+            Error::NoProgram => "No program loaded.",
+            Error::InvalidProgram => "Invalid program.",
+            Error::CycleLimit => "Cycle limit hit.",
         }
     }
 }
@@ -34,8 +34,8 @@ impl fmt::Display for Error {
             Error::Io(ref e) => e.fmt(f),
             Error::Tape(ref e) => e.fmt(f),
             Error::NoProgram => write!(f, "{}", error::Error::description(self)),
-            Error::CycleLimit => write!(f, "{}", error::Error::description(self)),
             Error::InvalidProgram => write!(f, "{}", error::Error::description(self)),
+            Error::CycleLimit => write!(f, "{}", error::Error::description(self)),
         }
     }
 }

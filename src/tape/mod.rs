@@ -1,4 +1,4 @@
-use std::{fmt, error, ops};
+use std::ops;
 
 /// The number of cells a portable tape contains. Attempts to access above or
 /// below this limit will result in an error.
@@ -25,28 +25,8 @@ pub trait Tape: ops::Deref<Target=u8> + ops::DerefMut {
     fn dec_ptr(&mut self) -> Result<usize, Error>;
 }
 
-/// The error type for dealing with tapes.
-#[derive(Debug)]
-pub enum Error {
-    ValOverflow,
-    ValUnderflow,
-    PtrOverflow,
-    PtrUnderflow,
-}
-
-impl error::Error for Error {
-    fn description(&self) -> &str {
-        "TODO"
-    }
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", error::Error::description(self))
-    }
-}
-
 // Re-exports.
+pub use self::error::Error;
 pub use self::vec_tape::VecTape;
 pub use self::array_tape::ArrayTape;
 
@@ -112,6 +92,9 @@ macro_rules! tape_tests {
         }
     }
 }
+
+/// Tape errors.
+mod error;
 
 /// A `Vec` based tape.
 mod vec_tape;
