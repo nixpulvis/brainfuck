@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Program","The logic desired to be run by the brainfuck interpreter."]]});
+initSidebarItems({"enum":[["Error","The error type for dealing with tapes."]],"struct":[["Program","The logic desired to be run by the brainfuck interpreter."]]});

@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/brainfuck/lib.rs.html#1-95' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/brainfuck/lib.rs.html#1-102' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Simple brainfuck interpreter in Rust.</p>
 
 <p>The brainfuck language was created with the purpose of being a
@@ -61,6 +61,14 @@ value. The instructions that trip people up the most are the control
 flow contructs <code>[</code> and <code>]</code>. <code>+++&gt;,&lt;[&gt;+.&lt;-]</code> for example prints the 3
 values after the input value. For more about control flow in brainfuck
 read the section on <a href="enum.Instruction.html#control-flow">control flow</a>.</p>
+
+<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1><pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>brainfuck</span>;
+
+<span class='comment'>// Evaluate a simple brainfuck program from a string.</span>
+<span class='ident'>brainfuck</span>::<span class='ident'>eval_string</span>(<span class='string'>&quot;+&gt;.&quot;</span>);
+<span class='comment'>// Evaluate a brainfuck program from a file.</span>
+<span class='ident'>brainfuck</span>::<span class='ident'>eval_file</span>(<span class='string'>&quot;fixtures/helloworld.rs&quot;</span>);</pre>
 
 <h1 id='semantics-and-portability' class='section-header'><a href='#semantics-and-portability'>Semantics and Portability</a></h1>
 <p>The brainfuck language has a few areas that are undefined behavior. These
@@ -87,6 +95,15 @@ be effective noops (potentially with a warning).</li>
 </div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                     <tr class=' module-item'>
+                        <td><a class='mod' href='program/index.html'
+                               title='brainfuck::program'>program</a></td>
+                        <td class='docblock short'>
+                             <p>Brainfuck programs are the best kind of programs too!</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
                         <td><a class='mod' href='tape/index.html'
                                title='brainfuck::tape'>tape</a></td>
                         <td class='docblock short'>
@@ -101,15 +118,6 @@ be effective noops (potentially with a warning).</li>
                                title='brainfuck::Interpreter'>Interpreter</a></td>
                         <td class='docblock short'>
                              <p>A brainfuck interpreter, with the needed state for execution.</p>
-
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.Program.html'
-                               title='brainfuck::Program'>Program</a></td>
-                        <td class='docblock short'>
-                             <p>The logic desired to be run by the brainfuck interpreter.</p>
 
                         </td>
                     </tr>
@@ -145,15 +153,6 @@ errors with <code>Error::CycleLimit</code>.</p>
                     </tr>
                 </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.eval.html'
-                               title='brainfuck::eval'>eval</a></td>
-                        <td class='docblock short'>
-                             <p>Run the given program with STDIN and STDOUT as the IO buffers.</p>
-
-                        </td>
-                    </tr>
-                
                     <tr class=' module-item'>
                         <td><a class='fn' href='fn.eval_file.html'
                                title='brainfuck::eval_file'>eval_file</a></td>

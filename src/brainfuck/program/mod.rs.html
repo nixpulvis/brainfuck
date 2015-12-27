@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `src/program.rs`.">
+    <meta name="description" content="Source to the Rust file `src/program/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
-    <title>program.rs.html -- source</title>
+    <title>mod.rs.html -- source</title>
 
-    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
 
     
     
@@ -151,12 +151,21 @@
 <span id="108">108</span>
 <span id="109">109</span>
 <span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>Read</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::<span class='ident'>Path</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fs</span>::<span class='ident'>File</span>;
-<span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>Error</span>, <span class='ident'>Instruction</span>};
+<span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>Instruction</span>;
+
+<span class='comment'>// Re-exports.</span>
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>error</span>::<span class='ident'>Error</span>;
 
 <span class='doccomment'>/// The logic desired to be run by the brainfuck interpreter.</span>
 <span class='doccomment'>///</span>
@@ -193,7 +202,7 @@
                 <span class='string'>&#39;]&#39;</span> <span class='op'>=&gt;</span> {
                     <span class='kw'>let</span> <span class='ident'>open_pc</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>stack</span>.<span class='ident'>pop</span>() {
                         <span class='prelude-val'>Some</span>(<span class='ident'>o</span>) <span class='op'>=&gt;</span> <span class='ident'>o</span>,
-                        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>InvalidProgram</span>)
+                        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Invalid</span>)
                     };
                     <span class='kw'>let</span> <span class='ident'>open</span> <span class='op'>=</span> <span class='ident'>asl</span>.<span class='ident'>get_mut</span>(<span class='ident'>open_pc</span>).<span class='ident'>expect</span>(<span class='string'>&quot;in&quot;</span>);
                     <span class='op'>*</span><span class='ident'>open</span> <span class='op'>=</span> <span class='ident'>Instruction</span>::<span class='ident'>SkipForward</span>(<span class='ident'>count</span>);
@@ -205,7 +214,7 @@
             <span class='ident'>asl</span>.<span class='ident'>push</span>(<span class='ident'>instruction</span>)
         }
         <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>stack</span>.<span class='ident'>is_empty</span>() {
-            <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>InvalidProgram</span>)
+            <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Invalid</span>)
         }
         <span class='prelude-val'>Ok</span>(<span class='ident'>Program</span> { <span class='ident'>asl</span>: <span class='ident'>asl</span> })
     }
@@ -233,6 +242,9 @@
         <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>string</span>)
     }
 }
+
+<span class='doccomment'>/// Program errors.</span>
+<span class='kw'>mod</span> <span class='ident'>error</span>;
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
@@ -315,13 +327,13 @@
     
 
     <script>
-        window.rootPath = "../../";
+        window.rootPath = "../../../";
         window.currentCrate = "brainfuck";
         window.playgroundUrl = "";
     </script>
-    <script src="../../jquery.js"></script>
-    <script src="../../main.js"></script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
     
-    <script defer src="../../search-index.js"></script>
+    <script defer src="../../../search-index.js"></script>
 </body>
 </html>

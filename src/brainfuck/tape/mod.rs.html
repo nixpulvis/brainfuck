@@ -144,26 +144,17 @@
 <span id="101">101</span>
 <span id="102">102</span>
 <span id="103">103</span>
-<span id="104">104</span>
-<span id="105">105</span>
-<span id="106">106</span>
-<span id="107">107</span>
-<span id="108">108</span>
-<span id="109">109</span>
-<span id="110">110</span>
-<span id="111">111</span>
-<span id="112">112</span>
-<span id="113">113</span>
-<span id="114">114</span>
-<span id="115">115</span>
-<span id="116">116</span>
-<span id="117">117</span>
 </pre><pre class='rust '>
-<span class='kw'>use</span> <span class='ident'>std</span>::{<span class='ident'>fmt</span>, <span class='ident'>error</span>, <span class='ident'>ops</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>;
 
 <span class='doccomment'>/// The number of cells a portable tape contains. Attempts to access above or</span>
 <span class='doccomment'>/// below this limit will result in an error.</span>
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>TAPE_LENGTH</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>30000</span>;
+
+<span class='comment'>// Re-exports.</span>
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>error</span>::<span class='ident'>Error</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>vec_tape</span>::<span class='ident'>VecTape</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>array_tape</span>::<span class='ident'>ArrayTape</span>;
 
 <span class='doccomment'>/// An interface for the underlying data for brainfuck. Tapes are</span>
 <span class='doccomment'>/// conceptually a sequential list of cells, who&#39;s values can be</span>
@@ -185,28 +176,6 @@
     <span class='doccomment'>/// Decrement the location of the pointer by 1 cell.</span>
     <span class='kw'>fn</span> <span class='ident'>dec_ptr</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>usize</span>, <span class='ident'>Error</span><span class='op'>&gt;</span>;
 }
-
-<span class='doccomment'>/// The error type for dealing with tapes.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Error</span> {
-    <span class='ident'>Overflow</span>,
-}
-
-<span class='kw'>impl</span> <span class='ident'>error</span>::<span class='ident'>Error</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
-    <span class='kw'>fn</span> <span class='ident'>description</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>str</span> {
-        <span class='string'>&quot;TODO&quot;</span>
-    }
-}
-
-<span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Display</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
-    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
-        <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>error</span>::<span class='ident'>Error</span>::<span class='ident'>description</span>(<span class='self'>self</span>))
-    }
-}
-
-<span class='comment'>// Re-exports.</span>
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>vec_tape</span>::<span class='ident'>VecTape</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>array_tape</span>::<span class='ident'>ArrayTape</span>;
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>tape_tests</span> {
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tape</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
@@ -270,6 +239,9 @@
         }
     }
 }
+
+<span class='doccomment'>/// Tape errors.</span>
+<span class='kw'>mod</span> <span class='ident'>error</span>;
 
 <span class='doccomment'>/// A `Vec` based tape.</span>
 <span class='kw'>mod</span> <span class='ident'>vec_tape</span>;

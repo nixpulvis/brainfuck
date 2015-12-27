@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-75' class='srclink' href='../src/brainfuck/interpreter.rs.html#22-29' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-81' class='srclink' href='../src/brainfuck/interpreter.rs.html#23-30' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Interpreter&lt;'a, T: <a class='trait' href='../brainfuck/tape/trait.Tape.html' title='brainfuck::tape::Tape'>Tape</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a>&gt; {
     // some fields omitted
 }</pre><div class='docblock'><p>A brainfuck interpreter, with the needed state for execution.</p>
@@ -63,7 +63,10 @@ current tape uses a dynamically allocated array of <code>TAPE_LENGTH</code> elem
 
 <p>Other fields used for instrumentation may also be stored in the
 interpreter.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;'a, T: <a class='trait' href='../brainfuck/tape/trait.Tape.html' title='brainfuck::tape::Tape'>Tape</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a>&gt; <a class='struct' href='../brainfuck/struct.Interpreter.html' title='brainfuck::Interpreter'>Interpreter</a>&lt;'a, T&gt;</code></h3><div class='impl-items'><h4 id='method.load' class='method'><code>fn <a href='#method.load' class='fnname'>load</a>(&amp;mut self, program: <a class='struct' href='../brainfuck/struct.Program.html' title='brainfuck::Program'>Program</a>) -&gt; &amp;mut Self</code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;'a, T: <a class='trait' href='../brainfuck/tape/trait.Tape.html' title='brainfuck::tape::Tape'>Tape</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a>&gt; <a class='struct' href='../brainfuck/struct.Interpreter.html' title='brainfuck::Interpreter'>Interpreter</a>&lt;'a, T&gt;</code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>&lt;R: <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>, W: <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>&gt;(program: <a class='struct' href='../brainfuck/program/struct.Program.html' title='brainfuck::program::Program'>Program</a>, reader: &amp;'a mut R, writer: &amp;'a mut W) -&gt; <a class='struct' href='../brainfuck/struct.Interpreter.html' title='brainfuck::Interpreter'>Interpreter</a>&lt;'a, T&gt;</code></h4>
+<div class='docblock'><p>Create a new interpreter with the given program, optional reader,
+and writer.</p>
+</div><h4 id='method.load' class='method'><code>fn <a href='#method.load' class='fnname'>load</a>(&amp;mut self, program: <a class='struct' href='../brainfuck/program/struct.Program.html' title='brainfuck::program::Program'>Program</a>) -&gt; &amp;mut Self</code></h4>
 <div class='docblock'><p>Load a program for the interpreter to run.</p>
 </div><h4 id='method.read_from' class='method'><code>fn <a href='#method.read_from' class='fnname'>read_from</a>&lt;R: <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>&gt;(&amp;mut self, reader: &amp;'a mut R) -&gt; &amp;mut Self</code></h4>
 <div class='docblock'><p>Use the given reader for the <code>Input</code> instruction.</p>
