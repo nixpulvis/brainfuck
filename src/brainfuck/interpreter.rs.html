@@ -271,10 +271,9 @@
 <span id="228">228</span>
 <span id="229">229</span>
 <span id="230">230</span>
-<span id="231">231</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='ident'>Read</span>, <span class='ident'>Write</span>};
-<span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>CYCLE_LIMIT</span>, <span class='ident'>TAPE_LENGTH</span>, <span class='ident'>Error</span>, <span class='ident'>Program</span>, <span class='ident'>Instruction</span>, <span class='ident'>Tape</span>};
+<span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>CYCLE_LIMIT</span>, <span class='ident'>Error</span>, <span class='ident'>Program</span>, <span class='ident'>Instruction</span>, <span class='ident'>Tape</span>};
 
 <span class='doccomment'>/// A brainfuck interpreter, with the needed state for execution.</span>
 <span class='doccomment'>///</span>
@@ -286,8 +285,7 @@
 <span class='doccomment'>/// of managing the program counter, which is `0` by default.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// Each interpreter stores a tape for the execution of the program. The</span>
-<span class='doccomment'>/// current tape uses a statically allocated array of `TAPE_LENGTH` elements.</span>
-<span class='doccomment'>/// This is something that may change, but the semantics will remain the same.</span>
+<span class='doccomment'>/// current tape uses a dynamically allocated array of `TAPE_LENGTH` elements.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// Other fields used for instrumentation may also be stored in the</span>
 <span class='doccomment'>/// interpreter.</span>
@@ -297,7 +295,7 @@
     <span class='ident'>program</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Program</span><span class='op'>&gt;</span>,
     <span class='ident'>reader</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Read</span><span class='op'>&gt;</span>,
     <span class='ident'>writer</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Write</span><span class='op'>&gt;</span>,
-    <span class='ident'>tape</span>: <span class='ident'>Tape</span><span class='op'>&lt;</span>[<span class='ident'>u8</span>; <span class='ident'>TAPE_LENGTH</span>]<span class='op'>&gt;</span>,
+    <span class='ident'>tape</span>: <span class='ident'>Tape</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span>,
     <span class='ident'>pc</span>: <span class='ident'>usize</span>,
     <span class='ident'>cycles</span>: <span class='ident'>u64</span>,
 }

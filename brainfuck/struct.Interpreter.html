@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-70' class='srclink' href='../src/brainfuck/interpreter.rs.html#21-28' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-70' class='srclink' href='../src/brainfuck/interpreter.rs.html#20-27' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Interpreter&lt;'a&gt; {
     // some fields omitted
 }</pre><div class='docblock'><p>A brainfuck interpreter, with the needed state for execution.</p>
@@ -59,8 +59,7 @@ writers. Each of which can be set dynamically with the <code>load</code>,
 of managing the program counter, which is <code>0</code> by default.</p>
 
 <p>Each interpreter stores a tape for the execution of the program. The
-current tape uses a statically allocated array of <code>TAPE_LENGTH</code> elements.
-This is something that may change, but the semantics will remain the same.</p>
+current tape uses a dynamically allocated array of <code>TAPE_LENGTH</code> elements.</p>
 
 <p>Other fields used for instrumentation may also be stored in the
 interpreter.</p>
