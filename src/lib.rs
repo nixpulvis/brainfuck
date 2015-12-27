@@ -50,16 +50,12 @@ use std::path::Path;
 /// errors with `Error::CycleLimit`.
 pub const CYCLE_LIMIT: u64 = 10000000;
 
-/// The number of cells the tape contains. Attempts to access above or
-/// below this limit will result in an error.
-pub const TAPE_LENGTH: usize = 30000;
-
 // Re-exports.
 pub use error::Error;
 pub use interpreter::Interpreter;
 pub use instruction::Instruction;
 pub use program::Program;
-pub use tape::Tape;
+pub use tape::VecTape;
 
 /// Run the given program with STDIN and STDOUT as the IO buffers.
 pub fn eval(program: Program) -> Result<(), Error> {

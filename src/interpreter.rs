@@ -1,5 +1,5 @@
 use std::io::{Read, Write};
-use super::{CYCLE_LIMIT, Error, Program, Instruction, Tape};
+use super::{CYCLE_LIMIT, Error, Program, Instruction, VecTape};
 
 /// A brainfuck interpreter, with the needed state for execution.
 ///
@@ -21,7 +21,7 @@ pub struct Interpreter<'a> {
     program: Option<Program>,
     reader: Option<&'a mut Read>,
     writer: Option<&'a mut Write>,
-    tape: Tape<Vec<u8>>,
+    tape: VecTape,
     pc: usize,
     cycles: u64,
 }
@@ -33,7 +33,7 @@ impl<'a> Interpreter<'a> {
             program: None,
             reader: None,
             writer: None,
-            tape: Tape::new(),
+            tape: VecTape::new(),
             pc: 0,
             cycles: 0,
         }

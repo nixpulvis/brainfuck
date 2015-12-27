@@ -1,5 +1,6 @@
 use std::ops;
-use super::TAPE_LENGTH;
+
+pub const TAPE_LENGTH: usize = 30000;
 
 /// A fixed length data structure for holding bytes and a pointer.
 ///
@@ -8,26 +9,26 @@ use super::TAPE_LENGTH;
 /// lookups can be done unconditionally.
 ///
 /// TODO: Overflows should cause `Err` results.
-pub struct Tape<C> {
-    cells: C,
+pub struct VecTape {
+    cells: Vec<u8>,
     ptr: usize,
 }
 
-impl Tape<Vec<u8>> {
+impl VecTape {
     /// Return a new tape with all values set to 0, and the pointer
     /// at the first cell.
-    pub fn new() -> Tape<Vec<u8>> {
+    pub fn new() -> VecTape {
         let mut vec = Vec::new();
         // Create the first cell.
         vec.push(0);
-        Tape {
+        VecTape {
             cells: vec,
             ptr: 0,
         }
     }
 }
 
-impl ops::Deref for Tape<Vec<u8>> {
+impl ops::Deref for VecTape {
     type Target = u8;
 
     fn deref(&self) -> &Self::Target {
@@ -35,13 +36,13 @@ impl ops::Deref for Tape<Vec<u8>> {
     }
 }
 
-impl ops::DerefMut for Tape<Vec<u8>> {
+impl ops::DerefMut for VecTape {
     fn deref_mut(&mut self) -> &mut u8 {
         &mut self.cells[self.ptr as usize]
     }
 }
 
-impl ops::AddAssign<u8> for Tape<Vec<u8>> {
+impl ops::AddAssign<u8> for VecTape {
     fn add_assign(&mut self, rhs: u8) {
         match (*self).checked_add(rhs) {
             Some(n) => **self = n,
@@ -50,7 +51,7 @@ impl ops::AddAssign<u8> for Tape<Vec<u8>> {
     }
 }
 
-impl ops::SubAssign<u8> for Tape<Vec<u8>> {
+impl ops::SubAssign<u8> for VecTape {
     fn sub_assign(&mut self, rhs: u8) {
         match (*self).checked_sub(rhs) {
             Some(n) => **self = n,
@@ -59,7 +60,7 @@ impl ops::SubAssign<u8> for Tape<Vec<u8>> {
     }
 }
 
-impl ops::ShrAssign<usize> for Tape<Vec<u8>> {
+impl ops::ShrAssign<usize> for VecTape {
     fn shr_assign(&mut self, rhs: usize) {
         match self.ptr.checked_add(rhs) {
             Some(n) if n < TAPE_LENGTH => {
@@ -75,7 +76,7 @@ impl ops::ShrAssign<usize> for Tape<Vec<u8>> {
     }
 }
 
-impl ops::ShlAssign<usize> for Tape<Vec<u8>> {
+impl ops::ShlAssign<usize> for VecTape {
     fn shl_assign(&mut self, rhs: usize) {
         match self.ptr.checked_sub(rhs) {
             Some(n) if n < TAPE_LENGTH => self.ptr = n,
@@ -90,25 +91,25 @@ mod tests {
 
     #[test]
     fn new() {
-        let _ = Tape::new();
+        let _ = VecTape::new();
     }
 
     #[test]
     fn deref() {
-        let tape = Tape::new();
+        let tape = VecTape::new();
         assert_eq!(*tape, 0);
     }
 
     #[test]
     fn deref_mut() {
-        let mut tape = Tape::new();
+        let mut tape = VecTape::new();
         *tape = 20;
         assert_eq!(*tape, 20);
     }
 
     #[test]
     fn add_assign() {
-        let mut tape = Tape::new();
+        let mut tape = VecTape::new();
         *tape = 5;
         tape += 1;
         assert_eq!(*tape, 6);
@@ -116,7 +117,7 @@ mod tests {
 
     #[test]
     fn sub_assign() {
-        let mut tape = Tape::new();
+        let mut tape = VecTape::new();
         *tape = 5;
         tape -= 1;
         assert_eq!(*tape, 4);
@@ -124,7 +125,7 @@ mod tests {
 
     #[test]
     fn shr_assign() {
-        let mut tape = Tape::new();
+        let mut tape = VecTape::new();
         tape += 4;
         tape >>= 1;
         assert_eq!(*tape, 0);
@@ -132,7 +133,7 @@ mod tests {
 
     #[test]
     fn shl_assign() {
-        let mut tape = Tape::new();
+        let mut tape = VecTape::new();
         tape += 4;
         tape >>= 1;
         assert_eq!(*tape, 0);
