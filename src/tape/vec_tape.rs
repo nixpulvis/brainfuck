@@ -14,10 +14,8 @@ pub struct VecTape {
     ptr: usize,
 }
 
-impl VecTape {
-    /// Return a new tape with all values set to 0, and the pointer
-    /// at the first cell.
-    pub fn new() -> VecTape {
+impl Default for VecTape {
+    fn default() -> Self {
         let mut vec = Vec::new();
         // Create the first cell.
         vec.push(0);
@@ -97,18 +95,18 @@ mod tests {
 
     #[test]
     fn new() {
-        let _ = VecTape::new();
+        let _ = VecTape::default();
     }
 
     #[test]
     fn deref() {
-        let tape = VecTape::new();
+        let tape = VecTape::default();
         assert_eq!(*tape, 0);
     }
 
     #[test]
     fn deref_mut() {
-        let mut tape = VecTape::new();
+        let mut tape = VecTape::default();
         tape.inc_val().unwrap();
         *tape = 20;
         assert_eq!(*tape, 20);
@@ -116,7 +114,7 @@ mod tests {
 
     #[test]
     fn inc_val() {
-        let mut tape = VecTape::new();
+        let mut tape = VecTape::default();
         *tape = 20;
         tape.inc_val().unwrap();
         assert_eq!(*tape, 21);
@@ -124,7 +122,7 @@ mod tests {
 
     #[test]
     fn dec_val() {
-        let mut tape = VecTape::new();
+        let mut tape = VecTape::default();
         *tape = 20;
         tape.dec_val().unwrap();
         assert_eq!(*tape, 19);
@@ -132,7 +130,7 @@ mod tests {
 
     #[test]
     fn inc_ptr() {
-        let mut tape = VecTape::new();
+        let mut tape = VecTape::default();
         *tape = 20;
         tape.inc_ptr().unwrap();
         assert_eq!(*tape, 0);
@@ -140,7 +138,7 @@ mod tests {
 
     #[test]
     fn dec_ptr() {
-        let mut tape = VecTape::new();
+        let mut tape = VecTape::default();
         *tape = 20;
         tape.inc_ptr().unwrap();
         assert_eq!(*tape, 0);

@@ -1,5 +1,5 @@
 use std::io::{Read, Write};
-use super::{CYCLE_LIMIT, Error, Program, Instruction, Tape, VecTape};
+use super::{CYCLE_LIMIT, Error, Program, Instruction, Tape};
 
 /// A brainfuck interpreter, with the needed state for execution.
 ///
@@ -17,23 +17,23 @@ use super::{CYCLE_LIMIT, Error, Program, Instruction, Tape, VecTape};
 /// interpreter.
 ///
 /// [top-doc]: index.html
-pub struct Interpreter<'a> {
+pub struct Interpreter<'a, T: Tape + Default> {
     program: Option<Program>,
     reader: Option<&'a mut Read>,
     writer: Option<&'a mut Write>,
-    tape: Box<Tape<Target=u8, Cell=u8>>,
+    tape: Box<T>,
     pc: usize,
     cycles: u64,
 }
 
-impl<'a> Interpreter<'a> {
+impl<'a, T: Tape + Default> Interpreter<'a, T> {
     /// Return a new interpreter, without a program or IO.
-    pub fn new() -> Interpreter<'a> {
+    pub fn new() -> Interpreter<'a, T> {
         Interpreter {
             program: None,
             reader: None,
             writer: None,
-            tape: Box::new(VecTape::new()),
+            tape: Box::new(T::default()),
             pc: 0,
             cycles: 0,
         }
@@ -147,26 +147,27 @@ mod tests {
     use std::io;
     use Instruction;
     use Program;
+    use VecTape;
     use super::*;
 
     // Public functions.
 
     #[test]
     fn new() {
-        let _ = Interpreter::new();
+        let _ = Interpreter::<VecTape>::new();
     }
 
     #[test]
     fn load() {
         let program = Program::parse("++>+.");
-        let mut interp = Interpreter::new();
+        let mut interp = Interpreter::<VecTape>::new();
         interp.load(program.unwrap());
     }
 
     #[test]
     fn run() {
         let program = Program::parse("++>+.");
-        let mut interp = Interpreter::new();
+        let mut interp = Interpreter::<VecTape>::new();
         interp.load(program.unwrap());
         assert!(interp.run().is_ok());
     }
@@ -174,7 +175,7 @@ mod tests {
     #[test]
     fn run_with_callback() {
         let program = Program::parse("++>+.");
-        let mut interp = Interpreter::new();
+        let mut interp = Interpreter::<VecTape>::new();
         interp.load(program.unwrap());
         let mut count = 0;
         assert!(interp.run_with_callback(|_, _| {
@@ -188,7 +189,7 @@ mod tests {
     #[test]
     fn step() {
         let program = Program::parse("++>+.");
-        let mut interp = Interpreter::new();
+        let mut interp = Interpreter::<VecTape>::new();
         interp.load(program.unwrap());
         let result = interp.step();
         assert!(result.is_ok());
@@ -199,7 +200,7 @@ mod tests {
 
     #[test]
     fn execute() {
-        let mut interp = Interpreter::new();
+        let mut interp = Interpreter::<VecTape>::new();
         let instruction = Instruction::IncVal;
         let result = interp.execute(instruction);
         assert!(result.is_ok());
@@ -208,7 +209,7 @@ mod tests {
     #[test]
     fn single_step() {
         let program = Program::parse(">");
-        let mut interp = Interpreter::new();
+        let mut interp = Interpreter::<VecTape>::new();
         interp.load(program.unwrap());
         interp.step().unwrap().unwrap().unwrap();
     }
@@ -219,7 +220,7 @@ mod tests {
         let mut writer = Vec::<u8>::new();
         let program = Program::parse("+,.");
         {
-            let mut interp = Interpreter::new();
+            let mut interp = Interpreter::<VecTape>::new();
             interp.read_from(&mut reader);
             interp.write_to(&mut writer);
             interp.load(program.unwrap());

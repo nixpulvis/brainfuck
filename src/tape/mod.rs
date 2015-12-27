@@ -1,7 +1,7 @@
 use std::{fmt, error, ops};
 
 /// TODO: ...
-pub trait Tape: ops::Deref + ops::DerefMut {
+pub trait Tape: ops::Deref<Target=u8> + ops::DerefMut {
     type Cell;
 
     fn inc_val(&mut self) -> Result<Self::Cell, Error>;

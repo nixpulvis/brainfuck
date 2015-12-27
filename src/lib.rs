@@ -61,7 +61,7 @@ pub use tape::{Tape, VecTape};
 pub fn eval(program: Program) -> Result<(), Error> {
     let mut stdin = io::stdin();
     let mut stdout = io::stdout();
-    Interpreter::new()
+    Interpreter::<VecTape>::new()
         .read_from(&mut stdin)
         .write_to(&mut stdout)
         .load(program)
