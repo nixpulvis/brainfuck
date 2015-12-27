@@ -25,16 +25,12 @@ use std::fmt;
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Instruction {
     /// Increment the pointer moving it up on the tape.
-    /// TODO: Document wrapping/error behavior.
     IncPtr,
     /// Decrement the pointer moving it down on the tape.
-    /// TODO: Document wrapping/error behavior.
     DecPtr,
     /// Increment the value at the pointer on the tape.
-    /// TODO: Document wrapping/error behavior.
     IncVal,
     /// Decrement the value at the pointer on the tape.
-    /// TODO: Document wrapping/error behavior.
     DecVal,
     /// Write the value at the pointer as a `char` to `STDOUT`. This
     /// instruction can fail if writing to the underlying writer fails.
