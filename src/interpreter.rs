@@ -1,5 +1,6 @@
 use std::io::{Read, Write};
-use super::{CYCLE_LIMIT, Error, Program, Instruction, Tape};
+use tape::Tape;
+use super::{CYCLE_LIMIT, Error, Program, Instruction};
 
 /// A brainfuck interpreter, with the needed state for execution.
 ///
