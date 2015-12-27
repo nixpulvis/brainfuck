@@ -1,4 +1,5 @@
 use std::ops;
+use super::*;
 
 /// A tape with dynamically allocated cells.
 ///
@@ -22,32 +23,32 @@ impl Default for VecTape {
     }
 }
 
-impl super::Tape for VecTape {
+impl Tape for VecTape {
     type Cell = u8;
 
-    fn inc_val(&mut self) -> Result<Self::Cell, super::Error> {
+    fn inc_val(&mut self) -> Result<Self::Cell, Error> {
         match self.checked_add(1) {
             Some(v) => {
                 **self = v;
                 Ok(v)
             },
-            None => Err(super::Error::Overflow)
+            None => Err(Error::ValOverflow)
         }
     }
 
-    fn dec_val(&mut self) -> Result<Self::Cell, super::Error> {
+    fn dec_val(&mut self) -> Result<Self::Cell, Error> {
         match self.checked_sub(1) {
             Some(v) => {
                 **self = v;
                 Ok(v)
             },
-            None => Err(super::Error::Overflow),
+            None => Err(Error::ValUnderflow),
         }
     }
 
-    fn inc_ptr(&mut self) -> Result<usize, super::Error> {
+    fn inc_ptr(&mut self) -> Result<usize, Error> {
         match self.ptr.checked_add(1) {
-            Some(v) if v < super::TAPE_LENGTH => {
+            Some(v) if v < TAPE_LENGTH => {
                 if v >= self.cells.len() {
                     // Add another cell dynamically.
                     self.cells.push(0);
@@ -55,17 +56,17 @@ impl super::Tape for VecTape {
                 self.ptr = v;
                 Ok(v)
             },
-            _ => Err(super::Error::Overflow),
+            _ => Err(Error::PtrOverflow),
         }
     }
 
-    fn dec_ptr(&mut self) -> Result<usize, super::Error> {
+    fn dec_ptr(&mut self) -> Result<usize, Error> {
         match self.ptr.checked_sub(1) {
-            Some(v) if v < super::TAPE_LENGTH => {
+            Some(v) if v < TAPE_LENGTH => {
                 self.ptr = v;
                 Ok(v)
             },
-            _ => Err(super::Error::Overflow),
+            _ => Err(Error::PtrUnderflow),
         }
     }
 }

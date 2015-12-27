@@ -1,4 +1,5 @@
 use std::ops;
+use super::*;
 
 /// A tape with statically allocated cells.
 ///
@@ -7,59 +8,59 @@ use std::ops;
 /// are of type `u8`, and the tape's length is forced to be no greater
 /// than `TAPE_LENGTH` so this tape is *nice*.
 pub struct ArrayTape {
-    cells: [u8; super::TAPE_LENGTH],
+    cells: [u8; TAPE_LENGTH],
     ptr: usize,
 }
 
 impl Default for ArrayTape {
     fn default() -> Self {
         ArrayTape {
-            cells: [0; super::TAPE_LENGTH],
+            cells: [0; TAPE_LENGTH],
             ptr: 0,
         }
     }
 }
 
-impl super::Tape for ArrayTape {
+impl Tape for ArrayTape {
     type Cell = u8;
 
-    fn inc_val(&mut self) -> Result<Self::Cell, super::Error> {
+    fn inc_val(&mut self) -> Result<Self::Cell, Error> {
         match self.checked_add(1) {
             Some(v) => {
                 **self = v;
                 Ok(v)
             },
-            None => Err(super::Error::Overflow)
+            None => Err(Error::ValOverflow)
         }
     }
 
-    fn dec_val(&mut self) -> Result<Self::Cell, super::Error> {
+    fn dec_val(&mut self) -> Result<Self::Cell, Error> {
         match self.checked_sub(1) {
             Some(v) => {
                 **self = v;
                 Ok(v)
             },
-            None => Err(super::Error::Overflow),
+            None => Err(Error::ValUnderflow),
         }
     }
 
-    fn inc_ptr(&mut self) -> Result<usize, super::Error> {
+    fn inc_ptr(&mut self) -> Result<usize, Error> {
         match self.ptr.checked_add(1) {
-            Some(v) if v < super::TAPE_LENGTH => {
+            Some(v) if v < TAPE_LENGTH => {
                 self.ptr = v;
                 Ok(v)
             },
-            _ => Err(super::Error::Overflow),
+            _ => Err(Error::PtrOverflow),
         }
     }
 
-    fn dec_ptr(&mut self) -> Result<usize, super::Error> {
+    fn dec_ptr(&mut self) -> Result<usize, Error> {
         match self.ptr.checked_sub(1) {
-            Some(v) if v < super::TAPE_LENGTH => {
+            Some(v) if v < TAPE_LENGTH => {
                 self.ptr = v;
                 Ok(v)
             },
-            _ => Err(super::Error::Overflow),
+            _ => Err(Error::PtrUnderflow),
         }
     }
 }

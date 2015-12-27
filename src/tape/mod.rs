@@ -28,7 +28,10 @@ pub trait Tape: ops::Deref<Target=u8> + ops::DerefMut {
 /// The error type for dealing with tapes.
 #[derive(Debug)]
 pub enum Error {
-    Overflow,
+    ValOverflow,
+    ValUnderflow,
+    PtrOverflow,
+    PtrUnderflow,
 }
 
 impl error::Error for Error {
