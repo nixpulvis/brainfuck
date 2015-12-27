@@ -148,7 +148,7 @@ mod tests {
     use std::io;
     use Instruction;
     use Program;
-    use VecTape;
+    use tape::VecTape;
     use super::*;
 
     // Public functions.

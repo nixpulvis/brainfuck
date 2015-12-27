@@ -5,7 +5,7 @@ extern crate brainfuck;
 use std::io;
 use std::collections::HashMap;
 use docopt::Docopt;
-use brainfuck::{Interpreter, Program, Instruction, VecTape};
+use brainfuck::{tape, Interpreter, Program, Instruction};
 
 const USAGE: &'static str = "
 Brainfuck
@@ -42,7 +42,7 @@ fn main() {
     } else {
         let mut stdin = io::stdin();
         let mut stdout = io::stdout();
-        let mut interp = Interpreter::<VecTape>::new();
+        let mut interp = Interpreter::<tape::VecTape>::new();
         interp.load(program);
         interp.read_from(&mut stdin);
         interp.write_to(&mut stdout);
