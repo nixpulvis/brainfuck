@@ -1,6 +1,7 @@
 extern crate brainfuck;
 
 use brainfuck::*;
+use brainfuck::program::Program;
 
 macro_rules! load_and_run {
     ($name:ident, $path:expr) => {

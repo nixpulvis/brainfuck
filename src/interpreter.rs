@@ -1,6 +1,7 @@
 use std::io::{Read, Write};
 use tape::Tape;
-use super::{CYCLE_LIMIT, Error, Program, Instruction};
+use program::Program;
+use super::{CYCLE_LIMIT, Error, Instruction};
 
 /// A brainfuck interpreter, with the needed state for execution.
 ///
@@ -146,7 +147,7 @@ impl<'a, T: Tape + Default> Interpreter<'a, T> {
 mod tests {
     use std::io;
     use Instruction;
-    use Program;
+    use program::Program;
     use tape::VecTape;
     use super::*;
 

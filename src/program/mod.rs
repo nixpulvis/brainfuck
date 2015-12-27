@@ -2,7 +2,10 @@ use std::fmt;
 use std::io::Read;
 use std::path::Path;
 use std::fs::File;
-use super::{Error, Instruction};
+use super::Instruction;
+
+// Re-exports.
+pub use self::error::Error;
 
 /// The logic desired to be run by the brainfuck interpreter.
 ///
@@ -39,7 +42,7 @@ impl Program {
                 ']' => {
                     let open_pc = match stack.pop() {
                         Some(o) => o,
-                        None => return Err(Error::InvalidProgram)
+                        None => return Err(Error::Invalid)
                     };
                     let open = asl.get_mut(open_pc).expect("in");
                     *open = Instruction::SkipForward(count);
@@ -51,7 +54,7 @@ impl Program {
             asl.push(instruction)
         }
         if !stack.is_empty() {
-            return Err(Error::InvalidProgram)
+            return Err(Error::Invalid)
         }
         Ok(Program { asl: asl })
     }
@@ -79,6 +82,9 @@ impl fmt::Display for Program {
         write!(f, "{}", string)
     }
 }
+
+/// Program errors.
+mod error;
 
 #[cfg(test)]
 mod tests {

@@ -4,6 +4,11 @@ use std::ops;
 /// below this limit will result in an error.
 pub const TAPE_LENGTH: usize = 30000;
 
+// Re-exports.
+pub use self::error::Error;
+pub use self::vec_tape::VecTape;
+pub use self::array_tape::ArrayTape;
+
 /// An interface for the underlying data for brainfuck. Tapes are
 /// conceptually a sequential list of cells, who's values can be
 /// represented as bytes.
@@ -24,11 +29,6 @@ pub trait Tape: ops::Deref<Target=u8> + ops::DerefMut {
     /// Decrement the location of the pointer by 1 cell.
     fn dec_ptr(&mut self) -> Result<usize, Error>;
 }
-
-// Re-exports.
-pub use self::error::Error;
-pub use self::vec_tape::VecTape;
-pub use self::array_tape::ArrayTape;
 
 macro_rules! tape_tests {
     ($tape:ident) => {

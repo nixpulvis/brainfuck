@@ -46,6 +46,7 @@
 use std::io;
 use std::path::Path;
 use tape::VecTape;
+use program::Program;
 
 /// The number of instructions allowed to execute before the interpreter
 /// errors with `Error::CycleLimit`.
@@ -55,7 +56,6 @@ pub const CYCLE_LIMIT: u64 = 10000000;
 pub use error::Error;
 pub use interpreter::Interpreter;
 pub use instruction::Instruction;
-pub use program::Program;
 
 /// Run the given program with STDIN and STDOUT as the IO buffers.
 pub fn eval(program: Program) -> Result<(), Error> {
@@ -85,7 +85,7 @@ mod interpreter;
 mod instruction;
 
 /// Brainfuck programs are the best kind of programs too!
-mod program;
+pub mod program;
 
 /// Brainfuck programs have the best underlying data structure.
 pub mod tape;
