@@ -103,16 +103,16 @@ impl<'a> Interpreter<'a> {
     fn execute(&mut self, instruction: Instruction) -> Result<Instruction, Error> {
         match instruction {
             Instruction::IncPtr => {
-                self.tape.inc_ptr().unwrap();
+                try!(self.tape.inc_ptr());
             },
             Instruction::DecPtr => {
-                self.tape.dec_ptr().unwrap();
+                try!(self.tape.dec_ptr());
             },
             Instruction::IncVal => {
-                self.tape.inc_val().unwrap();
+                try!(self.tape.inc_val());
             },
             Instruction::DecVal => {
-                self.tape.dec_val().unwrap();
+                try!(self.tape.dec_val());
             },
             Instruction::Output => {
                 if let Some(ref mut w) = self.writer {
