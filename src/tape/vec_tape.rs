@@ -54,11 +54,10 @@ impl super::Tape for VecTape {
     fn inc_ptr(&mut self) -> Result<usize, super::Error> {
         match self.ptr.checked_add(1) {
             Some(v) if v < TAPE_LENGTH => {
-                let mut extension = Vec::new();
-                for _ in self.cells.len()..(self.cells.len() + 1) {
-                    extension.push(0);
+                if v >= self.cells.len() {
+                    // Add another cell dynamically.
+                    self.cells.push(0);
                 }
-                self.cells.extend(extension);
                 self.ptr = v;
                 Ok(v)
             },
