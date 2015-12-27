@@ -61,11 +61,7 @@ pub use program::Program;
 pub fn eval(program: Program) -> Result<(), Error> {
     let mut stdin = io::stdin();
     let mut stdout = io::stdout();
-    Interpreter::<VecTape>::default()
-        .read_from(&mut stdin)
-        .write_to(&mut stdout)
-        .load(program)
-        .run()
+    Interpreter::<VecTape>::new(program, &mut stdin, &mut stdout).run()
 }
 
 /// Parse a program from the given string and `eval` it.

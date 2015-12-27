@@ -54,10 +54,7 @@ fn bf_dbf2c() {
     let mut writer = Vec::<u8>::new();
     let program = Program::from_file("fixtures/dbf2c.b").unwrap();
     {
-        let mut interp = Interpreter::<tape::VecTape>::default();
-        interp.read_from(&mut reader);
-        interp.write_to(&mut writer);
-        interp.load(program);
+        let mut interp = Interpreter::<tape::VecTape>::new(program, &mut reader, &mut writer);
         interp.run().unwrap();
     }
     let got = String::from_utf8(writer).unwrap();
@@ -71,10 +68,7 @@ fn bf_dbfi() {
     let mut writer = Vec::<u8>::new();
     let program = Program::from_file("fixtures/dbfi.b").unwrap();
     {
-        let mut interp = Interpreter::<tape::VecTape>::default();
-        interp.read_from(&mut reader);
-        interp.write_to(&mut writer);
-        interp.load(program);
+        let mut interp = Interpreter::<tape::VecTape>::new(program, &mut reader, &mut writer);
         interp.run().unwrap();
     }
     assert_eq!(String::from_utf8(writer).unwrap(), "1");

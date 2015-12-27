@@ -29,6 +29,16 @@ pub struct Interpreter<'a, T: Tape + Default> {
 }
 
 impl<'a, T: Tape + Default> Interpreter<'a, T> {
+    /// Create a new interpreter with the given program, optional reader,
+    /// and writer.
+    pub fn new<R: Read, W: Write>(program: Program, reader: &'a mut R, writer: &'a mut W) -> Interpreter<'a, T> {
+        let mut interp = Self::default();
+        interp.load(program);
+        interp.read_from(reader);
+        interp.write_to(writer);
+        interp
+    }
+
     /// Load a program for the interpreter to run.
     pub fn load(&mut self, program: Program) -> &mut Self {
         self.pc = 0;
@@ -144,7 +154,10 @@ mod tests {
 
     #[test]
     fn new() {
-        let _ = Interpreter::<VecTape>::default();
+        let program = Program::parse("++>+.").unwrap();
+        let mut reader = io::empty();
+        let mut writer = Vec::<u8>::new();
+        let _ = Interpreter::<VecTape>::new(program, &mut reader, &mut writer);
     }
 
     #[test]

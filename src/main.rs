@@ -42,10 +42,7 @@ fn main() {
     } else {
         let mut stdin = io::stdin();
         let mut stdout = io::stdout();
-        let mut interp = Interpreter::<tape::VecTape>::default();
-        interp.load(program);
-        interp.read_from(&mut stdin);
-        interp.write_to(&mut stdout);
+        let mut interp = Interpreter::<tape::VecTape>::new(program, &mut stdin, &mut stdout);
         if args.flag_instrumentation {
             let mut instruction_map: HashMap<Instruction, usize> = HashMap::new();
             interp.run_with_callback(|_, i| {
