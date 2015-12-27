@@ -40,7 +40,7 @@
 //! [control-flow]: enum.Instruction.html#control-flow
 //! [instruction-docs]: enum.Instruction.html
 //! [portabiliy]: http://www.muppetlabs.com/%7Ebreadbox/bf/standards.html
-#![feature(op_assign_traits, augmented_assignments)]
+#![feature(augmented_assignments)]
 #![deny(warnings)]
 
 use std::io;
@@ -55,7 +55,7 @@ pub use error::Error;
 pub use interpreter::Interpreter;
 pub use instruction::Instruction;
 pub use program::Program;
-pub use tape::VecTape;
+pub use tape::{Tape, VecTape};
 
 /// Run the given program with STDIN and STDOUT as the IO buffers.
 pub fn eval(program: Program) -> Result<(), Error> {

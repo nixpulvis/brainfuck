@@ -1,5 +1,5 @@
 use std::io::{Read, Write};
-use super::{CYCLE_LIMIT, Error, Program, Instruction, VecTape};
+use super::{CYCLE_LIMIT, Error, Program, Instruction, Tape, VecTape};
 
 /// A brainfuck interpreter, with the needed state for execution.
 ///
@@ -103,16 +103,16 @@ impl<'a> Interpreter<'a> {
     fn execute(&mut self, instruction: Instruction) -> Result<Instruction, Error> {
         match instruction {
             Instruction::IncPtr => {
-                self.tape >>= 1;
+                self.tape.inc_ptr().unwrap();
             },
             Instruction::DecPtr => {
-                self.tape <<= 1;
+                self.tape.dec_ptr().unwrap();
             },
             Instruction::IncVal => {
-                self.tape += 1;
+                self.tape.inc_val().unwrap();
             },
             Instruction::DecVal => {
-                self.tape -= 1;
+                self.tape.dec_val().unwrap();
             },
             Instruction::Output => {
                 if let Some(ref mut w) = self.writer {
