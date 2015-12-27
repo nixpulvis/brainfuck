@@ -43,12 +43,75 @@ impl fmt::Display for Error {
     }
 }
 
+// Re-exports.
+pub use self::vec_tape::VecTape;
+pub use self::array_tape::ArrayTape;
+
+macro_rules! tape_tests {
+    ($tape:ident) => {
+        #[cfg(test)]
+        mod tests {
+            use super::*;
+            use tape::Tape;
+
+            #[test]
+            fn new() {
+                let _ = $tape::default();
+            }
+
+            #[test]
+            fn deref() {
+                let tape = $tape::default();
+                assert_eq!(*tape, 0);
+            }
+
+            #[test]
+            fn deref_mut() {
+                let mut tape = $tape::default();
+                tape.inc_val().unwrap();
+                *tape = 20;
+                assert_eq!(*tape, 20);
+            }
+
+            #[test]
+            fn inc_val() {
+                let mut tape = $tape::default();
+                *tape = 20;
+                tape.inc_val().unwrap();
+                assert_eq!(*tape, 21);
+            }
+
+            #[test]
+            fn dec_val() {
+                let mut tape = $tape::default();
+                *tape = 20;
+                tape.dec_val().unwrap();
+                assert_eq!(*tape, 19);
+            }
+
+            #[test]
+            fn inc_ptr() {
+                let mut tape = $tape::default();
+                *tape = 20;
+                tape.inc_ptr().unwrap();
+                assert_eq!(*tape, 0);
+            }
+
+            #[test]
+            fn dec_ptr() {
+                let mut tape = $tape::default();
+                *tape = 20;
+                tape.inc_ptr().unwrap();
+                assert_eq!(*tape, 0);
+                tape.dec_ptr().unwrap();
+                assert_eq!(*tape, 20);
+            }
+        }
+    }
+}
+
 /// A `Vec` based tape.
 mod vec_tape;
 
 /// A `[]` (array) based tape.
 mod array_tape;
-
-// Re-exports.
-pub use self::vec_tape::VecTape;
-pub use self::array_tape::ArrayTape;
