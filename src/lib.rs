@@ -40,32 +40,28 @@
 //! [control-flow]: enum.Instruction.html#control-flow
 //! [instruction-docs]: enum.Instruction.html
 //! [portabiliy]: http://www.muppetlabs.com/%7Ebreadbox/bf/standards.html
-#![feature(op_assign_traits, augmented_assignments)]
+#![feature(augmented_assignments)]
 #![deny(warnings)]
 
 use std::io;
 use std::path::Path;
+use tape::VecTape;
 
 /// The number of instructions allowed to execute before the interpreter
 /// errors with `Error::CycleLimit`.
 pub const CYCLE_LIMIT: u64 = 10000000;
-
-/// The number of cells the tape contains. Attempts to access above or
-/// below this limit will result in an error.
-pub const TAPE_LENGTH: usize = 30000;
 
 // Re-exports.
 pub use error::Error;
 pub use interpreter::Interpreter;
 pub use instruction::Instruction;
 pub use program::Program;
-pub use tape::Tape;
 
 /// Run the given program with STDIN and STDOUT as the IO buffers.
 pub fn eval(program: Program) -> Result<(), Error> {
     let mut stdin = io::stdin();
     let mut stdout = io::stdout();
-    Interpreter::new()
+    Interpreter::<VecTape>::new()
         .read_from(&mut stdin)
         .write_to(&mut stdout)
         .load(program)
@@ -96,4 +92,4 @@ mod instruction;
 mod program;
 
 /// Brainfuck programs have the best underlying data structure.
-mod tape;
+pub mod tape;
