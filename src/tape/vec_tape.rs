@@ -1,10 +1,10 @@
 use std::ops;
 
-/// A fixed length data structure for holding bytes and a pointer.
+/// A tape with dynamically allocated cells.
 ///
-/// The tape consists of a fixed array of bytes, and a pointer into the
-/// array. The pointer is guerenteed to be in the range of the array, so
-/// lookups can be done unconditionally.
+/// This tape is implemented with a `Vec<u8>` so it only uses memory it
+/// needs. The cells are of type `u8`, and the tape's length is forced to
+/// be no greater than `TAPE_LENGTH` so this tape is *nice*.
 pub struct VecTape {
     cells: Vec<u8>,
     ptr: usize,
