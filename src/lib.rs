@@ -13,6 +13,17 @@
 //! values after the input value. For more about control flow in brainfuck
 //! read the section on [control flow][control-flow].
 //!
+//! # Examples
+//!
+//! ```
+//! use brainfuck;
+//!
+//! // Evaluate a simple brainfuck program from a string.
+//! brainfuck::eval_string("+>.");
+//! // Evaluate a brainfuck program from a file.
+//! brainfuck::eval_file("fixtures/helloworld.rs");
+//! ```
+//!
 //! # Semantics and Portability
 //!
 //! The brainfuck language has a few areas that are undefined behavior. These
@@ -58,7 +69,7 @@ pub use interpreter::Interpreter;
 pub use instruction::Instruction;
 
 /// Run the given program with STDIN and STDOUT as the IO buffers.
-pub fn eval(program: Program) -> Result<(), Error> {
+fn eval(program: Program) -> Result<(), Error> {
     let mut stdin = io::stdin();
     let mut stdout = io::stdout();
     Interpreter::<VecTape>::new(program, &mut stdin, &mut stdout).run()
