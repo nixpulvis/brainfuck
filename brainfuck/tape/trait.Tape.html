@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Tape` trait in crate `brainfuck`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Tape">
+
+    <title>brainfuck::tape::Tape - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>brainfuck</a>::<wbr><a href='index.html'>tape</a></p><script>window.sidebarCurrent = {name: 'Tape', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>brainfuck</a>::<wbr><a href='index.html'>tape</a>::<wbr><a class='trait' href=''>Tape</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-279' class='srclink' href='../../src/brainfuck/tape/mod.rs.html#10-26' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait Tape: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Deref.html' title='core::ops::Deref'>Deref</a>&lt;Target=<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>&gt; + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.DerefMut.html' title='core::ops::DerefMut'>DerefMut</a> {
+    type Cell;
+    fn <a href='#tymethod.inc_val' class='fnname'>inc_val</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;Self::<a class='trait' href='../../brainfuck/tape/trait.Tape.html' title='brainfuck::tape::Tape'>Cell</a>, <a class='enum' href='../../brainfuck/tape/enum.Error.html' title='brainfuck::tape::Error'>Error</a>&gt;;
+    fn <a href='#tymethod.dec_val' class='fnname'>dec_val</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;Self::<a class='trait' href='../../brainfuck/tape/trait.Tape.html' title='brainfuck::tape::Tape'>Cell</a>, <a class='enum' href='../../brainfuck/tape/enum.Error.html' title='brainfuck::tape::Error'>Error</a>&gt;;
+    fn <a href='#tymethod.inc_ptr' class='fnname'>inc_ptr</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='enum' href='../../brainfuck/tape/enum.Error.html' title='brainfuck::tape::Error'>Error</a>&gt;;
+    fn <a href='#tymethod.dec_ptr' class='fnname'>dec_ptr</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='enum' href='../../brainfuck/tape/enum.Error.html' title='brainfuck::tape::Error'>Error</a>&gt;;
+}</pre><div class='docblock'><p>An interface for the underlying data for brainfuck. Tapes are
+conceptually a sequential list of cells, who&#39;s values can be
+represented as bytes.</p>
+</div>
+            <h2 id='associated-types'>Associated Types</h2>
+            <div class='methods'>
+        <h3 id='associatedtype.Cell' class='method stab '><code>type Cell</code></h3><div class='docblock'><p>The underlying cell type, that holds the data. This value when
+dereferenced will need to be converted to a <code>u8</code>.</p>
+</div></div>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.inc_val' class='method stab '><code>fn <a href='#tymethod.inc_val' class='fnname'>inc_val</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;Self::<a class='trait' href='../../brainfuck/tape/trait.Tape.html' title='brainfuck::tape::Tape'>Cell</a>, <a class='enum' href='../../brainfuck/tape/enum.Error.html' title='brainfuck::tape::Error'>Error</a>&gt;</code></h3><div class='docblock'><p>Increment the value of the current cell by 1.</p>
+</div><h3 id='tymethod.dec_val' class='method stab '><code>fn <a href='#tymethod.dec_val' class='fnname'>dec_val</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;Self::<a class='trait' href='../../brainfuck/tape/trait.Tape.html' title='brainfuck::tape::Tape'>Cell</a>, <a class='enum' href='../../brainfuck/tape/enum.Error.html' title='brainfuck::tape::Error'>Error</a>&gt;</code></h3><div class='docblock'><p>Decrement the value of the current cell by 1.</p>
+</div><h3 id='tymethod.inc_ptr' class='method stab '><code>fn <a href='#tymethod.inc_ptr' class='fnname'>inc_ptr</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='enum' href='../../brainfuck/tape/enum.Error.html' title='brainfuck::tape::Error'>Error</a>&gt;</code></h3><div class='docblock'><p>Increment the location of the pointer by 1 cell.</p>
+</div><h3 id='tymethod.dec_ptr' class='method stab '><code>fn <a href='#tymethod.dec_ptr' class='fnname'>dec_ptr</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='enum' href='../../brainfuck/tape/enum.Error.html' title='brainfuck::tape::Error'>Error</a>&gt;</code></h3><div class='docblock'><p>Decrement the location of the pointer by 1 cell.</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl <a class='trait' href='../../brainfuck/tape/trait.Tape.html' title='brainfuck::tape::Tape'>Tape</a> for <a class='struct' href='../../brainfuck/tape/struct.VecTape.html' title='brainfuck::tape::VecTape'>VecTape</a></code></li>
+<li><code>impl <a class='trait' href='../../brainfuck/tape/trait.Tape.html' title='brainfuck::tape::Tape'>Tape</a> for <a class='struct' href='../../brainfuck/tape/struct.ArrayTape.html' title='brainfuck::tape::ArrayTape'>ArrayTape</a></code></li>
+</ul><script type="text/javascript" async
+                              src="../../implementors/brainfuck/tape/trait.Tape.js">
+                      </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "brainfuck";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

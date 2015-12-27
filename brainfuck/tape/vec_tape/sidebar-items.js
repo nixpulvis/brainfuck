@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["VecTape","A tape with dynamically allocated cells."]]});

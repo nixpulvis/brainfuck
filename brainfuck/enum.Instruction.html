@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-130' class='srclink' href='../src/brainfuck/instruction.rs.html#26-52' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-145' class='srclink' href='../src/brainfuck/instruction.rs.html#26-48' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum Instruction {
     IncPtr,
     DecPtr,
@@ -78,14 +78,10 @@ cell is <strong>not</strong> 0. This allows for a relatively simple syntax for
 decrementing iteration. For example <code>+++[- &gt; operate on cell 2 &lt; ]&gt;.</code>
 is the boilerplate for a loop that operates 3 times.</p>
 </div><h2 class='variants'>Variants</h2>
-<table><tr><td id='variant.IncPtr'><code>IncPtr</code></td><td><div class='docblock'><p>Increment the pointer moving it up on the tape.
-TODO: Document wrapping/error behavior.</p>
-</div></td></tr><tr><td id='variant.DecPtr'><code>DecPtr</code></td><td><div class='docblock'><p>Decrement the pointer moving it down on the tape.
-TODO: Document wrapping/error behavior.</p>
-</div></td></tr><tr><td id='variant.IncVal'><code>IncVal</code></td><td><div class='docblock'><p>Increment the value at the pointer on the tape.
-TODO: Document wrapping/error behavior.</p>
-</div></td></tr><tr><td id='variant.DecVal'><code>DecVal</code></td><td><div class='docblock'><p>Decrement the value at the pointer on the tape.
-TODO: Document wrapping/error behavior.</p>
+<table><tr><td id='variant.IncPtr'><code>IncPtr</code></td><td><div class='docblock'><p>Increment the pointer moving it up on the tape.</p>
+</div></td></tr><tr><td id='variant.DecPtr'><code>DecPtr</code></td><td><div class='docblock'><p>Decrement the pointer moving it down on the tape.</p>
+</div></td></tr><tr><td id='variant.IncVal'><code>IncVal</code></td><td><div class='docblock'><p>Increment the value at the pointer on the tape.</p>
+</div></td></tr><tr><td id='variant.DecVal'><code>DecVal</code></td><td><div class='docblock'><p>Decrement the value at the pointer on the tape.</p>
 </div></td></tr><tr><td id='variant.Output'><code>Output</code></td><td><div class='docblock'><p>Write the value at the pointer as a <code>char</code> to <code>STDOUT</code>. This
 instruction can fail if writing to the underlying writer fails.</p>
 </div></td></tr><tr><td id='variant.Input'><code>Input</code></td><td><div class='docblock'><p>Read from <code>STDIN</code> as a <code>char</code> to value at the pointer. This

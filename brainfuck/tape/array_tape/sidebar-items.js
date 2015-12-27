@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["ArrayTape","A tape with statically allocated cells."]]});
