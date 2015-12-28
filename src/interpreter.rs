@@ -20,7 +20,7 @@ use super::{CYCLE_LIMIT, Error, Instruction};
 ///
 /// [top-doc]: index.html
 #[derive(Default)]
-pub struct Interpreter<'a, T: Tape + Default> {
+pub struct Interpreter<'a, T: Tape> {
     program: Option<Program>,
     reader: Option<&'a mut Read>,
     writer: Option<&'a mut Write>,
