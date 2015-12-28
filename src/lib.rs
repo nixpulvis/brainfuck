@@ -42,31 +42,26 @@
 //!
 //! # Semantics and Portability
 //!
-//! The brainfuck language has a few areas that are undefined behavior. These
-//! undefined behaviors are given explicit semantics in this implmentation.
-//! Most brainfuck programs should work as expected in this implmentation.
-//! For more information on portabiliy of brainfuck programs read
-//! [The Unofficial Constraints on Portable Brainfuck Implementations][portabiliy].
-//! The deatils below should cover all of the undefined behavior in brainfuck
-//! with respect to this implmentation.
+//! The brainfuck language has a few areas that are undefined behavior. All of
+//! the undefined behaviors in brainfuck are listed below:
 //!
-//! - The tape contains `TAPE_LENGTH` (currently 30,000) cells.
-//! - The tape's pointer may **not** be moved below or above the begining
-//! or the end of the tape. The interpreter will return an `Err` if the
-//! program does so.
-//! - The values of the tape are unsigned bytes (`u8` in rust).
-//! - Values may not be incremented or decremented above 255, or below 0.
-//! The interpreter will return an `Err` if the program does so.
-//! - Attpempts to read input when there is no more input to be read will
-//! be effective noops (potentially with a warning).
-//! - Programs cannot contain unmatching brackets, and functions like
-//! `Program::parse` ensure this before running the program.
+//! 1. The tape's length.
+//! 2. Moving the tape's pointer above or below the range of the tape.
+//! 3. The type of the values of the tape.
+//! 4. Incrementing or decrementing the value out of range.
+//! 5. Attempting to read input when there is no more input.
+//! 6. Programs containing unmatching brackets.
+//!
+//! For 1-4 see the tape's [documentation][tape]. New tape's can be created to
+//! give arbitrary semantics for these points. For 5 and 6, attempts to read
+//! when there are no more input values are ignored. Programs with unmatched
+//! brackets are invalid.
 //!
 //! [instruction]: enum.Instruction.html
 //! [brainfuck]: http://www.muppetlabs.com/~breadbox/bf/
 //! [control-flow]: enum.Instruction.html#control-flow
 //! [instruction-docs]: enum.Instruction.html
-//! [portabiliy]: http://www.muppetlabs.com/%7Ebreadbox/bf/standards.html
+//! [tape]: tape/index.html
 #![feature(augmented_assignments)]
 #![deny(warnings)]
 
@@ -91,12 +86,30 @@ fn eval(program: Program) -> Result<(), Error> {
     Interpreter::<VecTape>::new(program, &mut stdin, &mut stdout).run()
 }
 
-/// Parse a program from the given string and `eval` it.
+/// Parse a program from the given string and run it.
+///
+/// This uses the dynamic `VecTape` implmentation, and reads and writes
+/// to `STDIN` and `STDOUT`. This covers the most common use case for brainfuck.
+///
+/// ```
+/// use brainfuck;
+///
+/// brainfuck::eval_string("+>.");
+/// ```
 pub fn eval_string(source: &str) -> Result<(), Error> {
     eval(try!(Program::parse(source)))
 }
 
-/// Parse a program from the given file path and `eval` it.
+/// Parse a program from the given file path and run it.
+///
+/// This uses the dynamic `VecTape` implmentation, and reads and writes
+/// to `STDIN` and `STDOUT`. This covers the most common use case for brainfuck.
+///
+/// ```
+/// use brainfuck;
+///
+/// brainfuck::eval_file("fixtures/helloworld.rs");
+/// ```
 pub fn eval_file<P: AsRef<Path>>(path: P) -> Result<(), Error> {
     let program = try!(Program::from_file(path));
     eval(program)
@@ -111,8 +124,8 @@ mod interpreter;
 /// Brainfuck instructions are the best kind of instructions.
 mod instruction;
 
-/// Brainfuck programs are the best kind of programs too!
+/// Data structure for the logic of a user brainfuck program.
 pub mod program;
 
-/// Brainfuck programs have the best underlying data structure.
+/// Underlying data structure for brainfuck programs.
 pub mod tape;
