@@ -20,11 +20,11 @@ pub enum Error {
 impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
-            Error::Io(_) => "IO error.",
-            Error::Tape(_) => "Tape error.",
-            Error::Program(_) => "Program error.",
-            Error::NoProgram => "No program loaded.",
-            Error::CycleLimit => "Cycle limit hit.",
+            Error::Io(_) => "IO error",
+            Error::Tape(_) => "Tape error",
+            Error::Program(_) => "Program error",
+            Error::NoProgram => "No program loaded",
+            Error::CycleLimit => "Cycle limit hit",
         }
     }
 }

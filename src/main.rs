@@ -37,7 +37,9 @@ fn main() {
         Args { arg_program: Some(p), .. } => Program::parse(&p),
         Args { arg_file: Some(p), .. } => Program::from_file(p),
         _ => panic!("Bad args."),
-    }).unwrap();
+    }).unwrap_or_else(|e| {
+        panic!("{}", e);
+    });
     if args.flag_asl {
         println!("{}", program);
 
@@ -51,12 +53,12 @@ fn main() {
                 let counter = instruction_map.entry(*i).or_insert(0);
                 *counter += 1;
             }).unwrap_or_else(|e| {
-                println!("\nWARN: {}", e);
+                panic!("{}", e);
             });
             println!("{:?}", instruction_map);
         } else {
             interp.run().unwrap_or_else(|e| {
-                println!("\nWARN: {}", e);
+                panic!("{}", e);
             });
         }
     }

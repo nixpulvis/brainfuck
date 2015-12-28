@@ -41,13 +41,14 @@ load_and_run!(bf_dquine,          "fixtures/dquine.b");
 load_and_run!(bf_dvorak,          "fixtures/dvorak.b");
 load_and_run!(bf_rot13,           "fixtures/rot13.b");
 load_and_run!(bf_wc,              "fixtures/wc.b");
-// load_and_run!(bf_collatz,         "fixtures/collatz.b");
+load_and_run!(bf_collatz,         "fixtures/collatz.b");
+// load_and_run!(bf_short,           "fixtures/short.b");
 load_and_run_limit!(bf_random,    "fixtures/random.b");
 load_and_run_limit!(bf_thuemorse, "fixtures/thuemorse.b");
 load_and_run_limit!(bf_factorial, "fixtures/factorial.b");
 load_and_run_limit!(bf_fib,       "fixtures/fib.b");
 // load_and_run_io!(bf_tests, "fixtures/tests.b");
-// load_and_run!(bf_short, "fixtures/short.b");
+
 
 #[test]
 fn bf_dbf2c() {

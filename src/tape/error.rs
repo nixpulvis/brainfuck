@@ -12,10 +12,10 @@ pub enum Error {
 impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
-            Error::ValOverflow => "Tape value overflowed.",
-            Error::ValUnderflow => "Tape value underflowed.",
-            Error::PtrOverflow => "Tape pointer overflowed.",
-            Error::PtrUnderflow => "Tape pointer underflowed.",
+            Error::ValOverflow => "Tape value overflowed",
+            Error::ValUnderflow => "Tape value underflowed",
+            Error::PtrOverflow => "Tape pointer overflowed",
+            Error::PtrUnderflow => "Tape pointer underflowed",
         }
     }
 }

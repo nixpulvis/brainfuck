@@ -42,7 +42,7 @@ impl Program {
                 ']' => {
                     let open_pc = match stack.pop() {
                         Some(o) => o,
-                        None => return Err(Error::Invalid)
+                        None => return Err(Error::MissingOpenBracket(count))
                     };
                     let open = asl.get_mut(open_pc).expect("in");
                     *open = Instruction::SkipForward(count);
@@ -54,7 +54,7 @@ impl Program {
             asl.push(instruction)
         }
         if !stack.is_empty() {
-            return Err(Error::Invalid)
+            return Err(Error::MissingCloseBracket(stack.len()))
         }
         Ok(Program { asl: asl })
     }
