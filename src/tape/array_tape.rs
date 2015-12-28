@@ -24,6 +24,10 @@ impl Default for ArrayTape {
 impl Tape for ArrayTape {
     type Cell = u8;
 
+    fn is_nice() -> bool {
+        true
+    }
+
     fn inc_val(&mut self) -> Result<Self::Cell, Error> {
         match self.checked_add(1) {
             Some(v) => {

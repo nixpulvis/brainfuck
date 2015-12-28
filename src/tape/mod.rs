@@ -17,6 +17,10 @@ pub trait Tape: ops::Deref<Target=u8> + ops::DerefMut {
     /// dereferenced will need to be converted to a `u8`.
     type Cell;
 
+    /// Returns true if this tape is *nice*, meaning that it upholds
+    /// the expectations of most brainfuck programs.
+    fn is_nice() -> bool;
+
     /// Increment the value of the current cell by 1.
     fn inc_val(&mut self) -> Result<Self::Cell, Error>;
 
