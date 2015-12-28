@@ -50,13 +50,15 @@ impl Program {
                 },
                 _ => continue,
             };
-            count = count + 1;
-            asl.push(instruction)
+            count += 1;
+            asl.push(instruction);
         }
         if !stack.is_empty() {
             return Err(Error::MissingCloseBracket(stack.len()))
         }
-        Ok(Program { asl: asl })
+        Ok(Program {
+            asl: asl
+        })
     }
 
     /// Get the instruction at the given program counter.

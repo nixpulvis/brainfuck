@@ -42,7 +42,6 @@ fn main() {
     });
     if args.flag_asl {
         println!("{}", program);
-
     } else {
         let mut stdin = io::stdin();
         let mut stdout = io::stdout();
