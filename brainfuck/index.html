@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/brainfuck/lib.rs.html#1-102' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/brainfuck/lib.rs.html#1-131' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Simple brainfuck interpreter in Rust.</p>
 
 <p>The brainfuck language was created with the purpose of being a
@@ -62,7 +62,9 @@ flow contructs <code>[</code> and <code>]</code>. <code>+++&gt;,&lt;[&gt;+.&lt;-
 values after the input value. For more about control flow in brainfuck
 read the section on <a href="enum.Instruction.html#control-flow">control flow</a>.</p>
 
-<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1><pre class='rust rust-example-rendered'>
+<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1>
+<p>Basic usage.</p>
+<pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>brainfuck</span>;
 
 <span class='comment'>// Evaluate a simple brainfuck program from a string.</span>
@@ -70,35 +72,42 @@ read the section on <a href="enum.Instruction.html#control-flow">control flow</a
 <span class='comment'>// Evaluate a brainfuck program from a file.</span>
 <span class='ident'>brainfuck</span>::<span class='ident'>eval_file</span>(<span class='string'>&quot;fixtures/helloworld.rs&quot;</span>);</pre>
 
-<h1 id='semantics-and-portability' class='section-header'><a href='#semantics-and-portability'>Semantics and Portability</a></h1>
-<p>The brainfuck language has a few areas that are undefined behavior. These
-undefined behaviors are given explicit semantics in this implmentation.
-Most brainfuck programs should work as expected in this implmentation.
-For more information on portabiliy of brainfuck programs read
-<a href="http://www.muppetlabs.com/%7Ebreadbox/bf/standards.html">The Unofficial Constraints on Portable Brainfuck Implementations</a>.
-The deatils below should cover all of the undefined behavior in brainfuck
-with respect to this implmentation.</p>
+<p>Advanced usage, with specified tape type.</p>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>;
+<span class='kw'>use</span> <span class='ident'>brainfuck</span>::<span class='ident'>Interpreter</span>;
+<span class='kw'>use</span> <span class='ident'>brainfuck</span>::<span class='ident'>program</span>::<span class='ident'>Program</span>;
+<span class='kw'>use</span> <span class='ident'>brainfuck</span>::<span class='ident'>tape</span>::<span class='ident'>ArrayTape</span>;
 
-<ul>
-<li>The tape contains <code>TAPE_LENGTH</code> (currently 30,000) cells.</li>
-<li>The tape&#39;s pointer may <strong>not</strong> be moved below or above the begining
-or the end of the tape. The interpreter will return an <code>Err</code> if the
-program does so.</li>
-<li>The values of the tape are unsigned bytes (<code>u8</code> in rust).</li>
-<li>Values may not be incremented or decremented above 255, or below 0.
-The interpreter will return an <code>Err</code> if the program does so.</li>
-<li>Attpempts to read input when there is no more input to be read will
-be effective noops (potentially with a warning).</li>
-<li>Programs cannot contain unmatching brackets, and functions like
-<code>Program::parse</code> ensure this before running the program.</li>
-</ul>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>stdin</span> <span class='op'>=</span> <span class='ident'>io</span>::<span class='ident'>stdin</span>();
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>stdout</span> <span class='op'>=</span> <span class='ident'>io</span>::<span class='ident'>stdout</span>();
+<span class='kw'>let</span> <span class='ident'>program</span> <span class='op'>=</span> <span class='ident'>Program</span>::<span class='ident'>parse</span>(<span class='string'>&quot;++&gt;+.&quot;</span>).<span class='ident'>unwrap</span>();
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>interp</span> <span class='op'>=</span> <span class='ident'>Interpreter</span>::<span class='op'>&lt;</span><span class='ident'>ArrayTape</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>program</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>stdin</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>stdout</span>);</pre>
+
+<h1 id='semantics-and-portability' class='section-header'><a href='#semantics-and-portability'>Semantics and Portability</a></h1>
+<p>The brainfuck language has a few areas that are undefined behavior. All of
+the undefined behaviors in brainfuck are listed below:</p>
+
+<ol>
+<li>The tape&#39;s length.</li>
+<li>Moving the tape&#39;s pointer above or below the range of the tape.</li>
+<li>The type of the values of the tape.</li>
+<li>Incrementing or decrementing the value out of range.</li>
+<li>Attempting to read input when there is no more input.</li>
+<li>Programs containing unmatching brackets.</li>
+</ol>
+
+<p>For 1-4 see the tape&#39;s <a href="tape/index.html">documentation</a>. New tape&#39;s can be created to
+give arbitrary semantics for these points. For 5 and 6, attempts to read
+when there are no more input values are ignored. Programs with unmatched
+brackets are invalid.</p>
 </div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                     <tr class=' module-item'>
                         <td><a class='mod' href='program/index.html'
                                title='brainfuck::program'>program</a></td>
                         <td class='docblock short'>
-                             <p>Brainfuck programs are the best kind of programs too!</p>
+                             <p>Data structure for the logic of a user brainfuck program.</p>
 
                         </td>
                     </tr>
@@ -107,7 +116,7 @@ be effective noops (potentially with a warning).</li>
                         <td><a class='mod' href='tape/index.html'
                                title='brainfuck::tape'>tape</a></td>
                         <td class='docblock short'>
-                             <p>Brainfuck programs have the best underlying data structure.</p>
+                             <p>Underlying data structure for brainfuck programs.</p>
 
                         </td>
                     </tr>
@@ -157,7 +166,7 @@ errors with <code>Error::CycleLimit</code>.</p>
                         <td><a class='fn' href='fn.eval_file.html'
                                title='brainfuck::eval_file'>eval_file</a></td>
                         <td class='docblock short'>
-                             <p>Parse a program from the given file path and <code>eval</code> it.</p>
+                             <p>Parse a program from the given file path and run it.</p>
 
                         </td>
                     </tr>
@@ -166,7 +175,7 @@ errors with <code>Error::CycleLimit</code>.</p>
                         <td><a class='fn' href='fn.eval_string.html'
                                title='brainfuck::eval_string'>eval_string</a></td>
                         <td class='docblock short'>
-                             <p>Parse a program from the given string and <code>eval</code> it.</p>
+                             <p>Parse a program from the given string and run it.</p>
 
                         </td>
                     </tr>

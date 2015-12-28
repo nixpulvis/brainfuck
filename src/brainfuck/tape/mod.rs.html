@@ -144,6 +144,10 @@
 <span id="101">101</span>
 <span id="102">102</span>
 <span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>;
 
@@ -163,6 +167,10 @@
     <span class='doccomment'>/// The underlying cell type, that holds the data. This value when</span>
     <span class='doccomment'>/// dereferenced will need to be converted to a `u8`.</span>
     <span class='kw'>type</span> <span class='ident'>Cell</span>;
+
+    <span class='doccomment'>/// Returns true if this tape is *nice*, meaning that it upholds</span>
+    <span class='doccomment'>/// the expectations of most brainfuck programs.</span>
+    <span class='kw'>fn</span> <span class='ident'>is_nice</span>() <span class='op'>-&gt;</span> <span class='ident'>bool</span>;
 
     <span class='doccomment'>/// Increment the value of the current cell by 1.</span>
     <span class='kw'>fn</span> <span class='ident'>inc_val</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Cell</span>, <span class='ident'>Error</span><span class='op'>&gt;</span>;
