@@ -15,6 +15,8 @@
 //!
 //! # Examples
 //!
+//! Basic usage.
+//!
 //! ```
 //! use brainfuck;
 //!
@@ -22,6 +24,20 @@
 //! brainfuck::eval_string("+>.");
 //! // Evaluate a brainfuck program from a file.
 //! brainfuck::eval_file("fixtures/helloworld.rs");
+//! ```
+//!
+//! Advanced usage, with specified tape type.
+//!
+//! ```
+//! use std::io;
+//! use brainfuck::Interpreter;
+//! use brainfuck::program::Program;
+//! use brainfuck::tape::ArrayTape;
+//!
+//! let mut stdin = io::stdin();
+//! let mut stdout = io::stdout();
+//! let program = Program::parse("++>+.").unwrap();
+//! let mut interp = Interpreter::<ArrayTape>::new(program, &mut stdin, &mut stdout);
 //! ```
 //!
 //! # Semantics and Portability
