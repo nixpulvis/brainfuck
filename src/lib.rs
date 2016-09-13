@@ -62,7 +62,6 @@
 //! [control-flow]: enum.Instruction.html#control-flow
 //! [instruction-docs]: enum.Instruction.html
 //! [tape]: tape/index.html
-#![feature(augmented_assignments)]
 #![deny(warnings)]
 
 use std::io;
