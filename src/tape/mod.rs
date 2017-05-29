@@ -8,6 +8,7 @@ pub const TAPE_LENGTH: usize = 30000;
 pub use self::error::Error;
 pub use self::vec_tape::VecTape;
 pub use self::array_tape::ArrayTape;
+pub use self::mod256_array_tape::Mod256ArrayTape;
 
 /// An interface for the underlying data for brainfuck. Tapes are
 /// conceptually a sequential list of cells, who's values can be
@@ -105,3 +106,6 @@ mod vec_tape;
 
 /// A `[]` (array) based tape.
 mod array_tape;
+
+/// A `[]` (array) based tape that does arithmetic mod 256.
+mod mod256_array_tape;
