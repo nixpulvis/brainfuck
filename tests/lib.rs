@@ -9,7 +9,7 @@ macro_rules! load_and_run {
 
         fn $name() {
             let program = Program::from_file($path).unwrap();
-            Interpreter::<tape::VecTape>::default().load(program).run().unwrap();
+            Interpreter::<tape::Mod256ArrayTape>::default().load(program).run().unwrap();
         }
     };
 }
