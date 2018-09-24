@@ -71,7 +71,7 @@ use program::Program;
 
 /// The number of instructions allowed to execute before the interpreter
 /// errors with `Error::CycleLimit`.
-pub const CYCLE_LIMIT: u64 = 10000000;
+pub const CYCLE_LIMIT: u64 = 10_000_000;
 
 // Re-exports.
 pub use error::Error;
