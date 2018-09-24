@@ -9,7 +9,7 @@ macro_rules! load_and_run {
 
         fn $name() {
             let program = Program::from_file($path).unwrap();
-            Interpreter::<tape::Mod256ArrayTape>::default().load(program).run().unwrap();
+            Interpreter::<tape::ModArrayTape>::default().load(program).run().unwrap();
         }
     };
 }
@@ -33,21 +33,21 @@ load_and_run!(bf_null,            "fixtures/null.b");
 load_and_run!(bf_jabh,            "fixtures/jabh.b");
 load_and_run!(bf_numwarp,         "fixtures/numwarp.b");
 load_and_run!(bf_squares,         "fixtures/squares.b");
-// load_and_run!(bf_392quine,        "fixtures/392quine.b");
-// load_and_run!(bf_400quine,        "fixtures/400quine.b");
+load_and_run!(bf_392quine,        "fixtures/392quine.b");
+load_and_run!(bf_400quine,        "fixtures/400quine.b");
 load_and_run!(bf_540quine,        "fixtures/540quine.b");
 load_and_run!(bf_dquine,          "fixtures/dquine.b");
-// load_and_run!(bf_utm,             "fixtures/utm.b");
+load_and_run!(bf_utm,             "fixtures/utm.b");
 load_and_run!(bf_dvorak,          "fixtures/dvorak.b");
 load_and_run!(bf_rot13,           "fixtures/rot13.b");
 load_and_run!(bf_wc,              "fixtures/wc.b");
 load_and_run!(bf_collatz,         "fixtures/collatz.b");
-// load_and_run!(bf_short,           "fixtures/short.b");
 load_and_run_limit!(bf_random,    "fixtures/random.b");
 load_and_run_limit!(bf_thuemorse, "fixtures/thuemorse.b");
 load_and_run_limit!(bf_factorial, "fixtures/factorial.b");
 load_and_run_limit!(bf_fib,       "fixtures/fib.b");
-// load_and_run_io!(bf_tests, "fixtures/tests.b");
+// load_and_run_io!(bf_tests,        "fixtures/tests.b");
+// TODO: Run all in short dir.
 
 
 #[test]
