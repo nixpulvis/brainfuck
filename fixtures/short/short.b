@@ -68,7 +68,7 @@ Version of random.b that outputs printable ASCII: "11011100..."
 Print "Hello World!" with a linefeed.
 
 >++++++++++>>+<+[[+++++[>++++++++<-]>.<++++++[>--------<-]+<<]>.>[->[
-<++>-[<++>-[<++>-[<++>-[<-------->>[-]++<-[<++>-]]]]]]<[>+<-]+>>]<<]  
+<++>-[<++>-[<++>-[<++>-[<-------->>[-]++<-[<++>-]]]]]]<[>+<-]+>>]<<]
 Output powers of two, in decimal. (Doesn't terminate.)
 
 Daniel B Cristofani (cristofdathevanetdotcom)
