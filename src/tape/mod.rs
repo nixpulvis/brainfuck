@@ -110,3 +110,5 @@ mod array_tape;
 /// A `[]` (array) based tape that does value and pointer arithmetic wrapping
 /// in a modular fashion.
 mod mod_array_tape;
+
+mod garbled_tape;
