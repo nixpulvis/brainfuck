@@ -22,8 +22,8 @@ use super::{CYCLE_LIMIT, Error, Instruction};
 #[derive(Default)]
 pub struct Interpreter<'a, T: Tape> {
     program: Option<Program>,
-    reader: Option<&'a mut Read>,
-    writer: Option<&'a mut Write>,
+    reader: Option<&'a mut dyn Read>,
+    writer: Option<&'a mut dyn Write>,
     tape: Box<T>,
     pc: usize,
     cycles: u64,
