@@ -1,4 +1,3 @@
-use std::ops;
 use super::*;
 
 /// A tape with dynamically allocated cells.
@@ -30,10 +29,18 @@ impl Tape for VecTape {
         true
     }
 
+    fn get(&self) -> Self::Cell {
+        self.cells[self.ptr]
+    }
+
+    fn set(&mut self, value: Self::Cell) {
+        self.cells[self.ptr] = value;
+    }
+
     fn inc_val(&mut self) -> Result<Self::Cell, Error> {
-        match self.checked_add(1) {
+        match self.get().checked_add(1) {
             Some(v) => {
-                **self = v;
+                self.set(v);
                 Ok(v)
             },
             None => Err(Error::ValOverflow)
@@ -41,9 +48,9 @@ impl Tape for VecTape {
     }
 
     fn dec_val(&mut self) -> Result<Self::Cell, Error> {
-        match self.checked_sub(1) {
+        match self.get().checked_sub(1) {
             Some(v) => {
-                **self = v;
+                self.set(v);
                 Ok(v)
             },
             None => Err(Error::ValUnderflow),
@@ -73,19 +80,11 @@ impl Tape for VecTape {
             _ => Err(Error::PtrUnderflow),
         }
     }
-}
 
-impl ops::Deref for VecTape {
-    type Target = u8;
-
-    fn deref(&self) -> &Self::Target {
-        &self.cells[self.ptr]
-    }
-}
-
-impl ops::DerefMut for VecTape {
-    fn deref_mut(&mut self) -> &mut u8 {
-        &mut self.cells[self.ptr]
+    fn trace(&self) {
+        println!("@[{}] = {}",
+                 self.ptr,
+                 self.cells[self.ptr]);
     }
 }
 

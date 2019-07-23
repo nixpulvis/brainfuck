@@ -64,6 +64,8 @@
 //! [tape]: tape/index.html
 #![deny(warnings)]
 
+extern crate rand;
+
 use std::io;
 use std::path::Path;
 use tape::VecTape;

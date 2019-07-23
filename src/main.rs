@@ -6,7 +6,7 @@ use std::io;
 use std::collections::HashMap;
 use docopt::Docopt;
 use brainfuck::{Interpreter, Instruction};
-use brainfuck::tape::ModArrayTape;
+use brainfuck::tape::*;
 use brainfuck::program::Program;
 
 const USAGE: &'static str = "
@@ -19,6 +19,7 @@ Usage:
 Options:
     -a --asl              Don't run, simply print the ASL.
     -i --instrumentation  Enable program instrumentation.
+    -v --verbose          Trace the program.
 ";
 
 #[derive(Debug, RustcDecodable)]
@@ -27,6 +28,7 @@ struct Args {
     arg_file: Option<String>,
     flag_asl: bool,
     flag_instrumentation: bool,
+    flag_verbose: bool,
 }
 
 fn main() {
@@ -45,8 +47,24 @@ fn main() {
     } else {
         let mut stdin = io::stdin();
         let mut stdout = io::stdout();
-        let mut interp = Interpreter::<ModArrayTape>::new(program, &mut stdin, &mut stdout);
-        if args.flag_instrumentation {
+
+        // TODO: Use trait instead of Interpreter<T> maybe?
+        // let mut interp = match args.flag_tape {
+        //     "vec" =>Interpreter::<VecTape>::new(program.clone(), &mut stdin, &mut stdout),
+        // }
+
+        // let mut interp = Interpreter::<ModArrayTape>::new(program, &mut stdin, &mut stdout);
+        // let mut interp = Interpreter::<ModArrayTape>::new(program, &mut stdin, &mut stdout);
+        // let mut interp = Interpreter::<VecTape>::new(program, &mut stdin, &mut stdout);
+        let mut interp = Interpreter::<GarbledTape>::new(program, &mut stdin, &mut stdout);
+
+        if args.flag_verbose {
+            interp.run_with_callback(|t, _| {
+                t.trace();
+            }).unwrap_or_else(|e| {
+                panic!("{}", e);
+            });
+        } else if args.flag_instrumentation {
             let mut instruction_map: HashMap<Instruction, usize> = HashMap::new();
             interp.run_with_callback(|_, i| {
                 let counter = instruction_map.entry(*i).or_insert(0);

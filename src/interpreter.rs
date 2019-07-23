@@ -71,10 +71,10 @@ impl<'a, T: Tape + Default> Interpreter<'a, T> {
 
     /// Run the interpreter with a callback hook.
     pub fn run_with_callback<F>(&mut self, mut hook: F) -> Result<(), Error>
-    where F: FnMut(&mut Self, &Instruction) {
+    where F: FnMut(&T, &Instruction) {
         while let Some(r) = try!(self.step()) {
             match r {
-                Ok(i) => hook(self, &i),
+                Ok(i) => hook(&self.tape, &i),
                 Err(e) => return Err(e),
             }
         };
@@ -117,23 +117,23 @@ impl<'a, T: Tape + Default> Interpreter<'a, T> {
             },
             Instruction::Output => {
                 if let Some(ref mut w) = self.writer {
-                    try!(w.write(&[**self.tape]));
+                    try!(w.write(&[self.tape.get().into()]));
                 }
             },
             Instruction::Input => {
                 if let Some(ref mut r) = self.reader {
                     if let Some(b) = r.bytes().next() {
-                        **self.tape = try!(b);
+                        self.tape.set(b?.into());
                     }
                 }
             },
             Instruction::SkipForward(iptr) => {
-                if **self.tape == 0 {
+                if self.tape.get().into() == 0 {
                     self.pc = iptr;
                 }
             },
             Instruction::SkipBackward(iptr) => {
-                if **self.tape != 0 {
+                if self.tape.get().into() != 0 {
                     self.pc = iptr;
                 }
             },

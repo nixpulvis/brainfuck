@@ -1,4 +1,3 @@
-use std::ops;
 use super::*;
 
 /// A tape with statically allocated cells.
@@ -28,15 +27,23 @@ impl Tape for ModArrayTape {
         true
     }
 
+    fn get(&self) -> Self::Cell {
+        self.cells[self.ptr]
+    }
+
+    fn set(&mut self, value: Self::Cell) {
+        self.cells[self.ptr] = value;
+    }
+
     fn inc_val(&mut self) -> Result<Self::Cell, Error> {
-        let v = self.wrapping_add(1);
-        **self = v;
+        let v = self.get().wrapping_add(1);
+        self.set(v);
         Ok(v)
     }
 
     fn dec_val(&mut self) -> Result<Self::Cell, Error> {
-        let v = self.wrapping_sub(1);
-        **self = v;
+        let v = self.get().wrapping_sub(1);
+        self.set(v);
         Ok(v)
     }
 
@@ -51,19 +58,11 @@ impl Tape for ModArrayTape {
         self.ptr = v;
         Ok(v)
     }
-}
 
-impl ops::Deref for ModArrayTape {
-    type Target = u8;
-
-    fn deref(&self) -> &Self::Target {
-        &self.cells[self.ptr]
-    }
-}
-
-impl ops::DerefMut for ModArrayTape {
-    fn deref_mut(&mut self) -> &mut u8 {
-        &mut self.cells[self.ptr]
+    fn trace(&self) {
+        println!("@[{}] = {}",
+                 self.ptr,
+                 self.cells[self.ptr]);
     }
 }
 

@@ -1,4 +1,3 @@
-use std::ops;
 use super::*;
 
 /// A tape with statically allocated cells.
@@ -28,10 +27,18 @@ impl Tape for ArrayTape {
         true
     }
 
+    fn get(&self) -> Self::Cell {
+        self.cells[self.ptr]
+    }
+
+    fn set(&mut self, value: Self::Cell) {
+        self.cells[self.ptr] = value;
+    }
+
     fn inc_val(&mut self) -> Result<Self::Cell, Error> {
-        match self.checked_add(1) {
+        match self.get().checked_add(1) {
             Some(v) => {
-                **self = v;
+                self.set(v);
                 Ok(v)
             },
             None => Err(Error::ValOverflow)
@@ -39,9 +46,9 @@ impl Tape for ArrayTape {
     }
 
     fn dec_val(&mut self) -> Result<Self::Cell, Error> {
-        match self.checked_sub(1) {
+        match self.get().checked_sub(1) {
             Some(v) => {
-                **self = v;
+                self.set(v);
                 Ok(v)
             },
             None => Err(Error::ValUnderflow),
@@ -67,19 +74,11 @@ impl Tape for ArrayTape {
             _ => Err(Error::PtrUnderflow),
         }
     }
-}
 
-impl ops::Deref for ArrayTape {
-    type Target = u8;
-
-    fn deref(&self) -> &Self::Target {
-        &self.cells[self.ptr]
-    }
-}
-
-impl ops::DerefMut for ArrayTape {
-    fn deref_mut(&mut self) -> &mut u8 {
-        &mut self.cells[self.ptr]
+    fn trace(&self) {
+        println!("@[{}] = {}",
+                 self.ptr,
+                 self.cells[self.ptr]);
     }
 }
 
