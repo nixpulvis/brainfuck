@@ -57,6 +57,18 @@
 //! when there are no more input values are ignored. Programs with unmatched
 //! brackets are invalid.
 //!
+//! # Security
+//!
+//! The standard set of tapes, [`tape::ArrayTape`], [`tape::ModArrayTape`], and
+//! [`tape::VecTape`] all both compute on and store data in cells in the clear,
+//! as well as access memory in predictable patterns. This makes them _insecure_
+//! from a threat model with access to the memory and program traces.
+//!
+//! The goal of the [`tape::GarbledTape`] is to make computation _secure_ under
+//! the same threat model. This is done by randomizing access to memory
+//! uniformly and encrypting the cell data.
+//!
+//!
 //! [instruction]: enum.Instruction.html
 //! [brainfuck]: http://www.muppetlabs.com/~breadbox/bf/
 //! [control-flow]: enum.Instruction.html#control-flow

@@ -30,6 +30,9 @@ impl Default for GarbledTape {
         // Typically, one time pad cipher keys are sent via diplomatic pouch.
         //
         // XXX: We still leak the address_index?
+        // XXX: Repeated access patterns are still noticable. We need to change
+        //      CBC mode for example: https://www.freesoft.org/CIE/Topics/143.htm
+        // keys at each step?
         let mut rng = thread_rng();
         let cell_key = rng.gen();
         let mut address_keys = [0; 65536];
