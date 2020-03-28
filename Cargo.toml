@@ -9,6 +9,7 @@ authors = [
 documentation = "http://nixpulvis.github.io/brainfuck/brainfuck/"
 repository = "https://github.com/nixpulvis/brainfuck"
 license = "MIT"
+edition = "2018"
 
 [[bin]]
 name = "brainfuck"

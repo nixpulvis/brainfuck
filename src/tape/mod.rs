@@ -40,7 +40,7 @@ macro_rules! tape_tests {
         #[cfg(test)]
         mod tests {
             use super::*;
-            use tape::Tape;
+            use crate::tape::Tape;
 
             #[test]
             fn new() {
