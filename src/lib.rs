@@ -96,7 +96,7 @@ fn eval(program: Program) -> Result<(), Error> {
 /// brainfuck::eval_string("+>.");
 /// ```
 pub fn eval_string(source: &str) -> Result<(), Error> {
-    eval(try!(Program::parse(source)))
+    eval(Program::parse(source)?)
 }
 
 /// Parse a program from the given file path and run it.
@@ -110,7 +110,7 @@ pub fn eval_string(source: &str) -> Result<(), Error> {
 /// brainfuck::eval_file("fixtures/helloworld.rs");
 /// ```
 pub fn eval_file<P: AsRef<Path>>(path: P) -> Result<(), Error> {
-    let program = try!(Program::from_file(path));
+    let program = Program::from_file(path)?;
     eval(program)
 }
 

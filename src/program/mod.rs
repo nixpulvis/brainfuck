@@ -68,9 +68,9 @@ impl Program {
 
     /// Create a program from a file.
     pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Program, Error> {
-        let mut file = try!(File::open(path));
+        let mut file = File::open(path)?;
         let mut source = String::new();
-        try!(file.read_to_string(&mut source));
+        file.read_to_string(&mut source)?;
         Program::parse(&source)
     }
 }

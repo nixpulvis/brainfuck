@@ -1,4 +1,4 @@
-use std::{error, fmt, io};
+use std::{fmt, io};
 use super::tape;
 use super::program;
 
@@ -17,26 +17,14 @@ pub enum Error {
     CycleLimit,
 }
 
-impl error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::Io(_) => "IO error",
-            Error::Tape(_) => "Tape error",
-            Error::Program(_) => "Program error",
-            Error::NoProgram => "No program loaded",
-            Error::CycleLimit => "Cycle limit hit",
-        }
-    }
-}
-
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             Error::Io(ref e) => e.fmt(f),
             Error::Tape(ref e) => e.fmt(f),
             Error::Program(ref e) => e.fmt(f),
-            Error::NoProgram => write!(f, "{}", error::Error::description(self)),
-            Error::CycleLimit => write!(f, "{}", error::Error::description(self)),
+            Error::NoProgram => write!(f, "{}", "No program loaded"),
+            Error::CycleLimit => write!(f, "{}", "Cycle limit hit"),
         }
     }
 }

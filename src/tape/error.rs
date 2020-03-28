@@ -1,4 +1,4 @@
-use std::{fmt, error};
+use std::fmt;
 
 /// The error type for dealing with tapes.
 #[derive(Debug)]
@@ -9,19 +9,13 @@ pub enum Error {
     PtrUnderflow,
 }
 
-impl error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::ValOverflow => "Tape value overflowed",
-            Error::ValUnderflow => "Tape value underflowed",
-            Error::PtrOverflow => "Tape pointer overflowed",
-            Error::PtrUnderflow => "Tape pointer underflowed",
-        }
-    }
-}
-
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", error::Error::description(self))
+        match *self {
+            Error::ValOverflow => write!(f, "Tape value overflowed"),
+            Error::ValUnderflow => write!(f, "Tape value underflowed"),
+            Error::PtrOverflow => write!(f, "Tape pointer overflowed"),
+            Error::PtrUnderflow => write!(f, "Tape pointer underflowed"),
+        }
     }
 }

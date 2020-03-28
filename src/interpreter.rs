@@ -61,7 +61,7 @@ impl<'a, T: Tape + Default> Interpreter<'a, T> {
 
     /// Run the interpreter.
     pub fn run(&mut self) -> Result<(), Error> {
-        while let Some(r) = try!(self.step()) {
+        while let Some(r) = self.step()? {
             if let Err(e) = r {
                 return Err(e)
             }
@@ -72,7 +72,7 @@ impl<'a, T: Tape + Default> Interpreter<'a, T> {
     /// Run the interpreter with a callback hook.
     pub fn run_with_callback<F>(&mut self, mut hook: F) -> Result<(), Error>
     where F: FnMut(&mut Self, &Instruction) {
-        while let Some(r) = try!(self.step()) {
+        while let Some(r) = self.step()? {
             match r {
                 Ok(i) => hook(self, &i),
                 Err(e) => return Err(e),
@@ -104,26 +104,26 @@ impl<'a, T: Tape + Default> Interpreter<'a, T> {
     fn execute(&mut self, instruction: Instruction) -> Result<Instruction, Error> {
         match instruction {
             Instruction::IncPtr => {
-                try!(self.tape.inc_ptr());
+                self.tape.inc_ptr()?;
             },
             Instruction::DecPtr => {
-                try!(self.tape.dec_ptr());
+                self.tape.dec_ptr()?;
             },
             Instruction::IncVal => {
-                try!(self.tape.inc_val());
+                self.tape.inc_val()?;
             },
             Instruction::DecVal => {
-                try!(self.tape.dec_val());
+                self.tape.dec_val()?;
             },
             Instruction::Output => {
                 if let Some(ref mut w) = self.writer {
-                    try!(w.write(&[**self.tape]));
+                    w.write(&[**self.tape])?;
                 }
             },
             Instruction::Input => {
                 if let Some(ref mut r) = self.reader {
                     if let Some(b) = r.bytes().next() {
-                        **self.tape = try!(b);
+                        **self.tape = b?;
                     }
                 }
             },

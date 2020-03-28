@@ -1,4 +1,4 @@
-use std::{fmt, error, io};
+use std::{fmt, io};
 
 /// The error type for dealing with tapes.
 #[derive(Debug)]
@@ -6,16 +6,6 @@ pub enum Error {
     Io(io::Error),
     MissingOpenBracket(usize),
     MissingCloseBracket(usize),
-}
-
-impl error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::Io(_) => "IO error",
-            Error::MissingOpenBracket(_) => "Missing opening bracket",
-            Error::MissingCloseBracket(_) => "Missing closing bracket(s)",
-        }
-    }
 }
 
 impl fmt::Display for Error {
