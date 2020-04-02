@@ -1,6 +1,6 @@
 [package]
 name = "brainfuck"
-version = "0.2.0"
+version = "0.2.1"
 description = "Brainfuck interpreter and modules."
 authors = [
     "Nathan Lilienthal <nathan@nixpulvis.com>",
