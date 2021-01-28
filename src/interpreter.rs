@@ -1,7 +1,7 @@
 use std::io::{Read, Write};
 use crate::tape::Tape;
 use crate::program::Program;
-use super::{CYCLE_LIMIT, Error, Instruction};
+use super::{Error, Instruction};
 
 /// A brainfuck interpreter, with the needed state for execution.
 ///
@@ -26,6 +26,7 @@ pub struct Interpreter<'a, T: Tape> {
     writer: Option<&'a mut dyn Write>,
     tape: Box<T>,
     pc: usize,
+    cycle_limit: Option<u64>,
     cycles: u64,
 }
 
@@ -38,6 +39,11 @@ impl<'a, T: Tape + Default> Interpreter<'a, T> {
         interp.read_from(reader);
         interp.write_to(writer);
         interp
+    }
+
+    /// Limit the interpreter to run in a specified number of instruction cycles.
+    pub fn limit(&mut self, cycles: u64) {
+        self.cycle_limit = Some(cycles);
     }
 
     /// Load a program for the interpreter to run.
@@ -82,8 +88,10 @@ impl<'a, T: Tape + Default> Interpreter<'a, T> {
     }
 
     fn step(&mut self) -> Result<Option<Result<Instruction, Error>>, Error> {
-        if self.cycles >= CYCLE_LIMIT {
-            return Ok(Some(Err(Error::CycleLimit)))
+        if let Some(limit) = self.cycle_limit {
+            if self.cycles >= limit {
+                return Ok(Some(Err(Error::CycleLimit)))
+            }
         }
         let instruction = match self.program {
             Some(ref p) => match p.get(self.pc) {

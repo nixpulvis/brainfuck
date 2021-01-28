@@ -9,7 +9,8 @@ macro_rules! load_and_run {
 
         fn $name() {
             let program = Program::from_file($path).unwrap();
-            Interpreter::<tape::ModArrayTape>::default().load(program).run().unwrap();
+            let mut interpreter = Interpreter::<tape::ModArrayTape>::default();
+            interpreter.load(program).run().unwrap();
         }
     };
 }
@@ -20,7 +21,9 @@ macro_rules! load_and_run_limit {
 
         fn $name() {
             let program = Program::from_file($path).unwrap();
-            match Interpreter::<tape::VecTape>::default().load(program).run() {
+            let mut interpreter = Interpreter::<tape::VecTape>::default();
+            interpreter.limit(10_000_000);
+            match interpreter.load(program).run() {
                 Err(Error::CycleLimit) => assert!(true),
                 _ => assert!(false),
             }
