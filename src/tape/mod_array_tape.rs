@@ -24,6 +24,8 @@ impl Default for ModArrayTape {
 impl Tape for ModArrayTape {
     type Cell = u8;
 
+    deref_get_set!();
+
     fn is_nice() -> bool {
         true
     }

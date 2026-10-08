@@ -24,6 +24,8 @@ impl Default for ArrayTape {
 impl Tape for ArrayTape {
     type Cell = u8;
 
+    deref_get_set!();
+
     fn is_nice() -> bool {
         true
     }

@@ -26,6 +26,8 @@ impl Default for VecTape {
 impl Tape for VecTape {
     type Cell = u8;
 
+    deref_get_set!();
+
     fn is_nice() -> bool {
         true
     }

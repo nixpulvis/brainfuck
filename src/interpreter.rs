@@ -39,6 +39,31 @@ impl<'a, T: Tape + Default> Interpreter<'a, T> {
         interp.write_to(writer);
         interp
     }
+}
+
+impl<'a, T: Tape> Interpreter<'a, T> {
+    /// Create a new interpreter over the given tape, with no program,
+    /// reader or writer.
+    pub fn with_tape(tape: T) -> Interpreter<'a, T> {
+        Interpreter {
+            program: None,
+            reader: None,
+            writer: None,
+            tape: Box::new(tape),
+            pc: 0,
+            cycles: 0,
+        }
+    }
+
+    /// The interpreter's tape.
+    pub fn tape(&self) -> &T {
+        &self.tape
+    }
+
+    /// The interpreter's tape, mutably.
+    pub fn tape_mut(&mut self) -> &mut T {
+        &mut self.tape
+    }
 
     /// Load a program for the interpreter to run.
     pub fn load(&mut self, program: Program) -> &mut Self {
@@ -117,23 +142,23 @@ impl<'a, T: Tape + Default> Interpreter<'a, T> {
             },
             Instruction::Output => {
                 if let Some(ref mut w) = self.writer {
-                    w.write(&[**self.tape])?;
+                    w.write(&[self.tape.get()?])?;
                 }
             },
             Instruction::Input => {
                 if let Some(ref mut r) = self.reader {
                     if let Some(b) = r.bytes().next() {
-                        **self.tape = b?;
+                        self.tape.set(b?)?;
                     }
                 }
             },
             Instruction::SkipForward(iptr) => {
-                if **self.tape == 0 {
+                if self.tape.is_zero()? {
                     self.pc = iptr;
                 }
             },
             Instruction::SkipBackward(iptr) => {
-                if **self.tape != 0 {
+                if !self.tape.is_zero()? {
                     self.pc = iptr;
                 }
             },
