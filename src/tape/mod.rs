@@ -1,5 +1,3 @@
-use std::ops;
-
 /// The number of cells a portable tape contains. Attempts to access above or
 /// below this limit will result in an error.
 pub const TAPE_LENGTH: usize = 30000;
@@ -13,7 +11,7 @@ pub use self::mod_array_tape::ModArrayTape;
 /// An interface for the underlying data for brainfuck. Tapes are
 /// conceptually a sequential list of cells, who's values can be
 /// represented as bytes.
-pub trait Tape: ops::Deref<Target=u8> + ops::DerefMut {
+pub trait Tape {
     /// The underlying cell type, that holds the data. This value when
     /// dereferenced will need to be converted to a `u8`.
     type Cell;
@@ -33,6 +31,31 @@ pub trait Tape: ops::Deref<Target=u8> + ops::DerefMut {
 
     /// Decrement the location of the pointer by 1 cell.
     fn dec_ptr(&mut self) -> Result<usize, Error>;
+
+    /// Get the value of the current cell.
+    fn get(&self) -> Result<u8, Error>;
+
+    /// Set the value of the current cell.
+    fn set(&mut self, value: u8) -> Result<(), Error>;
+
+    /// Returns true if the value of the current cell is 0.
+    fn is_zero(&self) -> Result<bool, Error> {
+        self.get().map(|v| v == 0)
+    }
+}
+
+/// Implement `get` and `set` for tapes that deref to the current cell.
+macro_rules! deref_get_set {
+    () => {
+        fn get(&self) -> Result<u8, Error> {
+            Ok(**self)
+        }
+
+        fn set(&mut self, value: u8) -> Result<(), Error> {
+            **self = value;
+            Ok(())
+        }
+    }
 }
 
 macro_rules! tape_tests {

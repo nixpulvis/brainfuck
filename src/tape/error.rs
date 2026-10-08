@@ -7,6 +7,7 @@ pub enum Error {
     ValUnderflow,
     PtrOverflow,
     PtrUnderflow,
+    Other(Box<dyn std::error::Error + Send + Sync>),
 }
 
 impl fmt::Display for Error {
@@ -16,6 +17,7 @@ impl fmt::Display for Error {
             Error::ValUnderflow => write!(f, "Tape value underflowed"),
             Error::PtrOverflow => write!(f, "Tape pointer overflowed"),
             Error::PtrUnderflow => write!(f, "Tape pointer underflowed"),
+            Error::Other(ref e) => e.fmt(f),
         }
     }
 }
